@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 .idea
+
+pg_data/
+rmq_data/
