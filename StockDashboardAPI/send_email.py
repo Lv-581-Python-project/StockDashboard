@@ -7,7 +7,7 @@ MAIL_PASSWORD = 'stockdashboard'
 
 yag = yagmail.SMTP(MAIL_ID, MAIL_PASSWORD)
 
-app = Celery('send_email', broker='amqp://localhost//',
+app = Celery('send_email', broker='amqp://localhost',
              include=('send_email',))
 
 
