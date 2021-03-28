@@ -1,0 +1,29 @@
+version: '3.8'
+
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: stock_dashboard_psql_db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+
+  rmq:
+    image: rabbitmq:3-management
+    container_name: stock_dashboard_rmq
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "${RABBITMQ_ERLANG_COOKIE}"
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rmq_data:/var/lib/rabbitmq
+    restart: always
