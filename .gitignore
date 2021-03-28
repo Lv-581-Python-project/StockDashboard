@@ -128,10 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.idea
-<<<<<<< HEAD
-=======
+.idea/
 
 pg_data/
 rmq_data/
->>>>>>> 8f2dad77f74d3dae7d5f0c3337c99d848160cf16
