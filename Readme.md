@@ -1,5 +1,10 @@
 Stock Dashboard
 
+```
+Create .env file in StockDashboard with
+export export FLASK_SECRET_KEY = "XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
+```
+
 ### Docker-compose setup
 1. Create .env file (skip if exists)
 2. Fill .env file according to this template
