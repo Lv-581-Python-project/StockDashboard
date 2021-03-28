@@ -10,4 +10,4 @@ CKEDITOR_ENABLE_CSRF = True
 
 app.config['SECRET_KEY'] = 'SDQ(*&SD(*Q(899*DS98(*&8978sd7987s98d7q9*Q'
 
-# from app import routes
+# from StockDashboardAPI import routes

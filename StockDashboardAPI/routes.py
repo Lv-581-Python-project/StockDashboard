@@ -1,5 +1,5 @@
 import send_email
-from app import app
+from StockDashboardAPI import app
 
 
 @app.route('/send_email', methods=['GET', 'POST'])
