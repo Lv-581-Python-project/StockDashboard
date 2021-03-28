@@ -1,15 +1,14 @@
 import os
 from dotenv import load_dotenv
-
 project_folder = os.path.expanduser('~/StockDashboard')  # adjust as appropriate
-load_dotenv(os.path.join(project_folder, '.env'))
+load_dotenv(os.path.join(project_folder, '.venv'))
 
 
 class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
+    SECRET_KEY = '%#%@!#@#!@#!@#!@#!SJKDHA@KJ!H@K#JHJ'
 
 
 class ProductionConfig(Config):

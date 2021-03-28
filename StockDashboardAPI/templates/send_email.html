@@ -1,0 +1,17 @@
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.sender.label }}<br>
+        {{ form.sender(size=32) }}
+    </p>
+    <p>
+        {{ form.recipient.label }}
+        {{ form.recipient(size=64) }}
+    </p>
+    <p>
+        {{ form.submit() }}
+    </p>
+    {% if form.errors %}
+        {{ form.errors }}
+    {% endif %}
+</form>

@@ -1,0 +1,34 @@
+<html>
+<head>
+    <title>Dashboard Invite from {{ sender }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .head {
+            background-color: lightblue;
+            color: white;
+        }
+
+        .link {
+            text-decoration: none;
+            color: #2C66E1;
+        }
+    </style>
+</head>
+<body>
+    <div class="head flex-center">
+        <h1>Hello {{ recipient }}!</h1>
+    </div>
+    <p class="flex-center">You've been invited to view a Stock Dashboard at the following link:</p>
+    <p class="flex-center link">{{ link }}</p>
+</body>
+</html>

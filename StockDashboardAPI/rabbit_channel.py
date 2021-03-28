@@ -17,5 +17,5 @@ def get_email_queue():
 
 
 @app.teardown_appcontext
-def close_queue(error, rabbitmq):
-    rabbitmq.close()
+def close_queue(error):
+    pass
