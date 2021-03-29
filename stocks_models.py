@@ -7,3 +7,19 @@ def create(name,company_name):
         cursor.execute(query)
         conn.commit()
         cursor.close()
+
+def update(id,name=None,company_name=None):
+    if not name:
+        with db.pool_manager() as conn:
+            cursor = conn.cursor()
+            query = f"UPDATE public.stocks SET company_name = '%s' WHERE id = %s;"%(company_name, id)
+            cursor.execute(query)
+            conn.commit()
+            cursor.close()
+    if not company_name:
+        with db.pool_manager() as conn:
+            cursor = conn.cursor()
+            query = f"UPDATE public.stocks SET name = '%s' WHERE id = %s;"%(name, id)
+            cursor.execute(query)
+            conn.commit()
+            cursor.close()
