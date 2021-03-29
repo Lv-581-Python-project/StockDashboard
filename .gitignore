@@ -103,6 +103,7 @@ celerybeat.pid
 
 # Environments
 .env
+StockDashboardAPI/.env
 .venv
 env/
 venv/
