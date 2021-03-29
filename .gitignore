@@ -103,6 +103,7 @@ celerybeat.pid
 
 # Environments
 .env
+StockDashboardAPI/.env
 .venv
 env/
 venv/
@@ -129,3 +130,6 @@ dmypy.json
 .pyre/
 
 .idea
+
+pg_data/
+rmq_data/
