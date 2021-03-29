@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS stocks(
     id serial PRIMARY KEY,
-    name TEXT NOT NULL,
-    company_name TEXT NOT NULL
+    name VARCHAR(16) NULL,
+    company_name VARCHAR(128) NOT NULL
 );
