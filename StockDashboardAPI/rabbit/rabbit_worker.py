@@ -19,8 +19,8 @@ def send_email_message(ch, method, properties, body):
     print('Sending email to {}'.format(recipient))  # change to address
     # template = render_template('email.html',
     #                            sender='stockdashboard581@gmail.com',
-    #                            recipient='slavko.dem@gmail.com',
-    #                            link='cooldashboardlink.com')
+    #                            recipient=recipient,
+    #                            link=link)
     template = "<html><head><style>* {margin: 0;padding: 0;}" \
                ".flex-center {display: flex;align-items: center;justify-content: center;}" \
                ".header {background-color: lightblue;color: white;" \
@@ -33,7 +33,7 @@ def send_email_message(ch, method, properties, body):
     msg = Message(html=template,
                   subject='Hello {}'.format(recipient),
                   sender='stockdashboard581@gmail.com',
-                  recipients=['slavko.dem@gmail.com']
+                  recipients=[recipient]
                   )
 
     with app.app_context():
