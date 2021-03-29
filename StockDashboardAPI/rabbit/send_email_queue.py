@@ -1,5 +1,6 @@
 import pika
 from StockDashboardAPI import app
+import os
 
 
 def connect_queue():

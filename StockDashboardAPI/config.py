@@ -1,14 +1,20 @@
 import os
 from dotenv import load_dotenv
-project_folder = os.path.expanduser('~/StockDashboard')  # adjust as appropriate
-load_dotenv(os.path.join(project_folder, '.venv'))
+project_folder = os.path.expanduser('~/StockDashboard')
+load_dotenv(os.path.join(project_folder, '.env'))
 
 
 class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = '%#%@!#@#!@#!@#!@#!SJKDHA@KJ!H@K#JHJ'
+    RABBITMQ_CONNECTION_HOST = os.getenv('RABBITMQ_CONNECTION_HOST')
+    SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
+    MAIL_HOST = os.getenv('MAIL_HOST')
+    MAIL_PORT = os.getenv('MAIL_PORT')
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS')
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 
 
 class ProductionConfig(Config):

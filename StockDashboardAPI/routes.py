@@ -1,9 +1,9 @@
 from StockDashboardAPI import app
 from flask import render_template, redirect, url_for, request
-from StockDashboardAPI.rabbit.rabbit_channel import get_email_queue
+from StockDashboardAPI.rabbit.send_email_queue import get_email_queue
 from .forms import EmailForm
 import pika
-
+import os
 
 @app.route('/')
 @app.route('/home')
