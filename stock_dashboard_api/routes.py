@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, request
 from stock_dashboard_api.rabbit.send_email_queue import get_email_queue
 from .forms import EmailForm
 import pika
-import os
+
 
 @app.route('/')
 @app.route('/home')
