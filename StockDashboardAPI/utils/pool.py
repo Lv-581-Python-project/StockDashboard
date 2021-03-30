@@ -2,16 +2,13 @@ import logging
 import os
 import time
 from logging.config import fileConfig
+from pathlib import Path
 
-from dotenv import load_dotenv
 from psycopg2.pool import PoolError, SimpleConnectionPool
-
-project_folder = os.getcwd()
-load_dotenv(os.path.join(project_folder, '../.env'))
 
 POOL_DELAY = os.getenv('POOL_DELAY')
 
-fileConfig(fname=(os.path.join(project_folder, '../_log.conf')), disable_existing_loggers=False)
+fileConfig((Path.cwd().parent / 'logging.conf'), disable_existing_loggers=True)
 logger = logging.getLogger('pool')
 
 
@@ -26,17 +23,30 @@ class Connection:
                                                               database=os.getenv('DATABASE'))
 
         logger.info('Connection pool was created')
-        self.conn = Connection.connection_pool.getconn()
+        self.conn = None
+        self.cursor = None
 
     def __enter__(self):
         logger.info(f'Get connection from pool {id(self.conn)}')
         try:
-            return self.conn
+            self.conn = Connection.connection_pool.getconn()
+            self.conn.autocommit = False
+            self.cursor = self.conn.cursor()
+            return self
 
         except PoolError:
             logger.info('Pool doesn\'t have available connection. Please wait')
             time.sleep(int(POOL_DELAY))
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        Connection.connection_pool.putconn(self.conn)
-        logger.info(f'Put connection to pool {id(self.conn)}')
+        if exc_val is not None:
+            logger.error(f'Unexpected error.{exc_val}. Rollback all changes')
+            self.conn.rollback()
+            self.cursor.close()
+            Connection.connection_pool.putconn(self.conn)
+        else:
+            logger.info('All changes was commited')
+            self.conn.commit()
+            self.cursor.close()
+            Connection.connection_pool.putconn(self.conn)
+            logger.info(f'Put connection to pool {id(self.conn)}')
