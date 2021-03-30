@@ -24,3 +24,20 @@ def update(id,name=None,company_name=None):
             cursor.execute(query)
             conn.commit()
             cursor.close()
+
+def remove(id):
+    with db.Connection() as conn:
+        cursor = conn.cursor()
+        query = f"DELETE FROM public.stocks WHERE id = %s;" % (id)
+        cursor.execute(query)
+        conn.commit()
+        cursor.close()
+
+def get_by_id(id):
+    with db.Connection() as conn:
+        cursor = conn.cursor()
+        query = f"SELECT name, company_name FROM public.stocks WHERE id = %s;" % (id)
+        cursor.execute(query)
+        record = cursor.fetchall()
+        print(record)
+        cursor.close()
