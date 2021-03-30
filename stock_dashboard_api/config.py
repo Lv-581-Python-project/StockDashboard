@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-project_folder = os.path.expanduser('~/StockDashboard/stock_dashboard_api')
+project_folder = os.path.expanduser('~/StockDashboard/StockDashboardAPI')
 load_dotenv(os.path.join(project_folder, '.env'))
 
 
@@ -9,8 +9,7 @@ class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    RABBITMQ_CONNECTION_HOST = os.getenv('RABBITMQ_CONNECTION_HOST')
-    SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
+    SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
 
 class ProductionConfig(Config):
