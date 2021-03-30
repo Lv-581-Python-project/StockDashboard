@@ -1,8 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-project_folder = os.path.expanduser('~/StockDashBoard/stock_dashboard_api')  # adjust as appropriate
-load_dotenv(os.path.join(project_folder, '.env'))
+load_dotenv(os.path.join(os.getcwd(), '.env'))
 
 
 class Config:
