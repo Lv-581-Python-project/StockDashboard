@@ -1,5 +1,5 @@
 import pika
-from StockDashboardAPI import app
+from stock_dashboard_api import app
 import os
 
 
