@@ -1,5 +1,5 @@
 from flask import Flask
-from .config import DevelopmentConfig
+from StockDashboardAPI.config import DevelopmentConfig
 
 app = Flask(__name__)
 

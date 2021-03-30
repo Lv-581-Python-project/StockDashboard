@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
-project_folder = os.path.expanduser('~/StockDashboard')
+
+project_folder = os.path.expanduser('~/StockDashboard/StockDashboardAPI')  # adjust as appropriate
 load_dotenv(os.path.join(project_folder, '.env'))
 
 
@@ -33,4 +34,3 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-
