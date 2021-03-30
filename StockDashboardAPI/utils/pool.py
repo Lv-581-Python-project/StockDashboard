@@ -29,8 +29,8 @@ class Connection:
         self.conn = Connection.connection_pool.getconn()
 
     def __enter__(self):
+        logger.info(f'Get connection from pool {id(self.conn)}')
         try:
-            logger.info(f'Get connection from pool {id(self.conn)}')
             return self.conn
 
         except PoolError:
