@@ -5,7 +5,7 @@ class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
+    SECRET_KEY = os.environ.get("FLASK_SECRET_KEY")
 
 
 class ProductionConfig(Config):
