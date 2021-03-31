@@ -17,8 +17,8 @@ class Connection:
 
     def __init__(self):
         if not Connection.connection_pool:
-            Connection.connection_pool = SimpleConnectionPool(os.getenv('MINCONN'),
-                                                              os.getenv('MAXCONN'),
+            Connection.connection_pool = SimpleConnectionPool(int(os.getenv('MINCONN')),
+                                                              int(os.getenv('MAXCONN')),
                                                               user=os.getenv('POSTGRES_USER'),
                                                               password=os.getenv('POSTGRES_PASSWORD'),
                                                               host=os.getenv('POSTGRES_HOST'),
