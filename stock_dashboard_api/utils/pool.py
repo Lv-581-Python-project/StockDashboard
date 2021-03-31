@@ -17,10 +17,13 @@ class Connection:
 
     def __init__(self):
         if not Connection.connection_pool:
-            Connection.connection_pool = SimpleConnectionPool(os.getenv('MINCONN'), os.getenv('MAXCONN'),
-                                                              user=os.getenv('USERS'), password=os.getenv('PASSWORD'),
-                                                              host=os.getenv('HOST'), port=os.getenv('PORT'),
-                                                              database=os.getenv('DATABASE'))
+            Connection.connection_pool = SimpleConnectionPool(os.getenv('MINCONN'),
+                                                              os.getenv('MAXCONN'),
+                                                              user=os.getenv('POSTGRES_USER'),
+                                                              password=os.getenv('POSTGRES_PASSWORD'),
+                                                              host=os.getenv('POSTGRES_HOST'),
+                                                              port=os.getenv('POSTGRES_PORT'),
+                                                              database=os.getenv('POSTGRES_DB'))
 
         logger.info('Connection pool was created')
         self.conn = None
