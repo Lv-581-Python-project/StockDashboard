@@ -17,20 +17,21 @@ class Connection:
 
     def __init__(self):
         if not Connection.connection_pool:
-            Connection.connection_pool = SimpleConnectionPool(int(os.getenv('MINCONN')),
-                                                              int(os.getenv('MAXCONN')),
-                                                              user=os.getenv('POSTGRES_USER'),
-                                                              password=os.getenv('POSTGRES_PASSWORD'),
-                                                              host=os.getenv('POSTGRES_HOST'),
-                                                              port=os.getenv('POSTGRES_PORT'),
-                                                              database=os.getenv('POSTGRES_DB'))
+            Connection.connection_pool = SimpleConnectionPool(
+                int(os.getenv('MINCONN')),
+                int(os.getenv('MAXCONN')),
+                user=os.getenv('POSTGRES_USER'),
+                password=os.getenv('POSTGRES_PASSWORD'),
+                host=os.getenv('POSTGRES_HOST'),
+                port=os.getenv('POSTGRES_PORT'),
+                database=os.getenv('POSTGRES_DB'))
 
         logger.info('Connection pool was created')
         self.conn = None
         self.cursor = None
 
     def __enter__(self):
-        logger.info(f'Get connection from pool {id(self.conn)}')
+        logger.info('Get connection from pool %s', id(self.conn))
         try:
             self.conn = Connection.connection_pool.getconn()
             self.conn.autocommit = False
@@ -40,16 +41,16 @@ class Connection:
         except PoolError:
             logger.info('Pool doesn\'t have available connection. Please wait')
             time.sleep(int(POOL_DELAY))
+            return self.__enter__()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_val is not None:
-            logger.error(f'Unexpected error.{exc_val}. Rollback all changes')
+            logger.error('Unexpected error. %s Rollback all changes', exc_val)
             self.conn.rollback()
             self.cursor.close()
             Connection.connection_pool.putconn(self.conn)
-        else:
-            logger.info('All changes was commited')
-            self.conn.commit()
-            self.cursor.close()
-            Connection.connection_pool.putconn(self.conn)
-            logger.info(f'Put connection to pool {id(self.conn)}')
+        logger.info('All changes was commited')
+        self.conn.commit()
+        self.cursor.close()
+        Connection.connection_pool.putconn(self.conn)
+        logger.info('Put connection to pool %s', id(self.conn))
