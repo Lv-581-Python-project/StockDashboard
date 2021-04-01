@@ -1,8 +1,8 @@
-<h1>Stock Dashboard</h1>
+# Stock Dashboard
 
 ### Add the secret key
 ```
-Create .env file in ~StockDashboard/StockDashboardAPI with 
+Create .env file in ~StockDashboard/stock_dashboard_api with 
 export FLASK_SECRET_KEY = "XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
 ```
 
@@ -21,3 +21,20 @@ export FLASK_SECRET_KEY = "XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
 3. Run `docker-compose up`
 
 - In case of editing some of this params you will likely have to remove `pg_data/` or `rmq-data/`
+
+### Database Init
+
+To create and to fill database go to
+folder data/StockDashboard and type command to run script:
+```bash
+ psql -U <username> -d <dbname> -a -f <script_name>
+```
+- To create run CREATE_DB.sql
+- To fill run INSERT_DATA.sql
+
+### Environment variables
+
+Insert to variable file:
+```
+export PROD_ROOT='${PROD_ROOT: -/home/user/StockDashboard/stock_dashboard_api}'
+```

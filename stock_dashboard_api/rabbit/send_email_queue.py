@@ -1,5 +1,4 @@
 import pika
-from stock_dashboard_api.app import app
 
 
 def connect_queue():
@@ -14,8 +13,3 @@ def get_email_queue():
     channel.queue_bind(exchange='amq.direct', queue='email_queue')
     email_queue = channel
     return email_queue
-
-
-@app.teardown_appcontext
-def close_queue(error):
-    pass

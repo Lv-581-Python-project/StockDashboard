@@ -7,7 +7,7 @@ import pika
 from dotenv import load_dotenv
 from flask import render_template
 
-from stock_dashboard_api.app import app
+from stock_dashboard_api.stock_dashboard_api import app
 
 project_folder = os.getcwd()
 load_dotenv(os.path.join(project_folder, '../.env'))
