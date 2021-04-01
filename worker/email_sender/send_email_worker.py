@@ -4,15 +4,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import pika
-from dotenv import load_dotenv
 from flask import render_template
 
 from stock_dashboard_api.stock_dashboard_api import app
 
-project_folder = os.getcwd()
-load_dotenv(os.path.join(project_folder, '../../.env'))
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST')))
 channel = connection.channel()
 channel.queue_declare(queue='email_queue', durable=True)
 
@@ -25,9 +22,9 @@ def send_email_message(ch, method, properties, body):
     recipient = body[1]
     link = 'http://127.0.0.1:5000/' + body[2]
 
-    s = smtplib.SMTP(host=os.getenv('MAIL_HOST'), port=os.getenv('MAIL_PORT'))
+    s = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
     s.starttls()
-    s.login(os.getenv('MAIL_USERNAME'), os.getenv('MAIL_PASSWORD'))
+    s.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
 
     msg = MIMEMultipart()
 

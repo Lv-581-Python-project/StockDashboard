@@ -6,16 +6,11 @@ from pathlib import Path
 
 from psycopg2.pool import PoolError, SimpleConnectionPool
 
-from dotenv import load_dotenv
-
 
 POOL_DELAY = os.getenv('POOL_DELAY')
 
 fileConfig((Path.cwd().parent / 'logging.conf'), disable_existing_loggers=True)
 logger = logging.getLogger('pool')
-
-project_folder = os.getcwd()
-load_dotenv(os.path.join(project_folder, '../../.env'))
 
 
 class Connection:
@@ -23,13 +18,13 @@ class Connection:
 
     def __init__(self):
         if not Connection.connection_pool:
-            Connection.connection_pool = SimpleConnectionPool(os.getenv('MINCONN'),
-                                                              os.getenv('MAXCONN'),
-                                                              user=os.getenv('POSTGRES_USER'),
-                                                              password=os.getenv('POSTGRES_PASSWORD'),
-                                                              host=os.getenv('POSTGRES_HOST'),
-                                                              port=os.getenv('POSTGRES_PORT'),
-                                                              database=os.getenv('POSTGRES_DB'))
+            Connection.connection_pool = SimpleConnectionPool(os.environ.get('MINCONN'),
+                                                              os.environ.get('MAXCONN'),
+                                                              user=os.environ.get('POSTGRES_USER'),
+                                                              password=os.environ.get('POSTGRES_PASSWORD'),
+                                                              host=os.environ.get('POSTGRES_HOST'),
+                                                              port=os.environ.get('POSTGRES_PORT'),
+                                                              database=os.environ.get('POSTGRES_DB'))
 
         logger.info('Connection pool was created')
         self.conn = None
