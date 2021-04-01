@@ -3,7 +3,6 @@ import os
 import time
 from logging.config import fileConfig
 from pathlib import Path
-
 from psycopg2.pool import PoolError, SimpleConnectionPool
 
 POOL_DELAY = os.getenv('POOL_DELAY')
@@ -54,3 +53,8 @@ class Connection:
         self.cursor.close()
         Connection.connection_pool.putconn(self.conn)
         logger.info('Put connection to pool %s', id(self.conn))
+
+def pool_manager():
+    return pool_instance
+
+pool_instance = Connection()
