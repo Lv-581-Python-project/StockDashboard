@@ -8,3 +8,4 @@ pika==1.2.0
 wtforms==2.3.3
 flask_wtf==0.14.3
 psycopg2==2.8.6
+wtforms[email]==2.3.3

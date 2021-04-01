@@ -6,10 +6,16 @@ from pathlib import Path
 
 from psycopg2.pool import PoolError, SimpleConnectionPool
 
+from dotenv import load_dotenv
+
+
 POOL_DELAY = os.getenv('POOL_DELAY')
 
 fileConfig((Path.cwd().parent / 'logging.conf'), disable_existing_loggers=True)
 logger = logging.getLogger('pool')
+
+project_folder = os.getcwd()
+load_dotenv(os.path.join(project_folder, '../../.env'))
 
 
 class Connection:
@@ -30,7 +36,7 @@ class Connection:
         self.cursor = None
 
     def __enter__(self):
-        logger.info(f'Get connection from pool {id(self.conn)}')
+        logger.info('Get connection from pool {}'.format(id(self.conn)))
         try:
             self.conn = Connection.connection_pool.getconn()
             self.conn.autocommit = False
@@ -43,7 +49,7 @@ class Connection:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_val is not None:
-            logger.error(f'Unexpected error.{exc_val}. Rollback all changes')
+            logger.error('Unexpected error.{}. Rollback all changes'.format(exc_val))
             self.conn.rollback()
             self.cursor.close()
             Connection.connection_pool.putconn(self.conn)
@@ -52,4 +58,4 @@ class Connection:
             self.conn.commit()
             self.cursor.close()
             Connection.connection_pool.putconn(self.conn)
-            logger.info(f'Put connection to pool {id(self.conn)}')
+            logger.info('Put connection to pool {}'.format(id(self.conn)))

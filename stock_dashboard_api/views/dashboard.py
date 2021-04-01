@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, request, Blueprint
-from stock_dashboard_api.rabbit.send_email_queue import get_email_queue
+from worker.email_sender.send_email_queue import get_email_queue
 from stock_dashboard_api.forms import EmailForm
 import pika
 
@@ -33,5 +33,5 @@ def send_email():
                 delivery_mode=2,
             )
         )
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard.home'))
     return render_template('send_email.html', form=form)

@@ -10,9 +10,9 @@ from flask import render_template
 from stock_dashboard_api.stock_dashboard_api import app
 
 project_folder = os.getcwd()
-load_dotenv(os.path.join(project_folder, '../.env'))
+load_dotenv(os.path.join(project_folder, '../../.env'))
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv('RABBITMQ_CONNECTION_HOST')))
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 channel.queue_declare(queue='email_queue', durable=True)
 
@@ -46,6 +46,5 @@ def send_email_message(ch, method, properties, body):
     channel.basic_ack(delivery_tag=method.delivery_tag)
 
 
-if __name__ == '__main__':
-    channel.basic_consume(queue='email_queue', on_message_callback=send_email_message)
-    channel.start_consuming()
+channel.basic_consume(queue='email_queue', on_message_callback=send_email_message)
+channel.start_consuming()
