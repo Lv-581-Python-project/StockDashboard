@@ -27,3 +27,13 @@ services:
     volumes:
       - ./rmq_data:/var/lib/rabbitmq
     restart: always
+
+  api:
+    build: stock_dashboard_api
+    container_name: stock_dashboard_api
+    env_file:
+      - stock_dashboard_api/.env
+    ports:
+    - 5000:5000
+    command: flask run --host=0.0.0.0 --port=5000
+    restart: always
