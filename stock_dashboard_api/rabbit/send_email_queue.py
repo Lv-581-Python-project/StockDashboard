@@ -1,6 +1,5 @@
 import pika
-from stock_dashboard_api import app
-import os
+from stock_dashboard_api.app import app
 
 
 def connect_queue():

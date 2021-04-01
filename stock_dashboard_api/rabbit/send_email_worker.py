@@ -7,7 +7,7 @@ import pika
 from dotenv import load_dotenv
 from flask import render_template
 
-from stock_dashboard_api import app
+from stock_dashboard_api.app import app
 
 project_folder = os.getcwd()
 load_dotenv(os.path.join(project_folder, '../.env'))
@@ -46,5 +46,6 @@ def send_email_message(ch, method, properties, body):
     channel.basic_ack(delivery_tag=method.delivery_tag)
 
 
-channel.basic_consume(queue='email_queue', on_message_callback=send_email_message)
-channel.start_consuming()
+if __name__ == '__main__':
+    channel.basic_consume(queue='email_queue', on_message_callback=send_email_message)
+    channel.start_consuming()

@@ -1,4 +1,4 @@
-from stock_dashboard_api.utils import pool as db
+from stock_dashboard_api import pool as db
 
 
 class DashboardConfig:

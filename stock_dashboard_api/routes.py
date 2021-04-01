@@ -1,7 +1,7 @@
-from stock_dashboard_api import app
+from stock_dashboard_api.app import app
 from flask import render_template, redirect, url_for, request
 from stock_dashboard_api.rabbit.send_email_queue import get_email_queue
-from .forms import EmailForm
+from stock_dashboard_api.forms import EmailForm
 import pika
 
 
