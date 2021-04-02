@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, request, Blueprint
-from worker.email_sender.send_email_queue import get_email_queue
+from workers.email_sender.send_email_queue import get_email_queue
 from stock_dashboard_api.forms import EmailForm
 import pika
 import json

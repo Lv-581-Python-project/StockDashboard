@@ -4,10 +4,11 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import pika
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST')))
+from send_email_queue import connect_queue
+
+connection = connect_queue()
 channel = connection.channel()
 channel.queue_declare(queue='email_queue', durable=True)
 
@@ -17,7 +18,7 @@ def send_email_message(ch, method, properties, body):
 
     sender = body['sender']
     recipient = body['recipient']
-    link = 'http://127.0.0.1:5000/' + body['path']
+    link = os.getenv('APPLICATION_HOST') + body['path']
 
     s = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
     s.starttls()
@@ -40,10 +41,9 @@ def send_email_message(ch, method, properties, body):
     email.attach(MIMEText(html, 'html'))
     s.send_message(email)
 
-    del email
-
     channel.basic_ack(delivery_tag=method.delivery_tag)
 
 
-channel.basic_consume(queue='email_queue', on_message_callback=send_email_message)
-channel.start_consuming()
+if __name__ == '__main__':
+    channel.basic_consume(queue='email_queue', on_message_callback=send_email_message)
+    channel.start_consuming()

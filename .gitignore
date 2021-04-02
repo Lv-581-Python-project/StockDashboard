@@ -133,3 +133,5 @@ dmypy.json
 
 pg_data/
 rmq_data/
+
+stock_dashboard_api/utils/test.py
