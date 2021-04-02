@@ -20,21 +20,16 @@ class Stocks:
             return Stocks(pk=pk, name=name, company_name=company_name)
 
     def update(self, name=None, company_name=None):
-        query = [f"UPDATE {self._table} SET ", ]
-        query_list = ["name = %(name)s", ", ", " ", "company_name = %(company_name)s ",
-                      "WHERE id = %(pk)s RETURNING id, name, company_name; "]
+        list_with_variable = []
         if name is not None:
-            query.append(query_list[0])
-            if company_name is not None:
-                query.append(query_list[1])
-            else:
-                query.append(query_list[2])
+            list_with_variable.append("name = %(name)s")
         if company_name is not None:
-            query.append(query_list[3])
-        query.append(query_list[4])
+            list_with_variable.append("company_name = %(company_name)s")
+        query = f"""UPDATE {self._table} SET {', '.join(list_with_variable)}
+                WHERE id = %(pk)s RETURNING id, name, company_name; """
         with pool_manager() as conn:
             conn.cursor.execute(
-                ''.join(query),
+                query,
                 {'name': name, 'company_name': company_name, 'pk': self.pk})
             pk, name, company_name = conn.cursor.fetchone()
             self.name = name
