@@ -44,7 +44,10 @@ class Stocks:
     @classmethod
     def get_by_id(cls, pk):
         with pool_manager() as conn:
-            query = f"SELECT id, name, company_name FROM {cls._table} WHERE id = %(id)s "
+            query = f"SELECT id, name, company_name FROM {cls._table} WHERE id = %(id)s"
             conn.cursor.execute(query, {'id': pk})
             pk, name, company_name = conn.cursor.fetchone()
-            return Stocks(pk=pk, name=name, company_name=company_name)
+            return Stocks(pk=pk, name=name, company_name=company_name).to_dict()
+
+    def to_dict(self):
+        return {'id': self.pk, "name": self.name, "company name": self.company_name}
