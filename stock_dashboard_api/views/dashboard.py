@@ -12,11 +12,17 @@ RABBITMQ_DELIVERY_MODE = 2
 @mod.route('/')
 @mod.route('/home')
 def home():
+    """
+    Temporary main page.
+    """
     return render_template('home.html')
 
 
 @mod.route('/send_email', methods=['GET', 'POST'])
 def send_email():
+    """
+    Handles a form that is used to send an email.
+    """
     form = EmailForm()
     if form.validate_on_submit():
 
@@ -28,7 +34,7 @@ def send_email():
 
         queue = get_email_queue()
         queue.basic_publish(
-            exchange='amq.direct',
+            exchange='email',
             routing_key='email_queue',
             body=body,
             properties=pika.BasicProperties(

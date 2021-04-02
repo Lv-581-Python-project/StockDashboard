@@ -2,14 +2,20 @@ from stock_dashboard_api.utils import pool as db
 
 
 class DashboardConfig:
+    """
+    Model used to create a dashboard_config_hash.
+    """
     _table = 'public.dashboard_config'
 
-    def __init__(self, config_hash, pk=None):
+    def __init__(self, config_hash: str, pk=None):
         self.pk = pk
         self.config_hash = config_hash
 
     @classmethod
-    def create(cls, config_hash):
+    def create(cls, config_hash: str):
+        """
+        Creates a new config_hash.
+        """
         with db.Connection() as conn:
             query = f"""INSERT INTO {cls._table} (config_hash)
                         VALUES (%(config_hash)s)
@@ -19,6 +25,9 @@ class DashboardConfig:
             return DashboardConfig(pk=pk, config_hash=config_hash)
 
     def update(self, config_hash=None):
+        """
+        Updates an existing config_hash.
+        """
         if config_hash:
             with db.Connection() as conn:
                 query = f"""UPDATE {self._table} SET config_hash = %(config_hash)s WHERE id = %(pk)s
@@ -27,7 +36,10 @@ class DashboardConfig:
                 return self
 
     @classmethod
-    def get_by_id(cls, pk):
+    def get_by_id(cls, pk: int):
+        """
+        Returns a config_hash instance by its id.
+        """
         with db.Connection() as conn:
             query = f"SELECT * FROM {cls._table} WHERE ID = %(pk)s;"
             conn.cursor.execute(query, {'pk': pk})
@@ -36,6 +48,9 @@ class DashboardConfig:
 
     @classmethod
     def delete_by_id(cls, pk):
+        """
+        Deletes a config_hash instance by its id.
+        """
         with db.Connection() as conn:
             query = f"DELETE FROM {cls._table} WHERE id = %(pk)s;"
             conn.cursor.execute(query, {'pk': pk})

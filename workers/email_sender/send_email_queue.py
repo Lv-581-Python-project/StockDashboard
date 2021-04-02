@@ -4,6 +4,9 @@ import pika
 
 
 def connect_queue():
+    """
+    Connects to the RMQ server.
+    """
     rabbitmq = pika.BlockingConnection(
         pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
     )
@@ -11,9 +14,19 @@ def connect_queue():
 
 
 def get_email_queue():
+    """
+    Returns a created email queue.
+    """
     connect = connect_queue()
     channel = connect.channel()
+    channel.exchange_declare(
+        exchange='email',
+        exchange_type='direct',
+        durable=True,
+        auto_delete=True,
+        internal=True
+    )
     channel.queue_declare(queue='email_queue', durable=True)
-    channel.queue_bind(exchange='amq.direct', queue='email_queue')
+    channel.queue_bind(exchange='email', queue='email_queue')
     email_queue = channel
     return email_queue

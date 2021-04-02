@@ -14,11 +14,14 @@ channel.queue_declare(queue='email_queue', durable=True)
 
 
 def send_email_message(ch, method, properties, body):
+    """
+    Sends an email.
+    """
     body = json.loads(body)
 
     sender = body['sender']
     recipient = body['recipient']
-    link = os.getenv('APPLICATION_HOST') + body['path']
+    link = os.environ.get('APPLICATION_HOST') + body['path']
 
     s = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
     s.starttls()
