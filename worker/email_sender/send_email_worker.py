@@ -1,13 +1,11 @@
+import json
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import pika
-from flask import render_template
-
-from stock_dashboard_api.stock_dashboard_api import app
-
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST')))
 channel = connection.channel()
@@ -15,30 +13,34 @@ channel.queue_declare(queue='email_queue', durable=True)
 
 
 def send_email_message(ch, method, properties, body):
-    body = body.decode('utf-8')
-    body = body.split(' ')
+    body = json.loads(body)
 
-    sender = body[0]
-    recipient = body[1]
-    link = 'http://127.0.0.1:5000/' + body[2]
+    sender = body['sender']
+    recipient = body['recipient']
+    link = 'http://127.0.0.1:5000/' + body['path']
 
     s = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
     s.starttls()
     s.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
 
-    msg = MIMEMultipart()
+    email = MIMEMultipart()
 
-    with app.app_context():
-        template = render_template('email.html', sender=sender, recipient=recipient, link=link)
+    env = Environment(
+        loader=PackageLoader('stock_dashboard_api', 'templates'),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
 
-    msg['From'] = sender
-    msg['To'] = recipient
-    msg['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
+    template = env.get_template('email.html')
+    html = template.render(sender=sender, recipient=recipient, link=link)
 
-    msg.attach(MIMEText(template, 'html'))
-    s.send_message(msg)
+    email['From'] = sender
+    email['To'] = recipient
+    email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
 
-    del msg
+    email.attach(MIMEText(html, 'html'))
+    s.send_message(email)
+
+    del email
 
     channel.basic_ack(delivery_tag=method.delivery_tag)
 

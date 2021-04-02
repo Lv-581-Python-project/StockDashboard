@@ -1,8 +1,12 @@
+import os
+
 import pika
 
 
 def connect_queue():
-    rabbitmq = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    rabbitmq = pika.BlockingConnection(
+        pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
+    )
     return rabbitmq
 
 

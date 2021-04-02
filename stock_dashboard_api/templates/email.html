@@ -1,7 +1,11 @@
 <html>
 <head>
     <style>
-        .head {
+        * {
+            text-align: center;
+        }
+
+        .head, .footer {
             background-color: lightblue;
             color: white;
         }
@@ -25,7 +29,18 @@
         <h1>Hello {{ recipient }}!</h1>
     </div>
     <br>
-    <h2>You've been invited to view a Stock Dashboard at the following link:</h2>
-    <p class="link">{{ link }}</p>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center">
+                <h2>You've been invited to view a Stock Dashboard at the following link:</h2>
+            </td>
+            <td align="center">
+                <p class="link">{{ link }}</p>
+            </td>
+        </tr>
+    </table>
+    <div class="footer">
+        <h3>Visit our Stonks Dashboard at 127.0.0.1 port 5000.</h3>
+    </div>
 </body>
 </html>
