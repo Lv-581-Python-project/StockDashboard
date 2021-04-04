@@ -42,9 +42,9 @@ class StockView(MethodView):
             return make_response("Wrong data provided", 400)
         stock_name, stock_company_name = body.get('name'), body.get('company name')
         stock_values_to_update = {}
-        if type(stock_name) is str:
+        if isinstance(stock_name, str) and len(stock_name) <= 16:
             stock_values_to_update['name'] = stock_name
-        if type(stock_company_name) is str:
+        if isinstance(stock_company_name, str) and len(stock_company_name) <= 128:
             stock_values_to_update['company_name'] = stock_company_name
         # MODEL HAVE TO RETURN NEW VALUE
         # IT IS POSSIBLE BY ADDING 'RETURNING' BLOCK TO SQL-QUERY, IN ORDER TO DO EVERYTHING AT ONCE
