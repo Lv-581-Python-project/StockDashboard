@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, Response, request
+from flask import Blueprint, request, jsonify, make_response, json
 from flask.views import MethodView
 from stock_dashboard_api.models.stock_data_models import StocksData
 
@@ -12,55 +12,53 @@ class StockDataView(MethodView):
     def get(self, pk):
         stock_data = StocksData.get_by_id(pk=pk)
         if stock_data is None:
-            return Response({"Error": "Can not find stock data, wrong id"}, status=400, mimetype='application/json')
-        return Response({"id": stock_data.pk, "stock id": stock_data.stock_id,
-                         "price": stock_data.price, "date": stock_data.date_time}, status=200,
-                        mimetype='application/json')
+            return make_response("Can not find stock data, wrong id", 400)
+        return make_response(jsonify(stock_data.to_dict()), 200)
 
     def post(self):
+
         try:
-            body = request.get_json()
-        except json.JSONDecodeError:
-            return Response({"Error": "Invalid JSON"}, status=400, mimetype='application/json')
+            body = json.loads(request.get_json())
+
+        except (ValueError, KeyError, TypeError):
+            return make_response("Invalid JSON", 400)
+
+        if body is None:
+            return make_response("No data provided", 400)
 
         data_to_create = {
             'stock_id': body.get('stock_id'),
             'price': body.get('price'),
-            'date_time': body.get('date_time')
+            'create_at': body.get('create_at')
         }
         # TODO check if stock_id exists in Stock table
         stock_data = StocksData.create(**data_to_create)
         if stock_data is None:
-            return Response({"Error": "Stock data is not created"}, status=400, mimetype='application/json')
-        return Response(
-            {"id": stock_data.pk, "stock id": stock_data.stock_id,
-             "price": stock_data.price, "date": stock_data.date_time}, status=201,
-            mimetype='application/json')
+            return make_response("Stock data is not created", 400)
+        return make_response(jsonify(stock_data.to_dict()), 201)
 
     def put(self, pk):
         stock_data = StocksData.get_by_id(pk=pk)
         if stock_data is None:
-            return Response({"Error": "Can not find stock data, wrong id"}, status=400, mimetype='application/json')
+            return make_response("Can not find stock data, wrong id", 400)
 
         try:
             body = request.get_json()
         except json.JSONDecodeError:
-            return Response({"Error": "Invalid JSON"}, status=400, mimetype='application/json')
+            return make_response("Invalid JSON", 400)
 
         data_to_update = {
             'price': body.get('price'),
-            'date_time': body.get('date_time')
+            'create_at': body.get('create_at')
         }
         stock_data_updated = stock_data.update(**data_to_update)
         # TODO check if stock_data is updated
-        return Response({"id": stock_data_updated.pk, "stock id": stock_data_updated.stock_id,
-                         "price": stock_data_updated.price, "date": stock_data_updated.date_time}, status=200,
-                        mimetype='application/json')
+        return make_response(jsonify(stock_data_updated.to_dict()), 200)
 
     def delete(self, pk):
         stock_data_deleted = StocksData.delete_by_id(pk=pk)
         # TODO check if stock_data is deleted
-        return Response({"Success": f"Stock data {pk} deleted"}, status=200, mimetype='application/json')
+        return make_response(f"Stock data {pk} deleted", 200)
 
 
 stock_data_view = StockDataView.as_view('stock_data_view')
