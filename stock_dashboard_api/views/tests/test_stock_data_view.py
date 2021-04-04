@@ -1,8 +1,9 @@
 import json
 from unittest.mock import patch
-from stock_dashboard_api.stock_dashboard_api import app
 
 from stock_dashboard_api.models.stock_data_models import StocksData
+from stock_dashboard_api.stock_dashboard_api import app
+
 
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.get_by_id')
 def test_get_pass(mock_get):
@@ -16,6 +17,7 @@ def test_get_pass(mock_get):
             assert body['create_at'] == '2021-01-01'
             assert body['price'] == 300
             assert body['stock_id'] == 2
+
 
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.get_by_id')
 def test_get_fail(mock_get):
@@ -61,8 +63,8 @@ def test_post_create_fail(mock_post):
         mock_post.return_value = None
         with app.test_client() as client:
             data = json.dumps({"stock_id": 3,
-                       "price": 300
-                       })
+                               "price": 300
+                               })
             response = client.post('/stocks_data/', json=data)
             assert response.status_code == 400
             assert response.data == b"Stock data is not created"
@@ -134,6 +136,7 @@ def test_delete_success(mock_delete):
             response = client.delete('/stocks_data/1')
             assert response.status_code == 200
             assert response.data == b"Stock data deleted"
+
 
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.delete_by_id')
 def test_delete_fail(mock_delete):

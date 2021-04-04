@@ -2,6 +2,7 @@ import json
 
 from flask import Blueprint, request, jsonify, make_response
 from flask.views import MethodView
+
 from stock_dashboard_api.models.stock_data_models import StocksData
 
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
@@ -51,7 +52,7 @@ class StockDataView(MethodView):
         if stock_data_updated:
             return make_response(jsonify(stock_data_updated.to_dict()), 200)
         return make_response("Stock Data is not updated, possible you input wrong data", 400)
-    
+
     def delete(self, pk):
         stock_data_deleted = StocksData.delete_by_id(pk=pk)
         if stock_data_deleted:
