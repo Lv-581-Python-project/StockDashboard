@@ -3,7 +3,7 @@
 ### Add the secret key
 ```
 Create .env file in ~StockDashboard/stock_dashboard_api with 
-export FLASK_SECRET_KEY = "XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
+export FLASK_SECRET_KEY = 'Your Secret Key'
 ```
 
 ### Docker-compose setup

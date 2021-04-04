@@ -9,3 +9,6 @@ wtforms==2.3.3
 flask_wtf==0.14.3
 psycopg2==2.8.6
 wtforms[email]==2.3.3
+pytest==6.2.3
+pytest-rabbitmq==2.1.0
+coverage==5.5

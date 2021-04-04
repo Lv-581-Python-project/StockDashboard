@@ -8,10 +8,6 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from send_email_queue import connect_queue
 
-connection = connect_queue()
-channel = connection.channel()
-channel.queue_declare(queue='email_queue', durable=True)
-
 
 def send_email_message(ch, method, properties, body):
     """
@@ -48,5 +44,8 @@ def send_email_message(ch, method, properties, body):
 
 
 if __name__ == '__main__':
+    connection = connect_queue()
+    channel = connection.channel()
+    channel.queue_declare(queue='email_queue', durable=True)
     channel.basic_consume(queue='email_queue', on_message_callback=send_email_message)
     channel.start_consuming()

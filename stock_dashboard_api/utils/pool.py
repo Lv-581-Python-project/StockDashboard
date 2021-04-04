@@ -2,14 +2,14 @@ import logging
 import os
 import time
 from logging.config import fileConfig
-from pathlib import Path
 
 from psycopg2.pool import PoolError, SimpleConnectionPool
 
 
 POOL_DELAY = os.getenv('POOL_DELAY')
+LOGGING_CONF = os.getenv('LOGGING_CONF')
 
-fileConfig((Path.cwd().parent / 'logging.conf'), disable_existing_loggers=True)
+fileConfig(LOGGING_CONF, disable_existing_loggers=True)
 logger = logging.getLogger('pool')
 
 

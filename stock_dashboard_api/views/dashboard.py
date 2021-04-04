@@ -1,12 +1,13 @@
-from flask import render_template, redirect, url_for, request, Blueprint
-from workers.email_sender.send_email_queue import get_email_queue
-from stock_dashboard_api.forms import EmailForm
-import pika
 import json
+import os
+
+import pika
+from flask import render_template, redirect, url_for, request, Blueprint
+
+from stock_dashboard_api.forms import EmailForm
+from workers.email_sender.send_email_queue import get_email_queue
 
 mod = Blueprint('dashboard', __name__, url_prefix='/mail')
-
-RABBITMQ_DELIVERY_MODE = 2
 
 
 @mod.route('/')
@@ -25,7 +26,6 @@ def send_email():
     """
     form = EmailForm()
     if form.validate_on_submit():
-
         sender = form.sender.data
         recipient = form.recipient.data
         path = request.endpoint
@@ -38,7 +38,7 @@ def send_email():
             routing_key='email_queue',
             body=body,
             properties=pika.BasicProperties(
-                delivery_mode=RABBITMQ_DELIVERY_MODE,
+                delivery_mode=int(os.environ.get('RABBITMQ_DELIVERY_MODE')),
             )
         )
         return redirect(url_for('dashboard.home'))
