@@ -1,7 +1,7 @@
 from stock_dashboard_api.utils.pool import pool_manager
 
 
-class Stocks:
+class Stock:
     _table = 'public.stocks'
 
     def __init__(self, name, company_name, pk=None):
@@ -17,7 +17,7 @@ class Stocks:
                         RETURNING id, name, company_name;"""
             conn.cursor.execute(query, {'name': name, 'company_name': company_name})
             pk, name, company_name = conn.cursor.fetchone()
-            return Stocks(pk=pk, name=name, company_name=company_name)
+            return Stock(pk=pk, name=name, company_name=company_name).to_dict()
 
     def update(self, name=None, company_name=None):
         list_with_variable = []
@@ -47,7 +47,7 @@ class Stocks:
             query = f"SELECT id, name, company_name FROM {cls._table} WHERE id = %(id)s"
             conn.cursor.execute(query, {'id': pk})
             pk, name, company_name = conn.cursor.fetchone()
-            return Stocks(pk=pk, name=name, company_name=company_name).to_dict()
+            return Stock(pk=pk, name=name, company_name=company_name).to_dict()
 
     def to_dict(self):
-        return {'id': self.pk, "name": self.name, "company name": self.company_name}
+        return {'id': self.pk, "name": self.name, "company_name": self.company_name}
