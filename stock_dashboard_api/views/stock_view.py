@@ -8,7 +8,7 @@ from stock_dashboard_api.models.stock_model import Stock
 
 class StockView(MethodView):
     def get(self, pk):
-        if pk:
+        if isinstance(pk, int):
             stock = Stock.get_by_id(pk)
             if stock:
                 return make_response(jsonify(stock.to_dict()), 200)
@@ -21,15 +21,16 @@ class StockView(MethodView):
             return make_response("Wrong data provided", 400)
         stock_name, stock_company_name = body.get('name'), body.get('company name')
 
-        if (type(stock_name) is str) and (type(stock_company_name) is str):
+        if isinstance(stock_name, str) and isinstance(stock_company_name, str) \
+                and len(stock_name) <= 16 and len(stock_company_name) <= 128:
             stock_to_create = {'name': stock_name, 'company_name': stock_company_name}
         else:
             return make_response("Wrong data provided", 400)
 
-        stock = Stock(**stock_to_create)
+        stock = Stock.create(**stock_to_create)
         if stock:
             return make_response(jsonify(stock.to_dict()), 200)
-        return make_response("An error occurred during entity creating", 400)
+        return make_response("Failed to create Stock. Check input data", 400)
 
     def put(self, pk):
         stock = Stock.get_by_id(pk)
@@ -46,7 +47,7 @@ class StockView(MethodView):
         if type(stock_company_name) is str:
             stock_values_to_update['company_name'] = stock_company_name
         # MODEL HAVE TO RETURN NEW VALUE
-        # ITS POSSIBLE TO ADD 'RETURNING' BLOCK IN SQL-QUERY, IN ORDER TO DO EVERYTHING AT ONCE
+        # IT IS POSSIBLE BY ADDING 'RETURNING' BLOCK TO SQL-QUERY, IN ORDER TO DO EVERYTHING AT ONCE
         # FIXME: it will fail, if model won't return new value
         stock = stock.update(**stock_values_to_update)
         if stock:
