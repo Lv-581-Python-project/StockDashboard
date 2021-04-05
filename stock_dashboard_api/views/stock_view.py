@@ -40,7 +40,7 @@ class StockView(MethodView):
             body = request.get_json()
         except json.JSONDecodeError:
             return make_response("Wrong data provided", 400)
-        stock_name, stock_company_name = body.get('name'), body.get('company name')
+        stock_name, stock_company_name = body.get('name'), body.get('company_name')
         stock_values_to_update = {}
         if isinstance(stock_name, str) and len(stock_name) <= 16:
             stock_values_to_update['name'] = stock_name
@@ -49,7 +49,6 @@ class StockView(MethodView):
         # MODEL HAVE TO RETURN NEW VALUE
         # IT IS POSSIBLE BY ADDING 'RETURNING' BLOCK TO SQL-QUERY, IN ORDER TO DO EVERYTHING AT ONCE
         # FIXME: it will fail, if model won't return new value
-        stock_values_to_update = {}
         if stock_values_to_update:
             stock = stock.update(**stock_values_to_update)
             if stock:
