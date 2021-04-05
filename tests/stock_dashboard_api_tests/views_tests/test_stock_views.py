@@ -2,12 +2,11 @@ import json
 from unittest import TestCase
 from unittest.mock import patch, PropertyMock
 
-from models.stock_model import Stock
+from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api import app
 
 
 class StockViewsTestCase(TestCase):
-
     def test_get_by_id(self):
         with patch('stock_dashboard_api.models.stock_model.Stock.get_by_id',
                    new_callable=PropertyMock) as mock_get_by_id:
