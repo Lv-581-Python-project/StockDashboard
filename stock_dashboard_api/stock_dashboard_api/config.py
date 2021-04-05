@@ -4,8 +4,10 @@ import os
 class Config:
     DEBUG = False
     TESTING = False
-    CSRF_ENABLED = True
+    # CSRF_ENABLED = False
     SECRET_KEY = os.environ.get('FLASK_SECRET_KEY')
+    WTF_CSRF_CHECK_DEFAULT = False
+    WTF_CSRF_ENABLED = False
 
 
 class ProductionConfig(Config):
@@ -24,4 +26,5 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    CSRF_ENABLED = False
+    WTF_CSRF_CHECK_DEFAULT = False
+    WTF_CSRF_ENABLED = False

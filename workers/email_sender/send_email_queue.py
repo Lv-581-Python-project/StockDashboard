@@ -30,3 +30,15 @@ def get_email_queue():
     channel.queue_bind(exchange='email', queue='email_queue')
     email_queue = channel
     return email_queue
+
+
+def publish(body):
+    queue = get_email_queue()
+    queue.basic_publish(
+        exchange='email',
+        routing_key='email_queue',
+        body=body,
+        properties=pika.BasicProperties(
+            delivery_mode=int(os.environ.get('RABBITMQ_DELIVERY_MODE')),
+        )
+    )

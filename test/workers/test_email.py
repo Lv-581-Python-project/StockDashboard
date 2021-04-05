@@ -15,14 +15,10 @@ rabbitmq_my = factories.rabbitmq('rabbitmq_my_proc')
 
 @pytest.fixture
 def client():
-    db_fd, stock_dashboard_api.app.config['DATABASE'] = tempfile.mkstemp()
     stock_dashboard_api.app.config['TESTING'] = True
 
     with stock_dashboard_api.app.test_client() as client:
         yield client
-
-    os.close(db_fd)
-    os.unlink(stock_dashboard_api.app.config['DATABASE'])
 
 
 def test_homepage(client):
@@ -32,7 +28,7 @@ def test_homepage(client):
 
 def test_send_email_get(client):
     response = client.get('/mail/send_email')
-    assert b'I am the dashboard page.' in response.data
+    assert b'This is the dashboard page.' in response.data
 
 
 def test_send_email_post(client):
@@ -40,8 +36,40 @@ def test_send_email_post(client):
         "sender": "Test",
         "recipient": "test_stock_dashboard581@gmail.com",
     }
-    response = requests.post("http://127.0.0.1:5000/mail/send_email", data=data)
-    print(response.content)
+    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
 
-    assert b'This is the home page' in response.content
+    assert b'This is the home page' in response.data
+    assert response.status_code == 200
+
+
+def test_send_email_invalid_no_sender(client):
+    data = {
+        "sender": "",
+        "recipient": "test_stock_dashboard581@gmail.com",
+    }
+    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
+
+    assert b'This field is required' in response.data
+    assert response.status_code == 200
+
+
+def test_send_email_invalid_no_recipient(client):
+    data = {
+        "sender": "Test",
+        "recipient": "",
+    }
+    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
+
+    assert b'This field is required' in response.data
+    assert response.status_code == 200
+
+
+def test_send_email_invalid_no_data(client):
+    data = {
+        "sender": "",
+        "recipient": "",
+    }
+    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
+
+    assert b'This field is required' in response.data
     assert response.status_code == 200

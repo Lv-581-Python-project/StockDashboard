@@ -1,4 +1,5 @@
 from stock_dashboard_api.utils import pool as db
+import psycopg2
 
 
 class DashboardConfig:
@@ -33,8 +34,11 @@ class DashboardConfig:
                 query = f"""UPDATE {self._table} SET config_hash = %(config_hash)s WHERE id = %(pk)s
                             RETURNING id, config_hash;"""
                 conn.cursor.execute(query, {'config_hash': config_hash, 'pk': self.pk})
-            pk, config_hash = conn.cursor.fetchone()
-            self.config_hash = config_hash
+                try:
+                    pk, config_hash = conn.cursor.fetchone()
+                    self.config_hash = config_hash
+                except psycopg2.ProgrammingError:
+                    pass
 
     @classmethod
     def get_by_id(cls, pk: int):
@@ -44,7 +48,10 @@ class DashboardConfig:
         with db.Connection() as conn:
             query = f"SELECT * FROM {cls._table} WHERE ID = %(pk)s;"
             conn.cursor.execute(query, {'pk': pk})
-            pk, config_hash = conn.cursor.fetchone()
+            try:
+                pk, config_hash = conn.cursor.fetchone()
+            except psycopg2.ProgrammingError:
+                return None
             return DashboardConfig(pk=pk, config_hash=config_hash)
 
     @classmethod
