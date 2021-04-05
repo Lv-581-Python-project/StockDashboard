@@ -20,22 +20,19 @@ def get_email_queue():
     connect = connect_queue()
     channel = connect.channel()
     channel.exchange_declare(
-        exchange='email',
+        exchange='emails',
         exchange_type='direct',
-        durable=True,
-        auto_delete=True,
-        internal=True
     )
     channel.queue_declare(queue='email_queue', durable=True)
-    channel.queue_bind(exchange='email', queue='email_queue')
+    channel.queue_bind(exchange='emails', queue='email_queue')
     email_queue = channel
     return email_queue
 
 
-def publish(body):
+def publish_email(body):
     queue = get_email_queue()
     queue.basic_publish(
-        exchange='email',
+        exchange='emails',
         routing_key='email_queue',
         body=body,
         properties=pika.BasicProperties(

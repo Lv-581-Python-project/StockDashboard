@@ -1,11 +1,9 @@
 import json
-import os
 
-import pika
 from flask import render_template, redirect, url_for, request, Blueprint
 
 from stock_dashboard_api.forms import EmailForm
-from workers.email_sender.send_email_queue import publish
+from workers.email_sender.send_email_queue import publish_email
 
 mod = Blueprint('dashboard', __name__, url_prefix='/mail')
 
@@ -32,7 +30,7 @@ def send_email():
         path = request.endpoint
 
         body = json.dumps({"sender": sender, "recipient": recipient, "path": path})
-        publish(body)
+        publish_email(body)
 
         return redirect(url_for('dashboard.home'))
     return render_template('send_email.html', form=form)

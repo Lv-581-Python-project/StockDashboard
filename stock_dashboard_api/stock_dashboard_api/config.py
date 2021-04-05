@@ -4,7 +4,7 @@ import os
 class Config:
     DEBUG = False
     TESTING = False
-    # CSRF_ENABLED = False
+    CSRF_ENABLED = False
     SECRET_KEY = os.environ.get('FLASK_SECRET_KEY')
     WTF_CSRF_CHECK_DEFAULT = False
     WTF_CSRF_ENABLED = False

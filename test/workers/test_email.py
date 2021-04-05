@@ -1,11 +1,7 @@
-import os
-import tempfile
-import requests
-
 import pytest
+from pytest_rabbitmq import factories
 
 from stock_dashboard_api import stock_dashboard_api
-from pytest_rabbitmq import factories
 
 rabbitmq_my_proc = factories.rabbitmq_proc(
     port=8888, logsdir='/tmp'
