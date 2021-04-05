@@ -2,7 +2,7 @@ import json
 
 from flask import request, make_response
 
-from stock_dashboard_api.stock_dashboard_api import app
+from stock_dashboard_api import app
 
 
 @app.before_request

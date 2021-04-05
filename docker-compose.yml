@@ -29,7 +29,9 @@ services:
     restart: always
 
   api:
-    build: stock_dashboard_api
+    build:
+      context: .
+      dockerfile: api.Dockerfile
     container_name: stock_dashboard_api
     env_file:
       - stock_dashboard_api/.env
