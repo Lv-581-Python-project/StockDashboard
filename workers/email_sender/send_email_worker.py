@@ -19,10 +19,6 @@ def send_email_message(ch, method, properties, body):
     recipient = body['recipient']
     link = os.environ.get('APPLICATION_HOST') + body['path']
 
-    s = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
-    s.starttls()
-    s.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
-
     email = MIMEMultipart()
 
     env = Environment(
@@ -36,8 +32,11 @@ def send_email_message(ch, method, properties, body):
     email['From'] = sender
     email['To'] = recipient
     email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
-
     email.attach(MIMEText(html, 'html'))
+
+    s = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
+    s.starttls()
+    s.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
     s.send_message(email)
 
     channel.basic_ack(delivery_tag=method.delivery_tag)

@@ -32,7 +32,7 @@ def test_send_email_post(client):
         "sender": "Test",
         "recipient": "test_stock_dashboard581@gmail.com",
     }
-    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
+    response = client.post('/mail/send_email', data=data, follow_redirects=True)
 
     assert b'This is the home page' in response.data
     assert response.status_code == 200
@@ -43,7 +43,7 @@ def test_send_email_invalid_no_sender(client):
         "sender": "",
         "recipient": "test_stock_dashboard581@gmail.com",
     }
-    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
+    response = client.post('/mail/send_email', data=data, follow_redirects=True)
 
     assert b'This field is required' in response.data
     assert response.status_code == 200
@@ -54,7 +54,7 @@ def test_send_email_invalid_no_recipient(client):
         "sender": "Test",
         "recipient": "",
     }
-    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
+    response = client.post('/mail/send_email', data=data, follow_redirects=True)
 
     assert b'This field is required' in response.data
     assert response.status_code == 200
@@ -65,7 +65,7 @@ def test_send_email_invalid_no_data(client):
         "sender": "",
         "recipient": "",
     }
-    response = client.post("http://127.0.0.1:5000/mail/send_email", data=data, follow_redirects=True)
+    response = client.post('/mail/send_email', data=data, follow_redirects=True)
 
     assert b'This field is required' in response.data
     assert response.status_code == 200
