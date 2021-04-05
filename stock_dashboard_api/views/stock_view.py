@@ -49,9 +49,11 @@ class StockView(MethodView):
         # MODEL HAVE TO RETURN NEW VALUE
         # IT IS POSSIBLE BY ADDING 'RETURNING' BLOCK TO SQL-QUERY, IN ORDER TO DO EVERYTHING AT ONCE
         # FIXME: it will fail, if model won't return new value
-        stock = stock.update(**stock_values_to_update)
-        if stock:
-            return make_response(jsonify(stock.to_dict()), 200)
+        stock_values_to_update = {}
+        if stock_values_to_update:
+            stock = stock.update(**stock_values_to_update)
+            if stock:
+                return make_response(jsonify(stock.to_dict()), 200)
         return make_response("An error occurred during entity updating", 400)
 
     def delete(self, pk):
