@@ -4,12 +4,13 @@ from flask import Flask, request, make_response
 
 from stock_dashboard_api.config import DevelopmentConfig
 from stock_dashboard_api.views import stock_view
-
+from stock_dashboard_api.views import stocks_data_view
 
 app = Flask(__name__)
 
 app.config.from_object(DevelopmentConfig)
 app.register_blueprint(stock_view.mod)
+app.register_blueprint(stocks_data_view.mod)
 
 @app.before_request
 def middleware_body_parse_json():
@@ -18,3 +19,5 @@ def middleware_body_parse_json():
             request.body = json.loads(request.get_json())
         except (ValueError, KeyError, TypeError):
             return make_response("Wrong data provided", 400)
+
+
