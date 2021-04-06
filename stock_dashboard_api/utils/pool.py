@@ -2,13 +2,13 @@ import logging
 import os
 import time
 from logging.config import fileConfig
-from pathlib import Path
 
 from psycopg2.pool import PoolError, SimpleConnectionPool
 
 POOL_DELAY = os.getenv('POOL_DELAY')
+LOGGING_CONF = os.getenv('LOGGING_CONF')
 
-fileConfig((Path.cwd().parent / 'logging.conf'), disable_existing_loggers=True)
+fileConfig(LOGGING_CONF, disable_existing_loggers=True)
 logger = logging.getLogger('pool')
 
 
@@ -32,16 +32,18 @@ class Connection:
 
     def __enter__(self):
         logger.info('Get connection from pool %s', id(self.conn))
-        try:
-            self.conn = Connection.connection_pool.getconn()
-            self.conn.autocommit = False
-            self.cursor = self.conn.cursor()
-            return self
+        for _ in range(10):
+            try:
+                self.conn = Connection.connection_pool.getconn()
+                self.conn.autocommit = False
+                self.cursor = self.conn.cursor()
+                return self
 
-        except PoolError:
-            logger.info('Pool doesn\'t have available connection. Please wait')
-            time.sleep(int(POOL_DELAY))
-            return self.__enter__()
+            except PoolError:
+                logger.info('Pool doesn\'t have available connection. Please wait')
+                time.sleep(int(POOL_DELAY))
+        raise PoolError ('Can\'t get a connection.')
+
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_val is not None:
@@ -54,3 +56,10 @@ class Connection:
         self.cursor.close()
         Connection.connection_pool.putconn(self.conn)
         logger.info('Put connection to pool %s', id(self.conn))
+
+
+def pool_manager():
+    return pool_instance
+
+
+pool_instance = Connection()
