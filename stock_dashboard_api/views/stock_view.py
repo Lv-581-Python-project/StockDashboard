@@ -5,7 +5,6 @@ from flask.views import MethodView
 
 from stock_dashboard_api.models.stock_model import Stock
 
-
 MAX_STOCK_NAME_LENGTH = 16
 MAX_STOCK_COMPANY_NAME_LENGTH = 128
 
@@ -25,8 +24,10 @@ class StockView(MethodView):
             return make_response("Wrong data provided", 400)
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
 
-        if isinstance(stock_name, str) and isinstance(stock_company_name, str) \
-                and len(stock_name) <= MAX_STOCK_NAME_LENGTH and len(stock_company_name) <= 128:
+        if isinstance(stock_name, str) \
+                and isinstance(stock_company_name, str) \
+                and len(stock_name) <= MAX_STOCK_NAME_LENGTH \
+                and len(stock_company_name) <= MAX_STOCK_COMPANY_NAME_LENGTH:
             stock_to_create = {'name': stock_name, 'company_name': stock_company_name}
         else:
             return make_response("Wrong data provided", 400)
@@ -63,7 +64,7 @@ class StockView(MethodView):
         return make_response("Wrong data provided", 400)
 
 
-stock_view_blueprint = Blueprint('stock', __name__, url_prefix='/stocks')
+mod = Blueprint('stock', __name__, url_prefix='/stocks')
 
 stock_view = StockView.as_view('stock_view')
 
