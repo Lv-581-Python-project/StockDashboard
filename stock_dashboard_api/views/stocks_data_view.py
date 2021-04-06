@@ -21,9 +21,9 @@ class StockDataView(MethodView):
         create_at = request.body.get('create_at')
         stock_id = request.body.get('stock_id')
         if not isinstance(price, int):
-            return make_response("Incorrect price specified, price should be integer (ex. 300)")
+            return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
         if not isinstance(stock_id, int):
-            return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)")
+            return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)", 400)
         if not isinstance(create_at, str):
             return make_response(
                 "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
