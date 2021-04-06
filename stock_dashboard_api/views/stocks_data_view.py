@@ -1,5 +1,3 @@
-import json
-
 from flask import Blueprint, request, jsonify, make_response
 from flask.views import MethodView
 
@@ -17,16 +15,10 @@ class StockDataView(MethodView):
         return make_response(jsonify(stock_data.to_dict()), 200)
 
     def post(self):
-        try:
-            body = json.loads(request.get_json())
-
-        except (ValueError, KeyError, TypeError):
-            return make_response("Wrong data provided", 400)
-
         data_to_create = {
-            'stock_id': body.get('stock_id'),
-            'price': body.get('price'),
-            'create_at': body.get('create_at')
+            'stock_id': request.body.get('stock_id'),
+            'price': request.body.get('price'),
+            'create_at': request.body.get('create_at')
         }
         stock_data = StocksData.create(**data_to_create)
         if stock_data is None:
@@ -38,15 +30,9 @@ class StockDataView(MethodView):
         if stock_data is None:
             return make_response("Can not find stock data, wrong id", 400)
 
-        try:
-            body = json.loads(request.get_json())
-
-        except (ValueError, KeyError, TypeError):
-            return make_response("Wrong data provided", 400)
-
         data_to_update = {
-            'price': body.get('price'),
-            'create_at': body.get('create_at')
+            'price': request.body.get('price'),
+            'create_at': request.body.get('create_at')
         }
         stock_data_updated = stock_data.update(**data_to_update)
         if stock_data_updated:
