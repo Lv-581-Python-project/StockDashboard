@@ -1,0 +1,46 @@
+<html>
+<head>
+    <style>
+        * {
+            text-align: center;
+        }
+
+        .head, .footer {
+            background-color: lightblue;
+            color: white;
+        }
+
+        .link {
+            text-decoration: none;
+            color: #2C66E1;
+            padding: 5px;
+            border: 3px solid lightblue;
+            width: fit-content;
+        }
+
+        a {
+            text-decoration: none;
+            color: #2C66E1;
+        }
+    </style>
+</head>
+<body>
+    <div class="head">
+        <h1>Hello {{ recipient }}!</h1>
+    </div>
+    <br>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center">
+                <h2>You've been invited to view a Stock Dashboard at the following link:</h2>
+            </td>
+            <td align="center">
+                <a href="{{ link }}" class="link">{{ link }}</a>
+            </td>
+        </tr>
+    </table>
+    <div class="footer">
+        <h3>Visit our Stonks Dashboard at 127.0.0.1 port 5000.</h3>
+    </div>
+</body>
+</html>
