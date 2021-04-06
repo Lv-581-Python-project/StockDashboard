@@ -37,7 +37,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit tests / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -133,3 +133,6 @@ dmypy.json
 
 pg_data/
 rmq_data/
+
+stock_dashboard_api/utils/test.py
+pytest.ini
