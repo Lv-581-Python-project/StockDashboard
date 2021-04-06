@@ -18,10 +18,7 @@ class StockView(MethodView):
         return make_response('Wrong data provided', 400)
 
     def post(self):
-        try:
-            body = request.get_json()
-        except json.JSONDecodeError:
-            return make_response("Wrong data provided", 400)
+        body = request.body
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
 
         if isinstance(stock_name, str) \
@@ -41,10 +38,8 @@ class StockView(MethodView):
         stock = Stock.get_by_id(pk)
         if not stock:
             return make_response("Wrong data provided", 400)
-        try:
-            body = request.get_json()
-        except json.JSONDecodeError:
-            return make_response("Wrong data provided", 400)
+        body = request.body
+
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
         stock_values_to_update = {}
         if isinstance(stock_name, str) and len(stock_name) <= MAX_STOCK_NAME_LENGTH:
