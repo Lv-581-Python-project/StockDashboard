@@ -68,5 +68,5 @@ mod = Blueprint('stock', __name__, url_prefix='/stocks')
 
 stock_view = StockView.as_view('stock_view')
 
-stock_view_blueprint.add_url_rule('/', view_func=stock_view, methods=['POST', ])
-stock_view_blueprint.add_url_rule('/<int:pk>', view_func=stock_view, methods=['GET', 'PUT', 'DELETE'])
+mod.add_url_rule('/', view_func=stock_view, methods=['POST', ])
+mod.add_url_rule('/<int:pk>', view_func=stock_view, methods=['GET', 'PUT', 'DELETE'])
