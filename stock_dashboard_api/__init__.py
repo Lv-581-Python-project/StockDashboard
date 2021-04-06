@@ -4,8 +4,7 @@ import json
 from flask import Flask, request, make_response
 
 from stock_dashboard_api.config import DevelopmentConfig
-from stock_dashboard_api.views import stock_view, dashboard
-from stock_dashboard_api.views import stocks_data_view
+from stock_dashboard_api.views import stock_view, dashboard, stocks_data_view
 
 TEMPLATE_FOLDER = os.path.join(os.environ.get('PROD_ROOT'), 'templates')
 app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
