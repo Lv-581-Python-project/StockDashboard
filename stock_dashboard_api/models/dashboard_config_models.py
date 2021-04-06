@@ -1,5 +1,6 @@
-from stock_dashboard_api.utils import pool as db
 import psycopg2
+from stock_dashboard_api.utils import pool as db
+
 
 
 class DashboardConfig:
@@ -8,8 +9,8 @@ class DashboardConfig:
     """
     _table = 'public.dashboard_config'
 
-    def __init__(self, config_hash: str, pk=None):
-        self.pk = pk
+    def __init__(self, config_hash: str, pk=None):  # pylint: disable=C0103,  W0613
+        self.pk = pk  # pylint: disable=C0103,  W0613
         self.config_hash = config_hash
 
     @classmethod
@@ -22,7 +23,7 @@ class DashboardConfig:
                         VALUES (%(config_hash)s)
                         RETURNING id, config_hash;"""
             conn.cursor.execute(query, {'config_hash': config_hash})
-            pk, config_hash = conn.cursor.fetchone()
+            pk, config_hash = conn.cursor.fetchone()  # pylint: disable=C0103,  W0613
             return DashboardConfig(pk=pk, config_hash=config_hash)
 
     def update(self, config_hash):
@@ -35,13 +36,13 @@ class DashboardConfig:
                             RETURNING id, config_hash;"""
                 try:
                     conn.cursor.execute(query, {'config_hash': config_hash, 'pk': self.pk})
-                    pk, config_hash = conn.cursor.fetchone()
+                    pk, config_hash = conn.cursor.fetchone()  # pylint: disable=C0103,  W0613, W0612
                     self.config_hash = config_hash
                 except psycopg2.ProgrammingError:
                     pass
 
     @classmethod
-    def get_by_id(cls, pk: int):
+    def get_by_id(cls, pk: int):  # pylint: disable=C0103,  W0613
         """
         Returns a dashboard_config instance by its id.
         """
@@ -55,7 +56,7 @@ class DashboardConfig:
             return DashboardConfig(pk=pk, config_hash=config_hash)
 
     @classmethod
-    def delete_by_id(cls, pk):
+    def delete_by_id(cls, pk):  # pylint: disable=C0103,  W0613
         """
         Deletes a dashboard_config instance by its id.
         """

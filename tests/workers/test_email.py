@@ -1,7 +1,7 @@
 import pytest
 from pytest_rabbitmq import factories
 
-from stock_dashboard_api import stock_dashboard_api
+from stock_dashboard_api import app
 
 rabbitmq_my_proc = factories.rabbitmq_proc(
     port=8888, logsdir='/tmp'
@@ -11,9 +11,9 @@ rabbitmq_my = factories.rabbitmq('rabbitmq_my_proc')
 
 @pytest.fixture
 def client():
-    stock_dashboard_api.app.config['TESTING'] = True
+    app.config['TESTING'] = True
 
-    with stock_dashboard_api.app.test_client() as client:
+    with app.test_client() as client:
         yield client
 
 

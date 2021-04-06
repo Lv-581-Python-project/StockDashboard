@@ -5,7 +5,7 @@ class Stock:
     _table = 'public.stocks'
 
     def __init__(self, name, company_name, pk=None):
-        self.pk = pk
+        self.pk = pk  # pylint: disable=C0103
         self.name = name
         self.company_name = company_name
 
@@ -17,7 +17,7 @@ class Stock:
                         RETURNING id, name, company_name;"""
             try:
                 conn.cursor.execute(query, {'name': name, 'company_name': company_name})
-                pk, name, company_name = conn.cursor.fetchone()
+                pk, name, company_name = conn.cursor.fetchone()  # pylint: disable=C0103
                 return Stock(pk=pk, name=name, company_name=company_name)
             except:
                 return False
@@ -35,7 +35,7 @@ class Stock:
                 conn.cursor.execute(
                     query,
                     {'name': name, 'company_name': company_name, 'pk': self.pk})
-                pk, name, company_name = conn.cursor.fetchone()
+                pk, name, company_name = conn.cursor.fetchone()  # pylint: disable=C0103, W0612
                 self.name = name
                 self.company_name = company_name
                 return True
@@ -44,7 +44,7 @@ class Stock:
 
 
     @classmethod
-    def delete_by_id(cls, pk):
+    def delete_by_id(cls, pk):  # pylint: disable=C0103
         with pool_manager() as conn:
             query = f"DELETE FROM {cls._table} WHERE id = %(id)s;"
             try:
@@ -54,7 +54,7 @@ class Stock:
                 return False
 
     @classmethod
-    def get_by_id(cls, pk):
+    def get_by_id(cls, pk):  # pylint: disable=C0103
         with pool_manager() as conn:
             query = f"SELECT id, name, company_name FROM {cls._table} WHERE id = %(id)s"
             try:
