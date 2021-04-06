@@ -1,6 +1,6 @@
 import json
 from unittest import TestCase
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch
 
 from stock_dashboard_api import app
 from stock_dashboard_api.models.stock_model import Stock
@@ -34,20 +34,19 @@ class StockViewsTestCase(TestCase):
             self.assertEqual(json.loads(response.data),
                              {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name})
 
-    # FIXME: real model does not return anything on update now
     def test_update_by_id(self):
-        stock_id, old_stock_name, old_stock_company_name = 1, 'mock old name', 'mocked pre update company name'
         stock_id, new_stock_name, new_stock_company_name = 1, 'mock upd name', 'mocked update company name'
         get_by_id = self.stock_mock.get_by_id
+        get_by_id.return_value = self.stock_mock(1, 'sdfsd', 'sdfsdf')
         update = get_by_id.return_value.update
-        get_by_id.return_value = {'name': 'stock name', 'company_name': 'stock company name'}
-        update.return_value = {'company_name': new_stock_company_name, 'id': stock_id, 'name': new_stock_name}
+        update.return_value.to_dict.return_value = {'company_name': new_stock_company_name, 'id': stock_id,
+                                                    'name': new_stock_name}
         with app.test_client() as client:
             response = client.put('/stocks/{}'.format(stock_id),
                                   json={'name': new_stock_name, 'company_name': new_stock_company_name})
 
-            # self.assertEqual(json.loads(response.data),
-            #                  {'company_name': new_stock_company_name, 'id': stock_id, 'name': new_stock_name})
+            self.assertEqual(json.loads(response.data),
+                             {'company_name': new_stock_company_name, 'id': stock_id, 'name': new_stock_name})
 
     def test_delete_by_id(self):
         delete = self.stock_mock.delete_by_id
