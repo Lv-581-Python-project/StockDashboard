@@ -25,7 +25,6 @@ class StockData:
             except:
                 return None
 
-
     def update(self, price=None, create_at=None):
         list_with_variable = []
         if price is not None:
@@ -52,7 +51,7 @@ class StockData:
     @classmethod
     def get_by_id(cls, pk):
         with pool_manager() as conn:
-            query = f"SELECT id, stock_id, price, create_at FROM {cls._table} WHERE id = %(id)s"
+            query = f"SELECT * FROM {cls._table} WHERE id = %(id)s"
             try:
                 conn.cursor.execute(query, {'id': pk})
                 pk, stock_id, price, create_at = conn.cursor.fetchone()
@@ -69,3 +68,6 @@ class StockData:
                 return True
             except:
                 return False
+
+    def to_dict(self):
+        return {'id': self.pk, "stock_id": self.stock_id, "price": self.price, "create_at": self.create_at}
