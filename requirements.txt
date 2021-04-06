@@ -1,0 +1,14 @@
+flask==1.1.2
+click==7.1.2
+itsdangerous==1.1.0
+Jinja2==2.11.3
+MarkupSafe==1.1.1
+Werkzeug==1.0.1
+pika==1.2.0
+wtforms==2.3.3
+flask_wtf==0.14.3
+psycopg2==2.8.6
+wtforms[email]==2.3.3
+pytest==6.2.3
+pytest-rabbitmq==2.1.0
+coverage==5.5
