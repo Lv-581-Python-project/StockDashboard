@@ -1,8 +1,8 @@
 import json
-
 from flask import Flask, request, make_response
 
 from stock_dashboard_api.config import DevelopmentConfig
+
 
 app = Flask(__name__)
 
