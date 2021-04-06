@@ -46,9 +46,6 @@ class StockView(MethodView):
             stock_values_to_update['name'] = stock_name
         if isinstance(stock_company_name, str) and len(stock_company_name) <= 128:
             stock_values_to_update['company_name'] = stock_company_name
-        # MODEL HAVE TO RETURN NEW VALUE
-        # IT IS POSSIBLE BY ADDING 'RETURNING' BLOCK TO SQL-QUERY, IN ORDER TO DO EVERYTHING AT ONCE
-        # FIXME: it will fail, if model won't return new value
         if stock_values_to_update:
             stock = stock.update(**stock_values_to_update)
             if stock:
@@ -57,9 +54,8 @@ class StockView(MethodView):
 
     def delete(self, pk):
         if Stock.get_by_id(pk):
-            # FIXME: add entity removal tracking
-            Stock.delete_by_id(pk)
-            return make_response('Removed successfully', 200)
+            if Stock.delete_by_id(pk):
+                return make_response('Removed successfully', 200)
         return make_response("Wrong data provided", 400)
 
 
