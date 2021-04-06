@@ -32,15 +32,16 @@ def test_get_fail(mock_get):
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.create')
 def test_post_pass(mock_post):
     with app.app_context():
-        mock_post.return_value = StocksData(stock_id=3, price=300, create_at="2020-01-01")
+        mock_post.return_value = StocksData(stock_id=3, price=300, create_at="18/09/19 01:55:19")
         with app.test_client() as client:
             data = json.dumps({"stock_id": 3,
                                "price": 300,
-                               "create_at": "2020-01-01"})
+                               "create_at": "18/09/19 01:55:19"})
             response = client.post('/stocks_data/', json=data)
+            print(response.data)
             body = json.loads(response.data)
             assert response.status_code == 201
-            assert body['create_at'] == '2020-01-01'
+            assert body['create_at'] == '18/09/19 01:55:19'
             assert body['price'] == 300
             assert body['stock_id'] == 3
 
@@ -67,24 +68,24 @@ def test_post_create_fail(mock_post):
                                })
             response = client.post('/stocks_data/', json=data)
             assert response.status_code == 400
-            assert response.data == b"Stock data is not created"
+            assert response.data == b"Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.get_by_id')
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.update')
 def test_put_success(mock_put, mock_get):
     with app.app_context():
-        mock_get.return_value = StocksData(stock_id=2, price=300, create_at="2021-01-01", pk=1)
-        mock_put.return_value = StocksData(stock_id=2, price=500, create_at="2021-01-08", pk=1)
+        mock_get.return_value = StocksData(stock_id=2, price=300, create_at="18/09/19 01:55:19", pk=1)
+        mock_put.return_value = StocksData(stock_id=2, price=500, create_at="19/09/19 01:55:19", pk=1)
         with app.test_client() as client:
             data = json.dumps({"price": 500,
-                               "create_at": "2021-01-08"
+                               "create_at": "19/09/19 01:55:19"
                                })
             response = client.put('/stocks_data/1', json=data)
             body = json.loads(response.data)
             assert response.status_code == 200
             assert body['id'] == 1
-            assert body['create_at'] == '2021-01-08'
+            assert body['create_at'] == '19/09/19 01:55:19'
             assert body['price'] == 500
             assert body['stock_id'] == 2
 
@@ -125,7 +126,7 @@ def test_put_wrong_values(mock_put, mock_get):
                                })
             response = client.put('/stocks_data/2', json=data)
             assert response.status_code == 400
-            assert response.data == b"Stock Data is not updated, possible you input wrong data"
+            assert response.data == b"Incorrect price specified, price should be integer (ex. 300)"
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.delete_by_id')
