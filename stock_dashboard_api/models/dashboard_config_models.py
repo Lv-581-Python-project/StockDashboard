@@ -47,8 +47,8 @@ class DashboardConfig:
         """
         with db.Connection() as conn:
             query = f"SELECT * FROM {cls._table} WHERE ID = %(pk)s;"
-            conn.cursor.execute(query, {'pk': pk})
             try:
+                conn.cursor.execute(query, {'pk': pk})
                 pk, config_hash = conn.cursor.fetchone()
             except psycopg2.ProgrammingError:
                 return None
