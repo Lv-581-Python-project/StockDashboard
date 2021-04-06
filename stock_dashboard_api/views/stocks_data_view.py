@@ -9,8 +9,8 @@ mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
 
 
 class StockDataView(MethodView):
-
     def get(self, pk):  # pylint: disable=C0103, R0201
+
         stock_data = StocksData.get_by_id(pk=pk)
         if stock_data is None:
             return make_response("Can not find stock data, wrong id", 400)
@@ -21,13 +21,13 @@ class StockDataView(MethodView):
         create_at = request.body.get('create_at')
         stock_id = request.body.get('stock_id')
         if not isinstance(price, int):
-            return make_response("Incorrect price specified, price should be integer (ex. 300)")
+            return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
         if not isinstance(stock_id, int):
-            return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)")
+            return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)", 400)
         if not isinstance(create_at, str):
             return make_response(
-                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day \
-                hour:minute:second))", 400)
+                "Incorrect create_at specified, " \
+                "example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         try:
             create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
         except ValueError:
