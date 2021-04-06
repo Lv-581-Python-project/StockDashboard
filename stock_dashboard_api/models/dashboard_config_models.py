@@ -33,8 +33,8 @@ class DashboardConfig:
             with db.Connection() as conn:
                 query = f"""UPDATE {self._table} SET config_hash = %(config_hash)s WHERE id = %(pk)s
                             RETURNING id, config_hash;"""
-                conn.cursor.execute(query, {'config_hash': config_hash, 'pk': self.pk})
                 try:
+                    conn.cursor.execute(query, {'config_hash': config_hash, 'pk': self.pk})
                     pk, config_hash = conn.cursor.fetchone()
                     self.config_hash = config_hash
                 except psycopg2.ProgrammingError:
