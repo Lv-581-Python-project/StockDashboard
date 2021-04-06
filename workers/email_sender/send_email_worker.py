@@ -1,3 +1,7 @@
+"""
+Send email worker
+"""
+
 import json
 import os
 import smtplib
@@ -9,7 +13,7 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 from send_email_queue import connect_queue
 
 
-def send_email_message(ch, method, properties, body):
+def send_email_message(ch, method, properties, body):  # pylint: disable=C0103,  W0613
     """
     Sends an email.
     """
@@ -34,10 +38,10 @@ def send_email_message(ch, method, properties, body):
     email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
     email.attach(MIMEText(html, 'html'))
 
-    s = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
-    s.starttls()
-    s.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
-    s.send_message(email)
+    smtp_conn = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
+    smtp_conn.starttls()
+    smtp_conn.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
+    smtp_conn.send_message(email)
 
     channel.basic_ack(delivery_tag=method.delivery_tag)
 
