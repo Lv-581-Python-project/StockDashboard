@@ -13,6 +13,7 @@ logger = logging.getLogger('pool')
 
 
 class Connection:
+    """Class is used to create database connection pool"""
     connection_pool = None
 
     def __init__(self):
