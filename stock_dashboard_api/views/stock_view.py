@@ -54,9 +54,8 @@ class StockView(MethodView):
         return make_response("An error occurred during entity updating", 400)
 
     def delete(self, pk):  # pylint: disable=C0103, R0201
-        if Stock.get_by_id(pk):
-            if Stock.delete_by_id(pk):
-                return make_response('Removed successfully', 200)
+        if Stock.delete_by_id(pk):
+            return make_response('Removed successfully', 200)
         return make_response("Wrong data provided", 400)
 
 
