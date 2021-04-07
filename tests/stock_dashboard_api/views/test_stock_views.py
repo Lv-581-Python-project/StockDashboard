@@ -29,7 +29,7 @@ class StockViewsTestCase(TestCase):
         create = self.stock_mock.create
         create.return_value = Stock(pk=stock_id, name=stock_name, company_name=stock_company_name)
         with app.test_client() as client:
-            response = client.post('/stocks/', json=json.dumps({'name': stock_name, 'company_name': stock_company_name}))
+            response = client.post('/stocks/', json={'name': stock_name, 'company_name': stock_company_name})
 
             self.assertEqual(json.loads(response.data),
                              {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name})
@@ -44,7 +44,7 @@ class StockViewsTestCase(TestCase):
                                                     'name': new_stock_name}
         with app.test_client() as client:
             response = client.put('/stocks/{}'.format(stock_id),
-                                  json=json.dumps({'name': new_stock_name, 'company_name': new_stock_company_name}))
+                                  json={'name': new_stock_name, 'company_name': new_stock_company_name})
 
             self.assertEqual(json.loads(response.data),
                              {'company_name': new_stock_company_name, 'id': stock_id, 'name': new_stock_name})
