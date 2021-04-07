@@ -25,14 +25,12 @@ class StockDataView(MethodView):
             return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)", 400)
         if not isinstance(create_at, str):
             return make_response(
-                "Incorrect create_at specified, " \
-                "example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         try:
             create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
         except ValueError:
             return make_response(
-                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day \
-                hour:minute:second))", 400)
+                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         data_to_create = {
             'price': price,
             'create_at': create_at,
@@ -47,14 +45,12 @@ class StockDataView(MethodView):
             return make_response("Can not find stock data, wrong id", 400)
         price, create_at = request.body.get('price'), request.body.get('create_at')
         if not isinstance(price, int):
-            return make_response("Incorrect price specified, \
-            price should be integer (ex. 300)", 400)
+            return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
         try:
             create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
         except ValueError:
             return make_response(
-                "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day \
-                hour:minute:second))", 400)
+                "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         data_to_update = {
             'price': price,
             'create_at': create_at
@@ -64,7 +60,12 @@ class StockDataView(MethodView):
             return make_response(jsonify(stock_data_updated.to_dict()), 200)
         return make_response("Stock Data is not updated, possible you input wrong data", 400)
 
-    def delete(self, pk):  # pylint: disable=C0103, R0201
+    def delete(self, pk: int):  # pylint: disable=C0103, R0201
+        """
+
+        :param pk:
+        :return:
+        """
         stock_data_deleted = StockData.delete_by_id(pk=pk)
         if stock_data_deleted:
             return make_response("Stock data deleted", 200)

@@ -1,5 +1,6 @@
-import os
 import json
+import os
+import re
 
 from flask import Flask, request, make_response
 
@@ -14,10 +15,13 @@ app.register_blueprint(stock_view.mod)
 app.register_blueprint(stocks_data_view.mod)
 app.register_blueprint(dashboard_views.mod)
 
-
+PATH_PUT_PATTERNS = [r'/stocks_data/\d+', r'/stocks/\d+', r'/stock_conf/\d+']
+PATH_POST_PATTERNS = ['/stocks_data/', '/stocks/', '/stock_conf/']
 @app.before_request
 def middleware_body_parse_json():
-    if request.method == 'PUT' or request.method == 'POST':
+    current_path = request.path
+    if (request.method == 'PUT' and any(map(lambda pattern:re.match(pattern,current_path), PATH_PUT_PATTERNS))) or (
+            request.method == 'POST' and any(map(lambda pattern: current_path == pattern, PATH_POST_PATTERNS))):
         try:
             request.body = json.loads(request.get_json())
         except (ValueError, KeyError, TypeError):
