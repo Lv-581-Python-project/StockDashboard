@@ -48,6 +48,8 @@ class Stock:
         with pool_manager() as conn:
             query = f"DELETE FROM {cls._table} WHERE id = %(id)s;"
             try:
+                if not Stock.get_by_id(pk):
+                    return False
                 conn.cursor.execute(query, {'id': pk})
                 return True
             except:
