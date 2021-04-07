@@ -15,10 +15,10 @@ app.register_blueprint(stocks_data_view.mod)
 app.register_blueprint(dashboard_views.mod)
 
 
-# @app.before_request
-# def middleware_body_parse_json():
-#     if request.method == 'PUT' or request.method == 'POST':
-#         try:
-#             request.body = json.loads(request.get_json())
-#         except (ValueError, KeyError, TypeError):
-#             return make_response("Wrong data provided", 400)
+@app.before_request
+def middleware_body_parse_json():
+    if request.method == 'PUT' or request.method == 'POST':
+        try:
+            request.body = json.loads(request.get_json())
+        except (ValueError, KeyError, TypeError):
+            return make_response("Wrong data provided", 400)
