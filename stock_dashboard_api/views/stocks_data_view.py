@@ -26,14 +26,12 @@ class StockDataView(MethodView):
             return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)", 400)
         if not isinstance(create_at, str):
             return make_response(
-                "Incorrect create_at specified, " \
-                "example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         try:
             create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
         except ValueError:
             return make_response(
-                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day \
-                hour:minute:second))", 400)
+                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         data_to_create = {
             'price': price,
             'create_at': create_at,
@@ -48,14 +46,12 @@ class StockDataView(MethodView):
             return make_response("Can not find stock data, wrong id", 400)
         price, create_at = request.body.get('price'), request.body.get('create_at')
         if not isinstance(price, int):
-            return make_response("Incorrect price specified, \
-            price should be integer (ex. 300)", 400)
+            return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
         try:
             create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
         except ValueError:
             return make_response(
-                "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day \
-                hour:minute:second))", 400)
+                "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         data_to_update = {
             'price': price,
             'create_at': create_at

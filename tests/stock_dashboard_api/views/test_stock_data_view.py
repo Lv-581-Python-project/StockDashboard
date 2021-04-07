@@ -1,8 +1,8 @@
 import json
 from unittest.mock import patch
 
-from stock_dashboard_api.models.stock_data_models import StocksData
 from stock_dashboard_api import app
+from stock_dashboard_api.models.stock_data_models import StocksData
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.get_by_id')
@@ -85,8 +85,8 @@ def test_post_data_fail_wrong_create_at():
                            "create_at": "2020-01-01"})
         response = client.post('/stocks_data/', json=data)
         assert response.status_code == 400
-        assert response.data == b"Incorrect create_at specified, " \
-                                b"example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
+        print(response.data)
+        assert response.data == b"Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StocksData.create')

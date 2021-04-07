@@ -1,5 +1,6 @@
-import os
 import json
+import os
+import re
 
 from flask import Flask, request, make_response
 
@@ -17,7 +18,9 @@ app.register_blueprint(dashboard.mod)
 
 @app.before_request
 def middleware_body_parse_json():
-    if request.method == 'PUT' or request.method == 'POST':
+    if (request.method == 'PUT' and (
+            re.match(r'/stocks_data/\d+', request.path) or re.match(r'/stocks/\d+', request.path))) or (
+            request.method == 'POST' and (request.path == '/stocks_data/' or request.path == '/stocks/')):
         try:
             request.body = json.loads(request.get_json())
         except (ValueError, KeyError, TypeError):
