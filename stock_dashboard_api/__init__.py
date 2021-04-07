@@ -1,6 +1,5 @@
 import json
 import os
-import re
 
 from flask import Flask, request, make_response
 
@@ -11,18 +10,25 @@ TEMPLATE_FOLDER = os.path.join(os.environ.get('PROD_ROOT'), 'templates')
 app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
 
 app.config.from_object(DevelopmentConfig)
+
 app.register_blueprint(stock_view.mod)
 app.register_blueprint(stocks_data_view.mod)
 app.register_blueprint(dashboard_views.mod)
 
-PATH_PUT_PATTERNS = [r'/stocks_data/\d+', r'/stocks/\d+', r'/stock_conf/\d+']
-PATH_POST_PATTERNS = ['/stocks_data/', '/stocks/', '/stock_conf/']
+PATH_PATTERNS_BODY_PARSE_JSON = ['/stocks_data/', '/stocks/', '/stock_conf/']
+
+
 @app.before_request
 def middleware_body_parse_json():
+    """A function that appears before request,
+    receive and validate json data for PUT and POST request methods.
+    """
     current_path = request.path
-    if (request.method == 'PUT' and any(map(lambda pattern:re.match(pattern,current_path), PATH_PUT_PATTERNS))) or (
-            request.method == 'POST' and any(map(lambda pattern: current_path == pattern, PATH_POST_PATTERNS))):
+    if (request.method == 'PUT' and any(
+            map(lambda pattern: current_path.startswith(pattern), PATH_PATTERNS_BODY_PARSE_JSON))) or (
+            request.method == 'POST' and any(
+            map(lambda pattern: current_path.startswith(pattern), PATH_PATTERNS_BODY_PARSE_JSON))):
         try:
-            request.body = json.loads(request.get_json())
+            request.body = json.loads(request.data)
         except (ValueError, KeyError, TypeError):
             return make_response("Wrong data provided", 400)
