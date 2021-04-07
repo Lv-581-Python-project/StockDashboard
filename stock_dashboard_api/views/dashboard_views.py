@@ -29,7 +29,10 @@ def send_email():
         recipient = form.recipient.data
         path = request.endpoint
 
-        body = json.dumps({"sender": sender, "recipient": recipient, "path": path})
+        body = json.dumps({"sender": sender,
+                           "recipient": recipient,
+                           "path": path,
+                           "template_name": "dashboard_invite_email"})
         publish_email(body)
 
         return redirect(url_for('dashboard.home'))
