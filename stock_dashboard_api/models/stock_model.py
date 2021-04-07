@@ -23,12 +23,12 @@ class Stock:
                 return False
 
     def update(self, name=None, company_name=None):
-        list_with_variable = []
+        data_to_update = []
         if name is not None:
-            list_with_variable.append("name = %(name)s")
+            data_to_update.append("name = %(name)s")
         if company_name is not None:
-            list_with_variable.append("company_name = %(company_name)s")
-        query = f"""UPDATE {self._table} SET {', '.join(list_with_variable)}
+            data_to_update.append("company_name = %(company_name)s")
+        query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
                 WHERE id = %(pk)s RETURNING id, name, company_name; """
         with pool_manager() as conn:
             try:
