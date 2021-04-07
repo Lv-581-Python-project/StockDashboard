@@ -26,12 +26,12 @@ class StockData:
                 return None
 
     def update(self, price=None, create_at=None):
-        list_with_variable = []
+        data_to_update = []
         if price is not None:
-            list_with_variable.append("price = %(price)s")
+            data_to_update.append("price = %(price)s")
         if create_at is not None:
-            list_with_variable.append("create_at = %(create_at)s")
-        query = f"""UPDATE {self._table} SET {', '.join(list_with_variable)}
+            data_to_update.append("create_at = %(create_at)s")
+        query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
                     WHERE id = %(id)s 
                     RETURNING id, stock_id, price, create_at;"""
         with pool_manager() as conn:

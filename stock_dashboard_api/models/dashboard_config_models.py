@@ -2,7 +2,6 @@ import psycopg2
 from stock_dashboard_api.utils import pool as db
 
 
-
 class DashboardConfig:
     """
     Model used to create a dashboard_config.
