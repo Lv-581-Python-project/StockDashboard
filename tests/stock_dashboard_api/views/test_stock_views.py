@@ -45,7 +45,6 @@ class StockViewsTestCase(TestCase):
         with app.test_client() as client:
             response = client.put('/stocks/{}'.format(stock_id),
                                   json=json.dumps({'name': new_stock_name, 'company_name': new_stock_company_name}))
-            print(response.data)
 
             self.assertEqual(json.loads(response.data),
                              {'company_name': new_stock_company_name, 'id': stock_id, 'name': new_stock_name})
@@ -61,7 +60,7 @@ class StockViewsTestCase(TestCase):
     def test_get_by_id_missing_id(self):
         stock_id, stock_name, stock_company_name = 1, 'mock cr name', 'mocked create company name'
         get_by_id = self.stock_mock.get_by_id
-        get_by_id.return_value = None
+        get_by_id.return_value = False
         with app.test_client() as client:
             response = client.get('/stocks/{stock_id}'.format(stock_id=stock_id))
             self.assertEqual(response.status, '400 BAD REQUEST')
@@ -93,8 +92,8 @@ class StockViewsTestCase(TestCase):
             self.assertEqual(response.status, '400 BAD REQUEST')
 
     def test_delete_by_id_missing_id(self):
-        get_by_id = self.stock_mock.get_by_id
-        get_by_id.return_value = None
+        delete_by_id = self.stock_mock.delete_by_id
+        delete_by_id.return_value = False
         stock_id = 1
         with app.test_client() as client:
             response = client.delete('/stocks/{stock_id}'.format(stock_id=stock_id))
