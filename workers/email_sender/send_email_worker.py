@@ -39,10 +39,10 @@ def create_email(ch, method, properties, body):
     email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
     email.attach(MIMEText(html, 'html'))
 
-    send_email(ch, email, properties, method)
+    send_email(email, method)
 
 
-def send_email(ch, email, properties, method):  # pylint: disable=C0103,  W0613
+def send_email(email, method):  # pylint: disable=C0103,  W0613
     """
     Sends an email.
     """
