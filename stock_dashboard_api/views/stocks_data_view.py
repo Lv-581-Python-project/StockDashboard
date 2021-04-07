@@ -3,15 +3,14 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify, make_response
 from flask.views import MethodView
 
-from stock_dashboard_api.models.stock_data_models import StocksData
+from stock_dashboard_api.models.stock_data_models import StockData
 
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
 
 
 class StockDataView(MethodView):
     def get(self, pk):  # pylint: disable=C0103, R0201
-
-        stock_data = StocksData.get_by_id(pk=pk)
+        stock_data = StockData.get_by_id(pk=pk)
         if stock_data is None:
             return make_response("Can not find stock data, wrong id", 400)
         return make_response(jsonify(stock_data.to_dict()), 200)
@@ -37,11 +36,11 @@ class StockDataView(MethodView):
             'create_at': create_at,
             'stock_id': stock_id
         }
-        stock_data = StocksData.create(**data_to_create)
+        stock_data = StockData.create(**data_to_create)
         return make_response(jsonify(stock_data.to_dict()), 201)
 
     def put(self, pk):  # pylint: disable=C0103, R0201
-        stock_data = StocksData.get_by_id(pk=pk)
+        stock_data = StockData.get_by_id(pk=pk)
         if stock_data is None:
             return make_response("Can not find stock data, wrong id", 400)
         price, create_at = request.body.get('price'), request.body.get('create_at')
@@ -62,7 +61,7 @@ class StockDataView(MethodView):
         return make_response("Stock Data is not updated, possible you input wrong data", 400)
 
     def delete(self, pk):  # pylint: disable=C0103, R0201
-        stock_data_deleted = StocksData.delete_by_id(pk=pk)
+        stock_data_deleted = StockData.delete_by_id(pk=pk)
         if stock_data_deleted:
             return make_response("Stock data deleted", 200)
         return make_response("Stock data not deleted", 400)
