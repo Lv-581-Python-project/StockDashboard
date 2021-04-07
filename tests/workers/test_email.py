@@ -28,6 +28,7 @@ def test_send_email_get(client):
 
 
 def test_send_email_post(client):
+    app.config['WTF_CSRF_ENABLED'] = False
     data = {
         "sender": "Test",
         "recipient": "test_stock_dashboard581@gmail.com",
