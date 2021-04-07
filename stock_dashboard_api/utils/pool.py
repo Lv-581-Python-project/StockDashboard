@@ -42,8 +42,7 @@ class Connection:
             except PoolError:
                 logger.info('Pool doesn\'t have available connection. Please wait')
                 time.sleep(int(POOL_DELAY))
-        raise PoolError ('Can\'t get a connection.')
-
+        raise PoolError('Can\'t get a connection.')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_val is not None:

@@ -1,3 +1,5 @@
+import psycopg2
+
 from stock_dashboard_api.utils.pool import pool_manager
 
 
@@ -19,7 +21,7 @@ class Stock:
                 conn.cursor.execute(query, {'name': name, 'company_name': company_name})
                 pk, name, company_name = conn.cursor.fetchone()  # pylint: disable=C0103
                 return Stock(pk=pk, name=name, company_name=company_name)
-            except:
+            except (psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
 
     def update(self, name=None, company_name=None):
@@ -39,9 +41,8 @@ class Stock:
                 self.name = name
                 self.company_name = company_name
                 return True
-            except:
+            except (psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
-
 
     @classmethod
     def delete_by_id(cls, pk):  # pylint: disable=C0103
@@ -52,7 +53,7 @@ class Stock:
                     return False
                 conn.cursor.execute(query, {'id': pk})
                 return True
-            except:
+            except(psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
 
     @classmethod
@@ -63,7 +64,7 @@ class Stock:
                 conn.cursor.execute(query, {'id': pk})
                 pk, name, company_name = conn.cursor.fetchone()
                 return Stock(pk=pk, name=name, company_name=company_name)
-            except:
+            except (psycopg2.DataError, psycopg2.ProgrammingError):
                 return None
 
     def to_dict(self):
