@@ -5,6 +5,32 @@
 1. Create `.env` file (skip if exists)
 2. Fill `.env` file according to this template
    ```
+   POSTGRES_USER=your_username
+   
+   POSTGRES_PASSWORD=your_password
+   
+   POSTGRES_DB=your_db_name
+   
+   RABBITMQ_ERLANG_COOKIE=your_rabbitmq_erland_cookie_secret_key
+   ```
+3. Run `docker-compose up`
+
+- In case of editing some of this params you will likely have to remove `pg_data/` or `rmq-data/`
+
+### Database Init
+
+To create and to fill database go to
+folder data/StockDashboard and type command to run script:
+```bash
+ psql -U <username> -d <dbname> -a -f <script_name>
+```
+- To create run `CREATE_DB.sql`
+- To fill run `INSERT_DATA.sql`
+
+### Environment variables
+
+Insert to `.env`:
+```
    export FLASK_APP=your_path_to_app
    export FLASK_SECRET_KEY=your_flask_secret_key
    export APPLICATION_HOST=your_application_host_address
@@ -29,17 +55,4 @@
    export MAIL_USE_TLS=your_tls_config_value
    export MAIL_USERNAME=your_email_username
    export MAIL_PASSWORD=your_email_password
-   ```
-3. Run `docker-compose up`
-
-- In case of editing some of this params you will likely have to remove `pg_data/` or `rmq-data/`
-
-### Database Init
-
-To create and to fill database go to
-folder data/StockDashboard and type command to run script:
-```bash
- psql -U <username> -d <dbname> -a -f <script_name>
 ```
-- To create run `CREATE_DB.sql`
-- To fill run `INSERT_DATA.sql`
