@@ -60,7 +60,12 @@ class StockDataView(MethodView):
             return make_response(jsonify(stock_data_updated.to_dict()), 200)
         return make_response("Stock Data is not updated, possible you input wrong data", 400)
 
-    def delete(self, pk):  # pylint: disable=C0103, R0201
+    def delete(self, pk: int):  # pylint: disable=C0103, R0201
+        """
+
+        :param pk:
+        :return:
+        """
         stock_data_deleted = StockData.delete_by_id(pk=pk)
         if stock_data_deleted:
             return make_response("Stock data deleted", 200)
