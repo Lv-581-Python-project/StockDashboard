@@ -1,34 +1,39 @@
 # Stock Dashboard
 
+### Add the secret key
+```
+Create .env file in ~StockDashboard/stock_dashboard_api with 
+export FLASK_SECRET_KEY = 'Your Secret Key'
+```
 
 ### Docker-compose setup
 1. Create `.env` file (skip if exists)
 2. Fill `.env` file according to this template
    ```
-   export FLASK_APP=your_path_to_app
-   export FLASK_SECRET_KEY=your_flask_secret_key
-   export APPLICATION_HOST=your_application_host_address
-   export PROD_ROOT=your_full_path_to_app
+   export FLASK_APP=path_to_app
+   export FLASK_SECRET_KEY=flask_secret_k
+   export APPLICATION_HOST='http://127.0.0.1:5000/'
+   export PROD_ROOT='/home/slavko/Work/StockDashboard/stock_dashboard_api'
    
-   export MINCONN=min_database_pool_connections
-   export MAXCONN=max_database_pool_connections
-   export POSTGRES_USER=your_postgres_user
-   export POSTGRES_PASSWORD=your_postgres_password
-   export POSTGRES_DB=your_postgres_database_name
-   export POSTGRES_PORT=your_postgres_post
-   export POSTGRES_HOST=your_postgres_host
+   export MINCONN=1
+   export MAXCONN=20
+   export POSTGRES_USER='postgres'
+   export POSTGRES_PASSWORD='postgres'
+   export POSTGRES_DB='stock_dashboard'
+   export POSTGRES_PORT=5432
+   export POSTGRES_HOST='localhost'
    
-   export LOGGING_CONF=your_path_to_pool_logging_file  # (logging.conf)
+   export LOGGING_CONF='/home/slavko/Work/StockDashboard/stock_dashboard_api/logging.conf'
    
-   export RABBITMQ_ERLANG_COOKIE=your_rmq_erl_cookie
-   export RABBITMQ_CONNECTION_HOST=your_rmq_host
-   export RABBITMQ_DELIVERY_MODE=your_rmq_delivery_mode  # default is 2 (PERSISTENT)
+   export RABBITMQ_ERLANG_COOKIE="set-cookie"
+   export RABBITMQ_CONNECTION_HOST="localhost"
+   export RABBITMQ_DELIVERY_MODE=2
    
-   export MAIL_PORT=your_smtp_email_port
-   export MAIL_HOST=your_smtp_email_host
-   export MAIL_USE_TLS=your_tls_config_value
-   export MAIL_USERNAME=your_email_username
-   export MAIL_PASSWORD=your_email_password
+   export MAIL_PORT=587
+   export MAIL_HOST='smtp.googlemail.com'
+   export MAIL_USE_TLS=1
+   export MAIL_USERNAME='stockdashboard581@gmail.com'
+   export MAIL_PASSWORD='stockdashboard'
    ```
 3. Run `docker-compose up`
 
