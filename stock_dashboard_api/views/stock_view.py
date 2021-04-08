@@ -9,15 +9,18 @@ MAX_STOCK_COMPANY_NAME_LENGTH = 128
 
 
 class StockView(MethodView):
-    """A StockView is a class-based view that inherits flask view - MethodView.
-         This class implements get, put, post and delete methods to handle
-         ``GET``, ``PUT``, ``POST``, ``DELETE`` requests accordingly."""
+    """
+    A StockView is a class-based view that inherits flask view - MethodView.
+    This class implements get, put, post and delete methods to handle
+    ``GET``, ``PUT``, ``POST``, ``DELETE`` requests accordingly.
+    """
 
     def get(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
         """A method that return Stock if provided pk is valid
 
         :param pk: Stock primary key (id)
-        :return: Response with one Stock"""
+        :return: Response with one Stock
+        """
         if isinstance(pk, int):
             stock = Stock.get_by_id(pk)
             if stock:
@@ -27,7 +30,8 @@ class StockView(MethodView):
     def post(self) -> Response:  # pylint: disable=R0201
         """A method that create Stock and return it if provided data is valid
 
-        :return: Response with just created Stock"""
+        :return: Response with just created Stock
+        """
         body = request.body
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
 
@@ -48,7 +52,8 @@ class StockView(MethodView):
         """A method that update Stock if provided data is valid
 
         :param pk: Stock primary key (id)
-        :return: Response with just updated Stock"""
+        :return: Response with just updated Stock
+        """
         stock = Stock.get_by_id(pk)
         if not stock:
             return make_response("Wrong data provided", 400)
@@ -71,7 +76,8 @@ class StockView(MethodView):
         """A method that remove Stock if provided pk is valid
 
         :param pk: Stock primary key (id)
-        :return: Response with result message"""
+        :return: Response with result message
+        """
         if Stock.delete_by_id(pk):
             return make_response('Removed successfully', 200)
         return make_response("Wrong data provided", 400)
