@@ -3,6 +3,7 @@ from datetime import datetime
 from psycopg2 import DataError, ProgrammingError
 
 
+
 class StockData:
     _table = "public.stocks_data"
 
@@ -39,13 +40,14 @@ class StockData:
             data_to_update.append("price = %(price)s")
         if create_at is not None:
             data_to_update.append("create_at = %(create_at)s")
+            create_at = create_at.strftime("%Y-%m-%d %H:%M:%S")
         query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
                     WHERE id = %(id)s 
                     RETURNING id, stock_id, price, create_at;"""
         with pool_manager() as conn:
             try:
                 conn.cursor.execute(query, {'price': price,
-                                            'create_at': create_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                            'create_at': create_at,
                                             'id': self.pk})
                 contents = conn.cursor.fetchone()
                 price = contents[2]
@@ -67,7 +69,7 @@ class StockData:
                 conn.cursor.execute(query, {'id': pk})
                 pk, stock_id, price, create_at = conn.cursor.fetchone()
                 return StockData(pk=pk, stock_id=stock_id, price=price, create_at=create_at)
-            except(DataError, ProgrammingError):
+            except(DataError, ProgrammingError, TypeError):
                 return None
 
     @classmethod
@@ -75,6 +77,8 @@ class StockData:
         """
         Delete stock data with given pk
         """
+        if not StockData.get_by_id(pk):
+            return False
         with pool_manager() as conn:
             query = f"DELETE FROM {cls._table} WHERE id = %(id)s "
             try:
