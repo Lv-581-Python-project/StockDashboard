@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify, make_response
 from flask.views import MethodView
 
-from stock_dashboard_api.models.stock_data_model import StockData
+from stock_dashboard_api.models.stock_data_models import StockData
 
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
 
