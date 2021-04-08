@@ -21,7 +21,8 @@ PATH_PATTERNS_BODY_PARSE_JSON = ['/stocks_data/', '/stocks/', '/stock_conf/']
 @app.before_request
 def middleware_body_parse_json():
     """A function that appears before request,
-    receive and validate json data for PUT and POST request methods."""
+    receive and validate json data for PUT and POST request methods.
+    """
     current_path = request.path
     if (request.method == 'PUT' and any(
             map(lambda pattern: current_path.startswith(pattern), PATH_PATTERNS_BODY_PARSE_JSON))) or (
