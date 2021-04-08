@@ -54,29 +54,34 @@ class DashboardConfig:
         Returns a dashboard_config instance by its id.
         :return: instance of DashboardConfig model
         """
+
         with pool_manager() as conn:
-            query = f"SELECT id, config_hash FROM {cls._table} WHERE ID = %(id)s;"
+            query = f"SELECT * FROM {cls._table} WHERE id = %(id)s"
             try:
                 conn.cursor.execute(query, {'id': pk})
                 pk, config_hash = conn.cursor.fetchone()
                 return DashboardConfig(pk=pk, config_hash=config_hash)
-            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
                 return None
+
 
     @classmethod
     def delete_by_id(cls, pk: int) -> bool:  # pylint: disable=C0103,  W0613
         """
         Deletes a dashboard_config instance by its id.
         """
+
+        if not DashboardConfig.get_by_id(pk):
+            return False
+
         with pool_manager() as conn:
-            query = f"DELETE FROM {cls._table} WHERE id = %(pk)s;"
+            query = f"DELETE FROM {cls._table} WHERE id = %(id)s;"
             try:
-                if not DashboardConfig.get_by_id(pk):
-                    return False
                 conn.cursor.execute(query, {'id': pk})
                 return True
             except(psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
+
 
     def to_dict(self) -> dict:
         """
