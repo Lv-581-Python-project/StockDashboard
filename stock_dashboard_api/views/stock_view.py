@@ -62,7 +62,7 @@ class StockView(MethodView):
                 and len(stock_company_name) <= MAX_STOCK_COMPANY_NAME_LENGTH:
             stock_values_to_update['company_name'] = stock_company_name
         if stock_values_to_update:
-            stock = stock.update(**stock_values_to_update)
+            stock.update(**stock_values_to_update)
             if stock:
                 return make_response(jsonify(stock.to_dict()), 200)
         return make_response("An error occurred during entity updating", 400)
