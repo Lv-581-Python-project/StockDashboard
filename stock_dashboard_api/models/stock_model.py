@@ -78,11 +78,11 @@ class Stock:
         :return: True if delete was successful and False if not
         """
 
+        if not Stock.get_by_id(pk):
+            return False
         with pool_manager() as conn:
             query = f"DELETE FROM {cls._table} WHERE id = %(id)s;"
             try:
-                if not Stock.get_by_id(pk):
-                    return False
                 conn.cursor.execute(query, {'id': pk})
                 return True
             except(psycopg2.DataError, psycopg2.ProgrammingError):
