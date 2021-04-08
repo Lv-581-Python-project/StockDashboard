@@ -1,16 +1,11 @@
-"""
-Send email worker
-"""
-
 import json
 import os
 import smtplib
+import pika
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from jinja2 import Environment, PackageLoader, select_autoescape
-
-from send_email_queue import connect_queue
 
 
 def create_email(ch, method, properties, body):
@@ -55,7 +50,9 @@ def send_email(email, method):  # pylint: disable=C0103,  W0613
 
 
 if __name__ == '__main__':
-    connection = connect_queue()
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
+    )
     channel = connection.channel()
     channel.queue_declare(queue='email_queue', durable=True)
     channel.basic_consume(queue='email_queue', on_message_callback=create_email)
