@@ -4,9 +4,18 @@ from psycopg2 import DataError, ProgrammingError
 
 
 class StockData:
+    """
+    Model used to create a StockDAta instance.
+    """
     _table = "public.stocks_data"
 
     def __init__(self, stock_id: int, price: float, create_at: datetime, pk=None):
+        """
+        :param stock_id: Stock id
+        :param price: StockData price
+        :param create_at: StockData creation date, time
+        :param pk: StockData id
+        """
         self.pk = pk
         self.stock_id = stock_id
         self.price = price
@@ -16,6 +25,10 @@ class StockData:
     def create(cls, stock_id: int, price: float, create_at: datetime):
         """
         Create new stock data
+        :param stock_id: Stock id
+        :param price: StockData price
+        :param create_at: StockData creation date, time
+        :return: StockData instance
         """
         with pool_manager() as conn:
             query = f"""INSERT INTO {cls._table} (stock_id, price, create_at)
@@ -33,6 +46,9 @@ class StockData:
     def update(self, price=None, create_at=None):
         """
         Changes values of the stock data to the given.
+        :param price: StockData price
+        :param create_at: StockData creation date, time
+        :return: updated StockData instance
         """
         data_to_update = []
         if price is not None:
@@ -60,6 +76,8 @@ class StockData:
     def get_by_id(cls, pk: int):
         """
         Get stock data with given pk.
+        :param pk: StockData id
+        :return: StockData instance with given pk
         """
         with pool_manager() as conn:
             query = f"SELECT * FROM {cls._table} WHERE id = %(id)s"
@@ -74,6 +92,8 @@ class StockData:
     def delete_by_id(cls, pk: int):
         """
         Delete stock data with given pk
+        :param pk: StockData id
+        :return: True if instance was deleted, else False
         """
         with pool_manager() as conn:
             query = f"DELETE FROM {cls._table} WHERE id = %(id)s "
@@ -86,5 +106,6 @@ class StockData:
     def to_dict(self):
         """
         Returns a dictionary with a stock data values.
+        :return: Dictionary with instance data
         """
         return {'id': self.pk, "stock_id": self.stock_id, "price": self.price, "create_at": self.create_at}
