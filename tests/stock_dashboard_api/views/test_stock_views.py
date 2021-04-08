@@ -21,7 +21,7 @@ class StockViewsTestCase(TestCase):
         with app.test_client() as client:
             response = client.get('/stocks/{stock_id}'.format(stock_id=stock_id))
 
-            self.assertEqual(response.data,
+            self.assertEqual(json.loads(response.data),
                              {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name})
 
     def test_create(self):
@@ -38,10 +38,7 @@ class StockViewsTestCase(TestCase):
         stock_id, new_stock_name, new_stock_company_name = 1, 'mock upd name', 'mocked update company name'
         get_by_id = self.stock_mock.get_by_id
         get_by_id.return_value = self.stock_mock(1, 'sdfsd', 'sdfsdf')
-        update = get_by_id.return_value.update
-        update.return_value.to_dict.return_value = {'company_name': new_stock_company_name,
-                                                    'id': stock_id,
-                                                    'name': new_stock_name}
+        get_by_id.return_value.to_dict.return_value = {'name': new_stock_name, 'id': stock_id, 'company_name': new_stock_company_name}
         with app.test_client() as client:
             response = client.put('/stocks/{}'.format(stock_id),
                                   json={'name': new_stock_name, 'company_name': new_stock_company_name})
