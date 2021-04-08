@@ -1,4 +1,5 @@
 from flask import Blueprint, request, make_response, jsonify, Response
+from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
 
 from stock_dashboard_api.models.stock_model import Stock

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 from flask.views import MethodView
 
-from stock_dashboard_api.models.dashboard_config_models import DashboardConfig
+from stock_dashboard_api.models.dashboard_config_model import DashboardConfig
 
 mod = Blueprint('stock_conf', __name__, url_prefix='/stock_conf')
 
@@ -36,7 +36,7 @@ class StockConfigView(MethodView):
 
         stock_config_updated = stock_config.update(config_hash)
         if stock_config_updated:
-            return make_response(jsonify(stock_config_updated.to_dict()), 200)
+            return make_response(jsonify(stock_config.to_dict()), 200)
         return make_response("Stock Config wasn't updated, check your input data", 400)
 
 
