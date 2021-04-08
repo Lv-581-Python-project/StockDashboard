@@ -1,11 +1,13 @@
+import psycopg2
+
 from stock_dashboard_api.utils.pool import pool_manager
 
 
 class StockData:
     _table = "public.stocks_data"
 
-    def __init__(self, stock_id, price, create_at, pk=None):
-        self.pk = pk
+    def __init__(self, stock_id, price, create_at, pk=None):  # pylint: disable=C0103
+        self.pk = pk  # pylint: disable=C0103
         self.stock_id = stock_id
         self.price = price
         self.create_at = create_at
@@ -20,9 +22,9 @@ class StockData:
                 conn.cursor.execute(query, {'stock_id': stock_id,
                                             'price': price,
                                             'create_at': create_at.strftime("%Y-%m-%d %H:%M:%S")})
-                pk, stock_id, price, create_at = conn.cursor.fetchone()
+                pk, stock_id, price, create_at = conn.cursor.fetchone()  # pylint: disable=C0103
                 return StockData(pk=pk, stock_id=stock_id, price=price, create_at=create_at)
-            except:
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
                 return None
 
     def update(self, price=None, create_at=None):
@@ -45,28 +47,28 @@ class StockData:
                 self.price = price
                 self.create_at = create_at
                 return True
-            except:
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError):
                 return False
 
     @classmethod
-    def get_by_id(cls, pk):
+    def get_by_id(cls, pk):  # pylint: disable=C0103
         with pool_manager() as conn:
             query = f"SELECT * FROM {cls._table} WHERE id = %(id)s"
             try:
                 conn.cursor.execute(query, {'id': pk})
                 pk, stock_id, price, create_at = conn.cursor.fetchone()
                 return StockData(pk=pk, stock_id=stock_id, price=price, create_at=create_at)
-            except:
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
                 return None
 
     @classmethod
-    def delete_by_id(cls, pk):
+    def delete_by_id(cls, pk):  # pylint: disable=C0103
         with pool_manager() as conn:
             query = f"DELETE FROM {cls._table} WHERE id = %(id)s "
             try:
                 conn.cursor.execute(query, {'table': cls._table, 'id': pk})
                 return True
-            except:
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
                 return False
 
     def to_dict(self):

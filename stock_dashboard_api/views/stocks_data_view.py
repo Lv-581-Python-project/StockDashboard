@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify, make_response
 from flask.views import MethodView
 
-from stock_dashboard_api.models.stock_data_models import StockData
+from stock_dashboard_api.models.stock_data_model import StockData
 
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
 
@@ -57,7 +57,7 @@ class StockDataView(MethodView):
         }
         stock_data_updated = stock_data.update(**data_to_update)
         if stock_data_updated:
-            return make_response(jsonify(stock_data_updated.to_dict()), 200)
+            return make_response(jsonify(stock_data.to_dict()), 200)
         return make_response("Stock Data is not updated, possible you input wrong data", 400)
 
     def delete(self, pk: int):  # pylint: disable=C0103, R0201

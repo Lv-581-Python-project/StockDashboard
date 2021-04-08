@@ -2,7 +2,7 @@ import json
 from unittest.mock import patch
 
 from stock_dashboard_api import app
-from stock_dashboard_api.models.stock_data_models import StockData
+from stock_dashboard_api.models.stock_data_model import StockData
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StockData.get_by_id')
