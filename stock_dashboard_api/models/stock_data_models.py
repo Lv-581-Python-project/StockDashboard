@@ -3,7 +3,6 @@ from datetime import datetime
 from psycopg2 import DataError, ProgrammingError
 
 
-
 class StockData:
     """
     Model used to create a StockData instance.
