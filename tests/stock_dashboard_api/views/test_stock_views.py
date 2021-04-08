@@ -38,10 +38,7 @@ class StockViewsTestCase(TestCase):
         stock_id, new_stock_name, new_stock_company_name = 1, 'mock upd name', 'mocked update company name'
         get_by_id = self.stock_mock.get_by_id
         get_by_id.return_value = self.stock_mock(1, 'sdfsd', 'sdfsdf')
-        update = get_by_id.return_value.update
-        update.return_value.to_dict.return_value = {'company_name': new_stock_company_name,
-                                                    'id': stock_id,
-                                                    'name': new_stock_name}
+        get_by_id.return_value.to_dict.return_value = {'name': new_stock_name, 'id': stock_id, 'company_name': new_stock_company_name}
         with app.test_client() as client:
             response = client.put('/stocks/{}'.format(stock_id),
                                   json={'name': new_stock_name, 'company_name': new_stock_company_name})
@@ -66,7 +63,15 @@ class StockViewsTestCase(TestCase):
             self.assertEqual(response.status, '400 BAD REQUEST')
 
     def test_create_wrong_data(self):
-        stock_id, stock_name, stock_company_name = 1, 'mock cr name', 'mocked create company name'
+        stock_id, stock_name, stock_company_name = 1, 'mock create super long name', 'mocked create company name'
+        create = self.stock_mock.create
+        create.return_value = None
+        with app.test_client() as client:
+            response = client.post('/stocks/', json={'name': stock_name, 'company_name': stock_company_name})
+            self.assertEqual(response.status, '400 BAD REQUEST')
+
+    def test_create_wrong_data2(self):
+        stock_id, stock_name, stock_company_name = 1, 'mock create name', 'mocked create company name'
         create = self.stock_mock.create
         create.return_value = None
         with app.test_client() as client:
