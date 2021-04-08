@@ -103,7 +103,7 @@ class Stock:
                 conn.cursor.execute(query, {'id': pk})
                 pk, name, company_name = conn.cursor.fetchone()
                 return Stock(pk=pk, name=name, company_name=company_name)
-            except (psycopg2.DataError, psycopg2.ProgrammingError):
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
                 return None
 
     def to_dict(self) -> dict:
