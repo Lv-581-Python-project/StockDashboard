@@ -5,7 +5,7 @@ from psycopg2 import DataError, ProgrammingError
 
 class StockData:
     """
-    Model used to create a StockDAta instance.
+    Model used to create a StockData instance.
     """
     _table = "public.stocks_data"
 
