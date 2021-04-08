@@ -21,7 +21,7 @@ class StockViewsTestCase(TestCase):
         with app.test_client() as client:
             response = client.get('/stocks/{stock_id}'.format(stock_id=stock_id))
 
-            self.assertEqual(json.loads(response.data),
+            self.assertEqual(response.data,
                              {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name})
 
     def test_create(self):
@@ -29,7 +29,7 @@ class StockViewsTestCase(TestCase):
         create = self.stock_mock.create
         create.return_value = Stock(pk=stock_id, name=stock_name, company_name=stock_company_name)
         with app.test_client() as client:
-            response = client.post('/stocks/', json=json.dumps({'name': stock_name, 'company_name': stock_company_name}))
+            response = client.post('/stocks/', json={'name': stock_name, 'company_name': stock_company_name})
 
             self.assertEqual(json.loads(response.data),
                              {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name})
@@ -44,7 +44,7 @@ class StockViewsTestCase(TestCase):
                                                     'name': new_stock_name}
         with app.test_client() as client:
             response = client.put('/stocks/{}'.format(stock_id),
-                                  json=json.dumps({'name': new_stock_name, 'company_name': new_stock_company_name}))
+                                  json={'name': new_stock_name, 'company_name': new_stock_company_name})
 
             self.assertEqual(json.loads(response.data),
                              {'company_name': new_stock_company_name, 'id': stock_id, 'name': new_stock_name})
@@ -66,7 +66,15 @@ class StockViewsTestCase(TestCase):
             self.assertEqual(response.status, '400 BAD REQUEST')
 
     def test_create_wrong_data(self):
-        stock_id, stock_name, stock_company_name = 1, 'mock cr name', 'mocked create company name'
+        stock_id, stock_name, stock_company_name = 1, 'mock create super long name', 'mocked create company name'
+        create = self.stock_mock.create
+        create.return_value = None
+        with app.test_client() as client:
+            response = client.post('/stocks/', json={'name': stock_name, 'company_name': stock_company_name})
+            self.assertEqual(response.status, '400 BAD REQUEST')
+
+    def test_create_wrong_data2(self):
+        stock_id, stock_name, stock_company_name = 1, 'mock create name', 'mocked create company name'
         create = self.stock_mock.create
         create.return_value = None
         with app.test_client() as client:
