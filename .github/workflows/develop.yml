@@ -18,7 +18,14 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-    
+    services:
+        rabbitmq:
+          image: rabbitmq
+          env:
+            RABBITMQ_DEFAULT_USER: rabbitmq
+            RABBITMQ_DEFAULT_PASS: rabbitmq
+          ports:
+            - 5672:5672
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Setup PostgreSQL
@@ -33,9 +40,7 @@ jobs:
           # POSTGRES_PASSWORD - superuser password
           postgresql password: postgres # optional, default is 
             # Runs a single command using the runners shell
-      - uses: getong/rabbitmq-action@v1.2
-        with:
-          rabbitmq version: '3.8.2-management-alpine'
+    
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
