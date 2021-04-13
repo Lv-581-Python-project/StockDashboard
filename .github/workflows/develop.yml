@@ -48,7 +48,7 @@ jobs:
         env:
           PGPASSWORD: postgres
       - name: RabbitMQ
-        run: systemctl start rabbitmq-server
+        run: sudo systemctl start rabbitmq-server
         env:
           rabbitmq user: 'user'
           rabbitmq password: 'noBahC3e'
