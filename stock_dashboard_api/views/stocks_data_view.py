@@ -74,7 +74,6 @@ class StockDataView(MethodView):
                     400)
             try:
                 created_at = datetime.strptime(created_at, '%y/%m/%d %H:%M:%S')
-
             except ValueError:
                 return make_response(
                     "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
