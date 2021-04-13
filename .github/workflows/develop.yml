@@ -38,7 +38,7 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/CREATE_DB.sql
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
-          postgresql password: postgres
+          PGPASSWORD: postgres
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
