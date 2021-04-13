@@ -66,7 +66,7 @@ class StockDataView(MethodView):
 
         if price is not None and not isinstance(price, int):
             return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
-        print(price)
+
         if created_at:
             if not isinstance(created_at, str):
                 return make_response(
