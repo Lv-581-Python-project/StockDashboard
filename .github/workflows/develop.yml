@@ -52,7 +52,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Tests
-        run: pytest
+        run: |
+          pwd
+          pytest
         env:
           PYTHONPATH: .
           LOGGING_CONF: ./stock_dashboard_api/logging.conf
