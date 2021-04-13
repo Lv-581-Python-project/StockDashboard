@@ -57,7 +57,7 @@ jobs:
           RABBITMQ_ERLANG_COOKIE: set-cookie
           RABBITMQ_CONNECTION_HOST: localhost
           RABBITMQ_DELIVERY_MODEL: 2
-          MINCONN=: 1
+          MINCONN: 1
           MAXCONN: 20
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
