@@ -30,8 +30,7 @@ class StockData:
                              VALUES (%(stock_id)s, %(dashboard_id)s)"""
                 conn.cursor.execute(query2, {'stock_id': stock_id, 'dashboard_id': pk})
                 return StockData(pk=pk, stock_id=stock_id, price=price, create_at=create_at)
-            except(DataError, ProgrammingError) as ex:
-                print(ex)
+            except(DataError, ProgrammingError):
                 return None
 
     def update(self, price=None, create_at=None):
