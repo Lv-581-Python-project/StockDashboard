@@ -53,6 +53,24 @@ jobs:
         run: pytest
         env:
           LOGGING_CONF: ./stock_dashboard_api/logging.conf
+          RABBITMQ_ERLANG_COOKIE: set-cookie
+          RABBITMQ_CONNECTION_HOST: localhost
+          RABBITMQ_DELIVERY_MODEL: 2
+          MINCONN=: 1
+          MAXCONN: 20
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_HOST: localhost
+          MAIL_PORT: 587
+          MAIL_HOST: 'smtp.googlemail.com'
+          MAIL_USE_TLS: 1
+          MAIL_USERNAME: 'stockdashboard581@gmail.com'
+          MAIL_PASSWORD: 'stockdashboard'
+          PROD_ROOT: ./stock_dashboard_api
+          FLASK_SECRET_KEY: ADV2-LKWA-1MG3-90AY-LMNY-AELK
+          FLASK_APP: stock_dashboard_api/
       - name: Upload coverage data to coveralls.io
         run: coveralls --rcfile=.coveragerc
         env:
