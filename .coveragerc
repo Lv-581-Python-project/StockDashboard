@@ -1,0 +1,6 @@
+[run]
+relative_files = True
+
+source =
+    stock_dashboard_api
+    workers
