@@ -31,23 +31,23 @@ class StockDataView(MethodView):
         :return: a Response object with specific data and status code
         """
         price = request.body.get('price')
-        create_at = request.body.get('create_at')
+        created_at = request.body.get('created_at')
         stock_id = request.body.get('stock_id')
         if not isinstance(price, int):
             return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
         if not isinstance(stock_id, int):
             return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)", 400)
-        if not isinstance(create_at, str):
+        if not isinstance(created_at, str):
             return make_response(
-                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                "Incorrect created_at specified, example '18/09/19 01:55:19'(year/month/day hour:minute:second))", 400)
         try:
-            create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
+            created_at = datetime.strptime(created_at, '%y/%m/%d %H:%M:%S')
         except ValueError:
             return make_response(
-                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                "Incorrect created_at specified, example '18/09/19 01:55:19'(year/month/day hour:minute:second))", 400)
         data_to_create = {
             'price': price,
-            'create_at': create_at,
+            'created_at': created_at,
             'stock_id': stock_id
         }
         stock_data = StockData.create(**data_to_create)
@@ -62,25 +62,25 @@ class StockDataView(MethodView):
         stock_data = StockData.get_by_id(pk=pk)
         if stock_data is None:
             return make_response("Can not find stock data, wrong id", 400)
-        price, create_at = request.body.get('price'), request.body.get('create_at')
+        price, created_at = request.body.get('price'), request.body.get('created_at')
 
         if price is not None and not isinstance(price, int):
             return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
         print(price)
-        if create_at:
-            if not isinstance(create_at, str):
+        if created_at:
+            if not isinstance(created_at, str):
                 return make_response(
-                    "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))",
+                    "Incorrect created_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))",
                     400)
             try:
-                create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
+                created_at = datetime.strptime(created_at, '%y/%m/%d %H:%M:%S')
 
             except ValueError:
                 return make_response(
                     "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
         data_to_update = {
             "price": price,
-            "create_at": create_at
+            "created_at": created_at
         }
         stock_data_updated = stock_data.update(**data_to_update)
         if stock_data_updated:
