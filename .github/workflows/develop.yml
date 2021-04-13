@@ -51,6 +51,8 @@ jobs:
           pip install -r requirements.txt
       - name: Tests
         run: pytest
+        env:
+          LOGGING_CONF: ./stock_dashboard_api/logging.conf
       - name: Upload coverage data to coveralls.io
         run: coveralls --rcfile=.coveragerc
         env:
