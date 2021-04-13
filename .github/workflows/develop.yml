@@ -34,10 +34,10 @@ jobs:
           postgresql password: postgres # optional, default is 
             # Runs a single command using the runners shell
       - name: Configure DB
+        working-directory: ./db/stock_dashboard
         run: |
           psql -U postgres -d postgres -a -f CREATE_DB.sql
           psql -U postgres -d postgres -a -f INSERT_DATA.sql
-        working-directory: ./db/stock_dashboard
         env:
           POSTGRES_PASSWORD: postgres
       - uses: actions/checkout@v2
