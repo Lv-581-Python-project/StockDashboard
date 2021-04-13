@@ -64,7 +64,6 @@ class DashboardConfig:
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
                 return None
 
-
     @classmethod
     def delete_by_id(cls, pk: int) -> bool:  # pylint: disable=C0103,  W0613
         """
@@ -81,7 +80,6 @@ class DashboardConfig:
                 return True
             except(psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
-
 
     def to_dict(self) -> dict:
         """
