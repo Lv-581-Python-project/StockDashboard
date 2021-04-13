@@ -33,7 +33,6 @@ jobs:
           # POSTGRES_PASSWORD - superuser password
           postgresql password: postgres # optional, default is 
             # Runs a single command using the runners shell
-      - name: RabbitMQ
       - uses: getong/rabbitmq-action@v1.2
         with:
           rabbitmq version: '3.8.2-management-alpine'
