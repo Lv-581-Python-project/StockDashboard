@@ -58,7 +58,7 @@ jobs:
           LOGGING_CONF: ./stock_dashboard_api/logging.conf
           RABBITMQ_ERLANG_COOKIE: set-cookie
           RABBITMQ_CONNECTION_HOST: localhost
-          RABBITMQ_DELIVERY_MODEL: 2
+          RABBITMQ_DELIVERY_MODE: 2
           MINCONN: 1
           MAXCONN: 20
           POSTGRES_USER: postgres
