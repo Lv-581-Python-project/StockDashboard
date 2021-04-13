@@ -72,6 +72,7 @@ jobs:
           PROD_ROOT: ./stock_dashboard_api
           FLASK_SECRET_KEY: ADV2-LKWA-1MG3-90AY-LMNY-AELK
           FLASK_APP: stock_dashboard_api/
+          APPLICATION_HOST: 'http://127.0.0.1:5000/'
       - name: Upload coverage data to coveralls.io
         run: coveralls --rcfile=.coveragerc
         env:
