@@ -71,7 +71,7 @@ jobs:
           MAIL_USE_TLS: 1
           MAIL_USERNAME: stockdashboard581@gmail.com
           MAIL_PASSWORD: stockdashboard
-          PROD_ROOT: ./stock_dashboard_api
+          PROD_ROOT: ./stock_dashboard_api/
           FLASK_SECRET_KEY: ADV2-LKWA-1MG3-90AY-LMNY-AELK
           FLASK_APP: stock_dashboard_api/
           APPLICATION_HOST: http://127.0.0.1:5000/
