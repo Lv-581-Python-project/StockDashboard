@@ -33,7 +33,9 @@ jobs:
           # POSTGRES_PASSWORD - superuser password
           postgresql password: postgres # optional, default is 
             # Runs a single command using the runners shell
-      
+      - uses: nijel/rabbitmq-action@v1.0.0
+        with:
+          rabbitmq version: '5'
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
