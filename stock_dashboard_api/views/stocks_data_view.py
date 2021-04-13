@@ -66,7 +66,7 @@ class StockDataView(MethodView):
 
         if price is not None and not isinstance(price, int):
             return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
-        print(price)
+
         if created_at:
             if not isinstance(created_at, str):
                 return make_response(
@@ -74,7 +74,6 @@ class StockDataView(MethodView):
                     400)
             try:
                 created_at = datetime.strptime(created_at, '%y/%m/%d %H:%M:%S')
-
             except ValueError:
                 return make_response(
                     "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
