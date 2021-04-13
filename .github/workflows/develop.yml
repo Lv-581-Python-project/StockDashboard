@@ -48,6 +48,8 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
           PGPASSWORD: postgres
+      - name: RabbitMQ
+        run: systemctl restart rabbitmq-server
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -57,9 +59,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Tests
-        run: |
-          pwd
-          pytest
+        run: pytest
         env:
           PYTHONPATH: .
           LOGGING_CONF: ./stock_dashboard_api/logging.conf
