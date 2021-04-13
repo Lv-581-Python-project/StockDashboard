@@ -36,10 +36,6 @@ jobs:
       - uses: getong/rabbitmq-action@v1.2
         with:
           rabbitmq version: '3.8.2-management-alpine'
-          host port: 5672
-          rabbitmq user: 'user'
-          rabbitmq password: 'noBahC3e'
-          rabbitmq vhost: 'vhost_name'
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
@@ -47,11 +43,6 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
           PGPASSWORD: postgres
-      - name: RabbitMQ
-        run: sudo systemctl start rabbitmq-server
-        env:
-          rabbitmq user: 'user'
-          rabbitmq password: 'noBahC3e'
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
