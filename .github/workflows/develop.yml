@@ -48,7 +48,7 @@ jobs:
         env:
           PGPASSWORD: postgres
       - name: RabbitMQ
-        run: sudo systemctl start rabbitmq-server
+        run: systemctl start rabbitmq-server
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
