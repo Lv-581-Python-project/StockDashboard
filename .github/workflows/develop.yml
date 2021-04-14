@@ -79,7 +79,9 @@ jobs:
           FLASK_APP: stock_dashboard_api/
           APPLICATION_HOST: http://127.0.0.1:5000/
       - name: Pylint
-        run: pylint --rcfile=.pylintrc stock_dashboard_api workers
+        run: |
+          pip install --upgrade pylint
+          pylint --rcfile=.pylintrc stock_dashboard_api workers
       - name: Upload coverage data to coveralls.io
         run: |
           pip install coveralls
