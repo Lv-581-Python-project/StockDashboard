@@ -45,7 +45,6 @@ jobs:
           rabbitmq version: '3.8.2-management-alpine'
           rabbitmq user: rabbitmq
           rabbitmq password: password
-          rabbitmq vhost: localhost
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
