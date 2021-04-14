@@ -23,7 +23,6 @@ jobs:
         image: rabbitmq:latest
         ports:
           - 5672/tcp
-        options:  --health-interval 10s --health-timeout 5s --health-retries 5
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Setup PostgreSQL
@@ -38,11 +37,11 @@ jobs:
           # POSTGRES_PASSWORD - superuser password
           postgresql password: postgres # optional, default is 
             # Runs a single command using the runners shell
-      - uses: getong/rabbitmq-action@v1.2
-        with:
-          rabbitmq version: '3.8.2-management-alpine'
-          rabbitmq user: rabbitmq
-          rabbitmq password: password
+#       - uses: getong/rabbitmq-action@v1.2
+#         with:
+#           rabbitmq version: '3.8.2-management-alpine'
+#           rabbitmq user: rabbitmq
+#           rabbitmq password: password
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
