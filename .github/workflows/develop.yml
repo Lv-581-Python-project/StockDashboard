@@ -43,10 +43,9 @@ jobs:
       - uses: getong/rabbitmq-action@v1.2
         with:
           rabbitmq version: '3.8.2-management-alpine'
-          host port: 5672
-          rabbitmq user: 'user'
-          rabbitmq password: 'noBahC3e'
-          rabbitmq vhost: 'localhost'
+          rabbitmq user: rabbitmq
+          rabbitmq password: password
+          rabbitmq vhost: localhost
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
