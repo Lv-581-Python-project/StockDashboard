@@ -79,9 +79,9 @@ jobs:
           FLASK_APP: stock_dashboard_api/
           APPLICATION_HOST: http://127.0.0.1:5000/
       - name: Python Pylin GitHub Action
-        uses: fylein/python-pylint-github-action@v1
-        with:
-          args: pip install --upgrade pylint && pylint --rcfile=.pylintrc stock_dashboard_api workers --threshold 9
+        run: |
+          pip install --upgrade pylint
+          pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=8
           
       - name: Upload coverage data to coveralls.io
         run: |
