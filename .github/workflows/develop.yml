@@ -49,8 +49,8 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
           PGPASSWORD: postgres
-#       - name: RabbitMQ
-#         run: sudo systemctl restart rabbitmq-server
+      - name: RabbitMQ
+        run: sudo systemctl restart rabbitmq-server
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
