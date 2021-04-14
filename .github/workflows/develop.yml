@@ -78,6 +78,7 @@ jobs:
           APPLICATION_HOST: http://127.0.0.1:5000/
       - name: Upload coverage data to coveralls.io
         run: |
+          pip install coveralls
           coveralls --service=github --rcfile=.coveragerc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
