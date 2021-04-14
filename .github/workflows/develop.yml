@@ -81,7 +81,7 @@ jobs:
       - name: Python Pylin GitHub Action
         uses: fylein/python-pylint-github-action@v1
         with:
-          args: pip install --upgrade pylint && pylint --rcfile=.pylintrc stock_dashboard_api workers
+          args: pip install --upgrade pylint && pylint --rcfile=.pylintrc stock_dashboard_api workers --threshold 9
           
       - name: Upload coverage data to coveralls.io
         run: |
