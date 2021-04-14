@@ -18,11 +18,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-#     services:
-#       rabbitmq:
-#         image: rabbitmq:latest
-#         ports:
-#           - 5672/tcp
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Setup PostgreSQL
@@ -82,7 +77,9 @@ jobs:
           FLASK_APP: stock_dashboard_api/
           APPLICATION_HOST: http://127.0.0.1:5000/
       - name: Upload coverage data to coveralls.io
-        run: coveralls --rcfile=.coveragerc
+        run: |
+          pip install coveralls
+          coveralls --rcfile=.coveragerc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: true
