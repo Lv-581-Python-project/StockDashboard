@@ -81,7 +81,7 @@ jobs:
       - name: Python Pylin GitHub Action
         run: |
           pip install --upgrade pylint
-          pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=8
+          pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
           
       - name: Upload coverage data to coveralls.io
         run: |
