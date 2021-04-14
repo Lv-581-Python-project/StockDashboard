@@ -37,7 +37,7 @@ jobs:
           # POSTGRES_PASSWORD - superuser password
           postgresql password: postgres # optional, default is 
             # Runs a single command using the runners shell
-      - uses: getong/rabbitmq-action@v1.2
+      - uses: nijel/rabbitmq-action@v1.0.0
         with:
           rabbitmq version: '3.8.2-management-alpine'
           host port: 5672
