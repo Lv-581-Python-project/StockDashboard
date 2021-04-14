@@ -1,4 +1,4 @@
-# Stock Dashboard
+# Stock Dashboard [![Coverage Status](https://coveralls.io/repos/github/Lv-581-Python-project/StockDashboard/badge.svg?branch=develop)](https://coveralls.io/github/Lv-581-Python-project/StockDashboard?branch=develop)
 
 
 ### Docker-compose setup
