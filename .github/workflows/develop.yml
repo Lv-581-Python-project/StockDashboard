@@ -40,10 +40,6 @@ jobs:
       - uses: nijel/rabbitmq-action@v1.0.0
         with:
           rabbitmq version: '3.8.2-management-alpine'
-          host port: 5672
-          rabbitmq user: 'user'
-          rabbitmq password: 'noBahC3e'
-          rabbitmq vhost: 'vhost_name'
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
