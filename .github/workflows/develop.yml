@@ -78,6 +78,8 @@ jobs:
           FLASK_SECRET_KEY: ADV2-LKWA-1MG3-90AY-LMNY-AELK
           FLASK_APP: stock_dashboard_api/
           APPLICATION_HOST: http://127.0.0.1:5000/
+      - name: Pylint
+        run: pylint --rcfile=.pylintrc stock_dashboard_api workers
       - name: Upload coverage data to coveralls.io
         run: |
           pip install coveralls
@@ -85,6 +87,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_PARALLEL: true
+        
   coveralls:
     name: Indicate completion to coveralls.io
     needs: build
