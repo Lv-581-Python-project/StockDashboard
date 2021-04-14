@@ -63,7 +63,6 @@ class StockDataView(MethodView):
         if stock_data is None:
             return make_response("Can not find stock data, wrong id", 400)
         price, created_at = request.body.get('price'), request.body.get('created_at')
-
         if price is not None and not isinstance(price, int):
             return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
 
