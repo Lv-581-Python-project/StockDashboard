@@ -54,11 +54,10 @@ jobs:
           pip install --upgrade pylint
       - name: Tests
         run: |
-          echo ${pwd}
           pytest
           coverage run -m pytest
         env:
-          LOGGING_CONF: ${{ env.LOGGING_CONF }}
+          LOGGING_CONF: ${{ action_env.LOGGING_CONF }}
       - name: Pylint
         run: pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
           
