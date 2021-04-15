@@ -57,6 +57,8 @@ jobs:
           echo ${pwd}
           pytest
           coverage run -m pytest
+        env:
+          LOGGING_CONF: ${{ secrets.LOGGING_CONF }}
       - name: Pylint
         run: pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
           
