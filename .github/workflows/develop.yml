@@ -50,6 +50,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install --upgrade pylint
       - name: Tests
         run: |
           pytest
@@ -74,10 +75,8 @@ jobs:
           FLASK_SECRET_KEY: ADV2-LKWA-1MG3-90AY-LMNY-AELK
           FLASK_APP: stock_dashboard_api/
           APPLICATION_HOST: http://127.0.0.1:5000/
-      - name: Python Pylin GitHub Action
-        run: |
-          pip install --upgrade pylint
-          pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
+      - name: Pylint
+        run: pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
           
       - name: Upload coverage data to coveralls.io
         run: |
