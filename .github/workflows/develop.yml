@@ -26,11 +26,11 @@ jobs:
         uses: Harmon758/postgresql-action@v1.0.0
         with:
           # POSTGRES_DB - name for the default database that is created
-          postgresql db: postgres # optional, default is 
+          postgresql db: ${{action_env.POSTGRES_DB}} # optional, default is 
           # POSTGRES_USER - create the specified user with superuser power
-          postgresql user: postgres # optional, default is 
+          postgresql user: ${{action_env.POSTGRES_USER}} # optional, default is 
           # POSTGRES_PASSWORD - superuser password
-          postgresql password: postgres # optional, default is 
+          postgresql password: ${{action_env.POSTGRES_PASSWORD}} # optional, default is 
             # Runs a single command using the runners shell
       - uses: nijel/rabbitmq-action@v1.0.0
         with:
@@ -41,7 +41,7 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/CREATE_DB.sql
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
-          PGPASSWORD: postgres
+          PGPASSWORD: ${{action_env.POSTGRES_PASSWORD}}
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -55,26 +55,6 @@ jobs:
         run: |
           pytest
           coverage run -m pytest
-        env:
-          PYTHONPATH: .
-          LOGGING_CONF: ./stock_dashboard_api/logging.conf
-          RABBITMQ_ERLANG_COOKIE: set-cookie
-          RABBITMQ_CONNECTION_HOST: localhost
-          RABBITMQ_DELIVERY_MODE: 2
-          MINCONN: 1
-          MAXCONN: 20
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_PORT: 5432
-          POSTGRES_HOST: localhost
-          MAIL_PORT: 587
-          MAIL_HOST: smtp.googlemail.com
-          MAIL_USE_TLS: 1
-          PROD_ROOT: /home/runner/work/StockDashboard/StockDashboard/stock_dashboard_api
-          FLASK_SECRET_KEY: ADV2-LKWA-1MG3-90AY-LMNY-AELK
-          FLASK_APP: stock_dashboard_api/
-          APPLICATION_HOST: http://127.0.0.1:5000/
       - name: Pylint
         run: pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
           
