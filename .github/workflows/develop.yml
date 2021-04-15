@@ -26,12 +26,16 @@ jobs:
         uses: Harmon758/postgresql-action@v1.0.0
         with:
           # POSTGRES_DB - name for the default database that is created
-          postgresql db: $action_env.POSTGRES_DB # optional, default is 
+          postgresql db: $POSTGRES_DB # optional, default is 
           # POSTGRES_USER - create the specified user with superuser power
-          postgresql user: $action_env.POSTGRES_USER # optional, default is 
+          postgresql user: $POSTGRES_USER # optional, default is 
           # POSTGRES_PASSWORD - superuser password
-          postgresql password: $action_env.POSTGRES_PASSWORD # optional, default is 
+          postgresql password: $POSTGRES_PASSWORD # optional, default is 
             # Runs a single command using the runners shell
+        env:
+          POSTGRES_USER: ${{action_env.POSTGRES_USER}}
+          POSTGRES_DB: ${{action_env.POSTGRES_DB}}
+          POSTGRES_PASSWORD: ${{action_env.POSTGRES_PASSWORD}}
       - uses: nijel/rabbitmq-action@v1.0.0
         with:
           rabbitmq version: '3.8.2-management-alpine'
