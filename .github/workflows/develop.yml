@@ -26,11 +26,11 @@ jobs:
         uses: Harmon758/postgresql-action@v1.0.0
         with:
           # POSTGRES_DB - name for the default database that is created
-          postgresql db: ${{action_env.POSTGRES_DB}} # optional, default is 
+          postgresql db: ${{ action_env.POSTGRES_DB }} # optional, default is 
           # POSTGRES_USER - create the specified user with superuser power
-          postgresql user: ${{action_env.POSTGRES_USER}} # optional, default is 
+          postgresql user: ${{ action_env.POSTGRES_USER }} # optional, default is 
           # POSTGRES_PASSWORD - superuser password
-          postgresql password: ${{action_env.POSTGRES_PASSWORD}} # optional, default is 
+          postgresql password: ${{ action_env.POSTGRES_PASSWORD }} # optional, default is 
             # Runs a single command using the runners shell
       - uses: nijel/rabbitmq-action@v1.0.0
         with:
@@ -41,7 +41,7 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/CREATE_DB.sql
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
-          PGPASSWORD: ${{action_env.POSTGRES_PASSWORD}}
+          PGPASSWORD: ${{ action_env.POSTGRES_PASSWORD }}
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
