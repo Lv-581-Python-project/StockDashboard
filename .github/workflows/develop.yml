@@ -70,8 +70,6 @@ jobs:
           MAIL_PORT: 587
           MAIL_HOST: smtp.googlemail.com
           MAIL_USE_TLS: 1
-          MAIL_USERNAME: ${{.env.MAIL_USERNAME}}
-          MAIL_PASSWORD: ${{.env.MAIL_PASSWORD}}
           PROD_ROOT: /home/runner/work/StockDashboard/StockDashboard/stock_dashboard_api
           FLASK_SECRET_KEY: ADV2-LKWA-1MG3-90AY-LMNY-AELK
           FLASK_APP: stock_dashboard_api/
