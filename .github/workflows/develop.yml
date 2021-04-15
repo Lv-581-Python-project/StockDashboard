@@ -38,6 +38,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Configure DB
         run: |
+          echo $action_env.POSTGRES_USER
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/CREATE_DB.sql
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
