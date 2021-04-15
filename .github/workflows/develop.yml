@@ -26,11 +26,11 @@ jobs:
         uses: Harmon758/postgresql-action@v1.0.0
         with:
           # POSTGRES_DB - name for the default database that is created
-          postgresql db: postgres # optional, default is 
+          postgresql db: ${{ secrets.POSTGRES_DB }} # optional, default is 
           # POSTGRES_USER - create the specified user with superuser power
-          postgresql user: postgres  # optional, default is 
+          postgresql user: ${{ secrets.POSTGRES_USER }}  # optional, default is 
           # POSTGRES_PASSWORD - superuser password
-          postgresql password: postgres  # optional, default is 
+          postgresql password: ${{ secrets.POSTGRES_PASSWORD }}  # optional, default is 
             # Runs a single command using the runners shell
       - uses: nijel/rabbitmq-action@v1.0.0
         with:
@@ -41,7 +41,7 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/CREATE_DB.sql
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
-          PGPASSWORD: postgres
+          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 #           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -58,6 +58,26 @@ jobs:
           coverage run -m pytest
         env:
           LOGGING_CONF: ${{ secrets.LOGGING_CONF }}
+          PYTHONPATH: ${{ secrets.PYTHONPATH }}
+          RABBITMQ_ERLANG_COOKIE: ${{ secrets.RABBITMQ_ERLANG_COOKIE }}
+          RABBITMQ_CONNECTION_HOST: ${{ secrets.RABBITMQ_CONNECTION_HOST }}
+          RABBITMQ_DELIVERY_MODE: ${{ secrets.RABBITMQ_DELIVERY_MODE }}
+          MINCONN: ${{ secrets.MINCONN }}
+          MAXCONN: ${{ secrets.MAXCONN }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_USE_TLS: ${{ secrets.MAIL_USE_TLS }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          PROD_ROOT: ${{ secrets.PROD_ROOT }}
+          FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
+          FLASK_APP: ${{ secrets.FLASK_APP }}
+          APPLICATION_HOST: ${{ secrets.APPLICATION_HOST }}
           #/home/runner/work/StockDashboard/StockDashboard/stock_dashboard_api/logging.conf
       - name: Pylint
         run: pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
