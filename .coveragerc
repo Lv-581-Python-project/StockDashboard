@@ -4,3 +4,6 @@ relative_files = True
 source =
     stock_dashboard_api
     workers
+
+omit =
+    *__init__.py*
