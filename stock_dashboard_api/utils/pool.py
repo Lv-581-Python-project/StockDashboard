@@ -9,6 +9,8 @@ POOL_DELAY = os.getenv('POOL_DELAY')
 LOGGING_CONF = os.getenv('LOGGING_CONF')
 print(LOGGING_CONF)
 print(os.getcwd())
+for k,v in os.environ.items():
+    print(k,v)
 fileConfig(LOGGING_CONF, disable_existing_loggers=True)
 logger = logging.getLogger('pool')
 
