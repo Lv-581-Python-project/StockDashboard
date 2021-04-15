@@ -7,7 +7,8 @@ from psycopg2.pool import PoolError, SimpleConnectionPool
 
 POOL_DELAY = os.getenv('POOL_DELAY')
 LOGGING_CONF = os.getenv('LOGGING_CONF')
-
+print(LOGGING_CONF)
+print(os.path)
 fileConfig(LOGGING_CONF, disable_existing_loggers=True)
 logger = logging.getLogger('pool')
 
