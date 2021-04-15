@@ -56,8 +56,9 @@ jobs:
         run: |
           pytest
           coverage run -m pytest
-#         env:
-#           LOGGING_CONF: /home/runner/work/StockDashboard/StockDashboard/stock_dashboard_api/logging.conf
+        env:
+          LOGGING_CONF: ${{ secrets.LOGGING_CONF }}
+          #/home/runner/work/StockDashboard/StockDashboard/stock_dashboard_api/logging.conf
       - name: Pylint
         run: pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
           
