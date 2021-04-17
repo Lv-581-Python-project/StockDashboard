@@ -1,5 +1,7 @@
 # Stock Dashboard [![Coverage Status](https://coveralls.io/repos/github/Lv-581-Python-project/StockDashboard/badge.svg?branch=develop)](https://coveralls.io/github/Lv-581-Python-project/StockDashboard?branch=develop)
 
+### Data Flow Diagram
+![Diagram](./documentation/diagrams/Project.png)
 
 ### Docker-compose setup
 1. Create `.env` file (skip if exists)
