@@ -11,7 +11,7 @@ class TestStock(unittest.TestCase):
 
     def test_create_true(self, pool_manager):
         data = {"id": 1, "name": "AAPL", "company_name": "Apple", "in_use": False}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, "AAPL", "Apple")
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, "AAPL", "Apple", False)
         self.assertEqual(sm.Stock.create("AAPL", "Apple").to_dict(), data)
 
     def test_create_false(self, pool_manager):
