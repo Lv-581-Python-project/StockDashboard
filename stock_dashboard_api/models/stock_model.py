@@ -1,6 +1,10 @@
+from datetime import datetime
+
 import psycopg2
 
 from stock_dashboard_api.utils.pool import pool_manager
+
+DATETIME_PATTERN = "%Y-%m-%d %H:%M:%S"
 
 
 class Stock:
@@ -105,6 +109,23 @@ class Stock:
                 return Stock(pk=pk, name=name, company_name=company_name)
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
                 return None
+
+    def get_data_for_time_period(self, datetime_from: datetime, datetime_to: datetime) -> list:
+        stock_data_for_time_period = []
+        datetime_from, datetime_to = datetime_from.strftime(DATETIME_PATTERN), datetime_to.strftime(DATETIME_PATTERN)
+        with pool_manager() as conn:
+            query = "SELECT price, created_at FROM stocks_data " \
+                    "WHERE stock_id = %(stock_id)s " \
+                    "AND %(datetime_from)s <= created_at AND created_at <= %(datetime_to)s " \
+                    "ORDER BY created_at;"
+            try:
+                conn.cursor.execute(query, {'stock_id': self.pk,
+                                            'datetime_from': datetime_from,
+                                            'datetime_to': datetime_to})
+                stock_data_for_time_period = conn.cursor.fetchall()
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
+                return stock_data_for_time_period
+        return stock_data_for_time_period
 
     def to_dict(self) -> dict:
         """
