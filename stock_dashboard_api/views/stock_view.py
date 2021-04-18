@@ -19,7 +19,8 @@ class StockView(MethodView):
     """
 
     def get(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
-        """A method that return Stock if provided pk is valid
+        """A method that return Stock if provided pk is valid, or if provided valid pk, 'from' and 'to' in query string,
+         this method return list of stock data for some period of time.
 
         :param pk: Stock primary key (id)
         :return: Response with one Stock
