@@ -3,12 +3,12 @@ import psycopg2
 from stock_dashboard_api.utils.pool import pool_manager
 
 
-class Config:
+class Dashboard:
     """
     Model used to create a dashboard_config.
     """
 
-    _table = 'public.config'
+    _table = 'public.dashboard'
 
     def __init__(self, config_hash: str, pk=None):  # pylint: disable=C0103,  W0613
         self.pk = pk  # pylint: disable=C0103,  W0613
@@ -29,7 +29,7 @@ class Config:
                 pk, config_hash = conn.cursor.fetchone()  # pylint: disable=C0103,  W0613
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
                 return False
-            return Config(pk=pk, config_hash=config_hash)
+            return Dashboard(pk=pk, config_hash=config_hash)
 
     def update(self, config_hash: str) -> bool:
         """
@@ -60,7 +60,7 @@ class Config:
             try:
                 conn.cursor.execute(query, {'id': pk})
                 pk, config_hash = conn.cursor.fetchone()
-                return Config(pk=pk, config_hash=config_hash)
+                return Dashboard(pk=pk, config_hash=config_hash)
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
                 return None
 
@@ -70,7 +70,7 @@ class Config:
         Deletes a dashboard_config instance by its id.
         """
 
-        if not Config.get_by_id(pk):
+        if not Dashboard.get_by_id(pk):
             return False
 
         with pool_manager() as conn:

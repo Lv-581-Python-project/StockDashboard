@@ -1,4 +1,4 @@
-INSERT INTO config(config_hash) VALUES
+INSERT INTO dashboard(config_hash) VALUES
     ('XJIOXJXL'),
     ('LKJDFLKG'),
     ('KLDGDPGD'),

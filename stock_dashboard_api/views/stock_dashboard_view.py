@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response, Response
 from flask.views import MethodView
 
-from stock_dashboard_api.models.config_model import Config
+from stock_dashboard_api.models.dashboard_model import Dashboard
 
 mod = Blueprint('stock_conf', __name__, url_prefix='/stock_conf')
 
@@ -9,13 +9,13 @@ mod = Blueprint('stock_conf', __name__, url_prefix='/stock_conf')
 class StockConfigView(MethodView):
 
     def get(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
-        stock_config = Config.get_by_id(pk=pk)
+        stock_config = Dashboard.get_by_id(pk=pk)
         if stock_config is None:
             return make_response("Can not find stock config, wrong id", 400)
         return make_response(jsonify(stock_config.to_dict()), 200)
 
     def delete(self, pk):  # pylint: disable=C0103, R0201
-        stock_config_deleted = Config.delete_by_id(pk=pk)
+        stock_config_deleted = Dashboard.delete_by_id(pk=pk)
         if stock_config_deleted:
             return make_response("Stock config deleted successfully", 200)
         return make_response("Stock config not deleted", 400)
@@ -24,13 +24,13 @@ class StockConfigView(MethodView):
         config_hash = str(request.body.get('config_hash'))
         if not config_hash:
             return make_response("Please provide hash for config creation", 400)
-        stock_config = Config.create(config_hash=config_hash)
+        stock_config = Dashboard.create(config_hash=config_hash)
         if not stock_config:
             return make_response("Please make sure that hash has correct length and format", 400)
         return make_response(jsonify(stock_config.to_dict()), 201)
 
     def put(self, pk):  # pylint: disable=C0103, R0201
-        stock_config = Config.get_by_id(pk=pk)
+        stock_config = Dashboard.get_by_id(pk=pk)
         config_hash = str(request.body.get('config_hash'))
         if stock_config is None:
             return make_response("Cannot find stock config data, wrong id", 400)
