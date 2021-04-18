@@ -12,8 +12,6 @@ app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
 
 app.config.from_object(DevelopmentConfig())
 
-app.config.from_object(DevelopmentConfig())
-
 app.register_blueprint(stock_view.mod)
 app.register_blueprint(stocks_data_view.mod)
 app.register_blueprint(dashboard_views.mod)
