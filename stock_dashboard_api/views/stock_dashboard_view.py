@@ -6,7 +6,7 @@ from stock_dashboard_api.models.dashboard_model import Dashboard
 mod = Blueprint('stock_conf', __name__, url_prefix='/stock_conf')
 
 
-class StockConfigView(MethodView):
+class StockDashboardView(MethodView):
 
     def get(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
         stock_config = Dashboard.get_by_id(pk=pk)
@@ -41,6 +41,6 @@ class StockConfigView(MethodView):
         return make_response("Stock Config wasn't updated, check your input data", 400)
 
 
-stock_config_view = StockConfigView.as_view('stock_config_view')
+stock_config_view = StockDashboardView.as_view('stock_config_view')
 mod.add_url_rule('/', view_func=stock_config_view, methods=['POST', ])
 mod.add_url_rule('/<int:pk>', view_func=stock_config_view, methods=['GET', 'PUT', 'DELETE'])
