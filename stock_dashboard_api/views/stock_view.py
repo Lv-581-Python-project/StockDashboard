@@ -1,12 +1,14 @@
+from datetime import datetime
+
 from flask import Blueprint, request, make_response, jsonify, Response
-from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
 
 from stock_dashboard_api.models.stock_model import Stock
 
-
 MAX_STOCK_NAME_LENGTH = 16
 MAX_STOCK_COMPANY_NAME_LENGTH = 128
+
+DATETIME_PATTERN = '%y/%m/%d %H:%M:%S'
 
 
 class StockView(MethodView):
@@ -24,6 +26,21 @@ class StockView(MethodView):
         """
         if isinstance(pk, int):
             stock = Stock.get_by_id(pk)
+            datetime_from, datetime_to = request.args.get('from'), request.args.get('to')
+            if stock and datetime_from and datetime_to:
+                try:
+                    datetime_from = datetime.strptime(datetime_from, DATETIME_PATTERN)
+                    datetime_to = datetime.strptime(datetime_to, DATETIME_PATTERN)
+                except ValueError:
+                    return make_response(
+                        "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second)",
+                        400)
+
+                stock_data_for_time_period = stock.get_data_for_time_period(datetime_from, datetime_to)
+                #print(stock_data_for_time_period)
+                stock_data_for_time_period = convert_stock_data_to_dict_per_time_period(stock_data_for_time_period)
+
+                return make_response(jsonify(stock_data_for_time_period), 200)
             if stock:
                 return make_response(jsonify(stock.to_dict()), 200)
         return make_response('Wrong data provided', 400)
@@ -84,9 +101,18 @@ class StockView(MethodView):
         return make_response("Wrong data provided", 400)
 
 
-mod = Blueprint('stock', __name__, url_prefix='/stocks')
+mod = Blueprint('stock', __name__, url_prefix='/api/stocks')
 
 stock_view = StockView.as_view('stock_view')
 
 mod.add_url_rule('/', view_func=stock_view, methods=['POST', ])
 mod.add_url_rule('/<int:pk>', view_func=stock_view, methods=['GET', 'PUT', 'DELETE'])
+
+
+def convert_stock_data_to_dict_per_time_period(stock_data_per_time_period: list) -> list:
+    PRICE_INDEX = 0
+    CREATED_AT_INDEX = 1
+    for i in range(len(stock_data_per_time_period)):
+        stock_data = stock_data_per_time_period[i]
+        stock_data_per_time_period[i] = {'price': stock_data[PRICE_INDEX], 'created_at': stock_data[CREATED_AT_INDEX]}
+    return stock_data_per_time_period
