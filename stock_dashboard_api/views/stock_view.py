@@ -37,7 +37,6 @@ class StockView(MethodView):
                         400)
 
                 stock_data_for_time_period = stock.get_data_for_time_period(datetime_from, datetime_to)
-                #print(stock_data_for_time_period)
                 stock_data_for_time_period = convert_stock_data_to_dict_per_time_period(stock_data_for_time_period)
 
                 return make_response(jsonify(stock_data_for_time_period), 200)

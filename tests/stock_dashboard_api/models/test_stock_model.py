@@ -1,3 +1,4 @@
+import datetime
 import unittest
 from unittest.mock import patch
 
@@ -53,6 +54,22 @@ class TestStock(unittest.TestCase):
     def test_get_by_id_error(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(sm.Stock.get_by_id(1), None)
+
+    def test_get_data_for_time_period(self, pool_manager):
+        datetime_from = datetime.datetime(2020, 4, 1, 5, 21, 45)
+        datetime_to = datetime.datetime(2020, 4, 1, 5, 22, 30)
+        expected_return = [(142.0, datetime_from),
+                           (139.0, datetime.datetime(2020, 4, 1, 5, 22, 10)),
+                           (147.55, datetime_to)]
+        pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = expected_return
+        self.assertEqual(sm.Stock(1, 'IBM', 'IBM').get_data_for_time_period(datetime_from, datetime_to),
+                         expected_return)
+
+    def test_get_data_for_time_period_error(self, pool_manager):
+        datetime_from = datetime.datetime(2020, 4, 1, 5, 21, 45)
+        datetime_to = datetime.datetime(2020, 4, 1, 5, 22, 30)
+        pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = TypeError
+        self.assertEqual(sm.Stock(1, 'IBM', 'IBM').get_data_for_time_period(datetime_from, datetime_to), [])
 
 
 if __name__ == '__main__':
