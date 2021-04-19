@@ -78,6 +78,13 @@ def insert_new_stock(name, company_name):
 
 
 def insert_stock_data(stock_id, price, created_at):
+    """
+    Function to insert data about stock
+    :param stock_id: id of stock
+    :param price: price of a stock
+    :param created_at: time to creation
+    :return: True if success and None if not
+    """
     with pool_manager() as conn:
         query = f"""INSERT INTO stocks_data(stock_id, price, created_at)
                     VALUES 
