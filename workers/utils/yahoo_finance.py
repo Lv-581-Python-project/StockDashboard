@@ -17,11 +17,8 @@ def get_one_ticket(ticket):
         company_name = all_info.info['shortName']
         ticket_id_in_db = None
         with pool_manager() as conn:
-            query = 'INSERT INTO public.stocks(name, company_name) VALUES (%(name)s, %(company_name)s);'
+            query = 'INSERT INTO public.stocks(name, company_name) VALUES (%(name)s, %(company_name)s) RETURNING id;'
             conn.cursor.execute(query, {'name': name, 'company_name': company_name})
-
-            query = 'SELECT id FROM public.stocks WHERE name = %(name)s'
-            conn.cursor.execute(query, {'name': name})
             ticket_id_in_db = conn.cursor.fetchone()
 
             data = all_info.history('5d', interval='15m')
