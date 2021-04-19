@@ -15,8 +15,11 @@ class StockViewsTestCase(TestCase):
 
     def setUp(self) -> None:
         stock_patcher = patch('stock_dashboard_api.views.stock_view.Stock', autospec=True)
+        stock_data_patcher = patch('stock_dashboard_api.models.stock_data_models.StockData', autospec=True)
         self.stock_mock = stock_patcher.start()
+        self.stock_data_mock = stock_data_patcher.start()
         self.addCleanup(stock_patcher.stop)
+        self.addCleanup(stock_data_patcher.stop)
 
     def test_get_by_id(self):
         stock_id, stock_name, stock_company_name = 1, 'mocked get name', 'mocked get company name'
@@ -114,25 +117,27 @@ class StockViewsTestCase(TestCase):
         get_by_id = self.stock_mock.get_by_id
         get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM')
         get_data_for_time_period = get_by_id.return_value.get_data_for_time_period
-        get_data_for_time_period.return_value = [(142.0, datetime.datetime(2020, 4, 1, 5, 21, 45)),
-                                                 (139.0, datetime.datetime(2020, 4, 1, 5, 22, 10)),
-                                                 (147.55, datetime.datetime(2020, 4, 1, 5, 22, 30))]
+
+        stock_data_id = 1
+        stock_data_stock_id = 1
+        stock_data_price = 144.15
+        stock_data_created_at = datetime.datetime(2020, 4, 1, 5, 21, 22)
+        stock_data = self.stock_data_mock(stock_data_id, stock_data_stock_id, stock_data_price, stock_data_created_at)
+        stock_data.to_dict.return_value = {'id': stock_data_id,
+                                           'stock_id': stock_data_stock_id,
+                                           'price': stock_data_price,
+                                           'created_at': stock_data_created_at}
+        get_data_for_time_period.return_value = [stock_data, ]
+
         stock_id = 1
-        expected_response = [
-            {
-                "created_at": "Wed, 01 Apr 2020 05:21:45 GMT",
-                "price": 142.0
-            },
-            {
-                "created_at": "Wed, 01 Apr 2020 05:22:10 GMT",
-                "price": 139.0
-            },
-            {
-                "created_at": "Wed, 01 Apr 2020 05:22:30 GMT",
-                "price": 147.55
-            }]
+        expected_response = [{
+            "created_at": "Wed, 01 Apr 2020 05:21:22 GMT",
+            "id": 1,
+            "price": 144.15,
+            "stock_id": 1
+        }]
         with app.test_client() as client:
-            response = client.get(BASE_URL + '{stock_id}?from=20/04/01 05:21:23&to=20/04/01 05:22:30'
+            response = client.get(BASE_URL + '{stock_id}?from=2020-04-01 05:21:22&to=2020-05-11 04:22:30'
                                   .format(stock_id=stock_id))
             self.assertEqual(json.loads(response.data), expected_response)
 
@@ -141,9 +146,9 @@ class StockViewsTestCase(TestCase):
         get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM')
         stock_id = 1
         with app.test_client() as client:
-            response = client.get(BASE_URL + '{stock_id}?from=20-04-01 05:21:23&to=20/04/01 05:22:30'
+            response = client.get(BASE_URL + '{stock_id}?from=2020/04/01 05:21:22&to=2020-05-11 04:22:30'
                                   .format(stock_id=stock_id))
             self.assertEqual(response.data,
-                             b"Incorrect date specified, example '18/09/19 01:55:19'"
+                             b"Incorrect date specified, example '2018-09-19 01:55:19'"
                              b"(year/month,day hour:minute:second)")
             self.assertEqual(response.status, STATUS_400)
