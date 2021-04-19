@@ -3,8 +3,8 @@ import os
 import pika
 import json
 
-from queue1 import publish_queue1_task
-from queue2 import publish_queue2_task
+from stock_dashboard_api.utils.queue1 import publish_queue1_task
+from stock_dashboard_api.utils.queue2 import publish_queue2_task
 
 
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
