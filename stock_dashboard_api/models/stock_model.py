@@ -13,16 +13,18 @@ class Stock:
     """
     _table = 'public.stocks'
 
-    def __init__(self, name: str, company_name: str, pk: int = None):
+    def __init__(self, name: str, company_name: str, pk: int = None, in_use: bool = False) -> object:
         """
         :param name: short name of company stocks
         :param company_name: name of company
         :param pk: company id in database
+        :param in_use: flag to show if data was used before or not
         """
 
         self.pk = pk  # pylint: disable=C0103
         self.name = name
         self.company_name = company_name
+        self.in_use = in_use
 
     @classmethod
     def create(cls, name: str, company_name: str) -> object:
@@ -37,11 +39,11 @@ class Stock:
         with pool_manager() as conn:
             query = f"""INSERT INTO {cls._table} (name, company_name)
                         VALUES (%(name)s, %(company_name)s)
-                        RETURNING id, name, company_name;"""
+                        RETURNING id, name, company_name, in_use;"""
             try:
                 conn.cursor.execute(query, {'name': name, 'company_name': company_name})
-                pk, name, company_name = conn.cursor.fetchone()  # pylint: disable=C0103
-                return Stock(pk=pk, name=name, company_name=company_name)
+                pk, name, company_name, in_use = conn.cursor.fetchone()  # pylint: disable=C0103
+                return Stock(pk=pk, name=name, company_name=company_name, in_use=in_use)
             except (psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
 
@@ -60,13 +62,13 @@ class Stock:
         if company_name is not None:
             data_to_update.append("company_name = %(company_name)s")
         query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
-                WHERE id = %(pk)s RETURNING id, name, company_name; """
+                WHERE id = %(pk)s RETURNING id, name, company_name, in_use; """
         with pool_manager() as conn:
             try:
                 conn.cursor.execute(
                     query,
-                    {'name': name, 'company_name': company_name, 'pk': self.pk})
-                pk, name, company_name = conn.cursor.fetchone()  # pylint: disable=C0103, W0612
+                    {'name': name, 'company_name': company_name, 'pk': self.pk, 'in_use': self.in_use})
+                pk, name, company_name, in_use = conn.cursor.fetchone()  # pylint: disable=C0103, W0612
                 self.name = name
                 self.company_name = company_name
                 return True
@@ -102,11 +104,11 @@ class Stock:
         """
 
         with pool_manager() as conn:
-            query = f"SELECT id, name, company_name FROM {cls._table} WHERE id = %(id)s"
+            query = f"SELECT id, name, company_name, in_use FROM {cls._table} WHERE id = %(id)s"
             try:
                 conn.cursor.execute(query, {'id': pk})
-                pk, name, company_name = conn.cursor.fetchone()
-                return Stock(pk=pk, name=name, company_name=company_name)
+                pk, name, company_name, in_use = conn.cursor.fetchone()
+                return Stock(pk=pk, name=name, company_name=company_name, in_use=in_use)
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
                 return None
 
@@ -144,4 +146,4 @@ class Stock:
         :return: dictionary with information about instance
         """
 
-        return {'id': self.pk, "name": self.name, "company_name": self.company_name}
+        return {'id': self.pk, "name": self.name, "company_name": self.company_name, "in_use": self.in_use}
