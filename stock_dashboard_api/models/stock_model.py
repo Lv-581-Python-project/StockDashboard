@@ -1,5 +1,9 @@
+from datetime import datetime
+
 import psycopg2
 
+from stock_dashboard_api.models.stock_data_models import StockData
+from stock_dashboard_api.utils.constants import DATETIME_PATTERN
 from stock_dashboard_api.utils.pool import pool_manager
 
 
@@ -107,6 +111,33 @@ class Stock:
                 return Stock(pk=pk, name=name, company_name=company_name, in_use=in_use)
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
                 return None
+
+    def get_data_for_time_period(self, datetime_from: datetime, datetime_to: datetime) -> list:
+        """
+        Return list of stock datas for current stock in specified period of time
+
+        :param datetime_from: start time of period to get stock data
+        :param datetime_to: end time of period to get stock data
+        :return: list of StockData
+        """
+
+        stock_data_for_time_period = []
+        datetime_from, datetime_to = datetime_from.strftime(DATETIME_PATTERN), datetime_to.strftime(DATETIME_PATTERN)
+        with pool_manager() as conn:
+            query = "SELECT * FROM stocks_data " \
+                    "WHERE stock_id = %(stock_id)s " \
+                    "AND %(datetime_from)s <= created_at AND created_at < %(datetime_to)s " \
+                    "ORDER BY created_at;"
+            try:
+                conn.cursor.execute(query, {'stock_id': self.pk,
+                                            'datetime_from': datetime_from,
+                                            'datetime_to': datetime_to})
+                stock_data_for_time_period = conn.cursor.fetchall()
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as e:
+                pass
+            stock_data_for_time_period = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
+                                          for pk, stock_id, price, created_at in stock_data_for_time_period]
+        return stock_data_for_time_period
 
     def to_dict(self) -> dict:
         """

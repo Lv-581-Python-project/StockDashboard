@@ -1,3 +1,4 @@
+import datetime
 import unittest
 from unittest.mock import patch
 
@@ -53,6 +54,34 @@ class TestStock(unittest.TestCase):
     def test_get_by_id_error(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(sm.Stock.get_by_id(1), None)
+
+    def test_get_data_for_time_period(self, pool_manager):
+        datetime_from, datetime_to = datetime.datetime(2020, 4, 1, 5, 21, 45), datetime.datetime(2020, 4, 1, 5, 22, 30)
+        stock_data_id, stock_id, stock_data_price = 1, 1, 144.15
+        stock_data_created_at = datetime.datetime(2020, 4, 1, 5, 21, 22)
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (stock_id,
+                                                                                         "AAPL",
+                                                                                         "Apple",
+                                                                                         False)
+        stock = sm.Stock.get_by_id(1)
+        pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [(stock_data_id,
+                                                                                          stock_id,
+                                                                                          stock_data_price,
+                                                                                          stock_data_created_at), ]
+        stock_data_for_time_period = stock.get_data_for_time_period(datetime_from, datetime_to)
+        stock_data_for_time_period_dict = [stock.to_dict() for stock in stock_data_for_time_period]
+        expected_result = [{'id': stock_data_id,
+                            'stock_id': stock_id,
+                            'price': stock_data_price,
+                            'created_at': stock_data_created_at}, ]
+
+        self.assertEqual(expected_result, stock_data_for_time_period_dict)
+
+    def test_get_data_for_time_period_error(self, pool_manager):
+        datetime_from = datetime.datetime(2020, 4, 1, 5, 21, 45)
+        datetime_to = datetime.datetime(2020, 4, 1, 5, 22, 30)
+        pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = TypeError
+        self.assertEqual(sm.Stock(1, 'IBM', 'IBM').get_data_for_time_period(datetime_from, datetime_to), [])
 
 
 if __name__ == '__main__':
