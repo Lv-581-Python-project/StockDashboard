@@ -123,7 +123,8 @@ class Stock:
                                             'datetime_from': datetime_from,
                                             'datetime_to': datetime_to})
                 stock_data_for_time_period = conn.cursor.fetchall()
-            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as e:
+                print(e)
                 return stock_data_for_time_period
         return stock_data_for_time_period
 
