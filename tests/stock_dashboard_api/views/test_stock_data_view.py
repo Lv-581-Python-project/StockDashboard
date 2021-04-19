@@ -144,7 +144,7 @@ def test_put_not_existing_pk(mock_get):
 def test_put_wrong_json(mock_get):
     with app.app_context():
         message = b"Wrong data provided"
-        mock_get.return_value = StockData(stock_id=2, price=300, created_at="19/09/19 01:55:19", pk=1)
+        mock_get.return_value = StockData(stock_id=2, price=300, created_at="2020-09-19 01:55:19", pk=1)
         with app.test_client() as client:
             incorrect_json = '{ "stock_id:"12 "price":30 "created_at:"None" }'
             response = client.put('/stocks_data/2', data=incorrect_json)
