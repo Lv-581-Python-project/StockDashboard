@@ -60,8 +60,8 @@ class StockData:
             data_to_update.append("created_at = %(created_at)s")
             created_at = created_at.strftime("%Y-%m-%d %H:%M:%S")
         query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
-                            WHERE id = %(id)s 
-                            RETURNING id, stock_id, price, created_at;"""
+                    WHERE id = %(id)s 
+                    RETURNING id, stock_id, price, created_at;"""
         with pool_manager() as conn:
             try:
                 conn.cursor.execute(query, {'price': price,
