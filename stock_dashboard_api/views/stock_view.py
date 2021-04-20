@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from flask import Blueprint, request, make_response, jsonify, Response
-from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
 
 from stock_dashboard_api.models.stock_model import Stock
-
+from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
+from stock_dashboard_api.utils.constants import DATETIME_PATTERN
 
 MAX_STOCK_NAME_LENGTH = 16
 MAX_STOCK_COMPANY_NAME_LENGTH = 128
@@ -17,22 +19,35 @@ class StockView(MethodView):
     """
 
     def get(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
-        """A method that return Stock if provided pk is valid
+        """A method that return Stock if provided pk is valid, or if provided valid pk, 'from' and 'to' in query string,
+         this method return list of stock data for some period of time.
 
         :param pk: Stock primary key (id)
         :return: Response with one Stock
         """
-        if isinstance(pk, int):
-            stock = Stock.get_by_id(pk)
-            if stock:
-                return make_response(jsonify(stock.to_dict()), 200)
-        return make_response('Wrong data provided', 400)
+        stock = Stock.get_by_id(pk)
+        if not stock:
+            return make_response('Wrong data provided', 400)
+        datetime_from, datetime_to = request.args.get('from'), request.args.get('to')
+        if datetime_from and datetime_to:
+            try:
+                datetime_from = datetime.strptime(datetime_from, DATETIME_PATTERN)
+                datetime_to = datetime.strptime(datetime_to, DATETIME_PATTERN)
+            except ValueError:
+                return make_response(
+                    "Incorrect date specified, example '2018-09-19 01:55:19'(year/month,day hour:minute:second)",
+                    400)
+            stock_data_for_time_period = stock.get_data_for_time_period(datetime_from, datetime_to)
+            stock_data_for_time_period = [stock_data.to_dict() for stock_data in stock_data_for_time_period]
+            return make_response(jsonify(stock_data_for_time_period), 200)
+        return make_response(jsonify(stock.to_dict()), 200)
 
     def post(self) -> Response:  # pylint: disable=R0201
         """A method that create Stock and return it if provided data is valid
 
         :return: Response with just created Stock
         """
+        middleware_body_parse_json(request)
         body = request.body
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
 
@@ -55,6 +70,7 @@ class StockView(MethodView):
         :param pk: Stock primary key (id)
         :return: Response with just updated Stock
         """
+        middleware_body_parse_json(request)
         stock = Stock.get_by_id(pk)
         if not stock:
             return make_response("Wrong data provided", 400)
@@ -84,7 +100,7 @@ class StockView(MethodView):
         return make_response("Wrong data provided", 400)
 
 
-mod = Blueprint('stock', __name__, url_prefix='/stocks')
+mod = Blueprint('stock', __name__, url_prefix='/api/stocks')
 
 stock_view = StockView.as_view('stock_view')
 
