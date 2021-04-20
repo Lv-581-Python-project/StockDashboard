@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, make_response, Response
 from flask.views import MethodView
 
 from stock_dashboard_api.models.stock_data_models import StockData
-
+from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
 
 
@@ -30,6 +30,9 @@ class StockDataView(MethodView):
 
         :return: a Response object with specific data and status code
         """
+        response = middleware_body_parse_json(request)
+        if not response:
+            return make_response("Wrong data provided", 400)
         price = request.body.get('price')
         created_at = request.body.get('created_at')
         stock_id = request.body.get('stock_id')
@@ -39,19 +42,22 @@ class StockDataView(MethodView):
             return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)", 400)
         if not isinstance(created_at, str):
             return make_response(
-                "Incorrect created_at specified, example '18/09/19 01:55:19'(year/month/day hour:minute:second))", 400)
+                "Incorrect created_at specified, example '2020-09-19 01:55:19'(year/month/day hour:minute:second))", 400)
         try:
-            created_at = datetime.strptime(created_at, '%y/%m/%d %H:%M:%S')
+            print(created_at)
+            created_at = datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
         except ValueError:
             return make_response(
-                "Incorrect created_at specified, example '18/09/19 01:55:19'(year/month/day hour:minute:second))", 400)
+                "Incorrect created_at specified, example '2020-09-19 01:55:19'(year/month/day hour:minute:second))", 400)
         data_to_create = {
             'price': price,
             'created_at': created_at,
             'stock_id': stock_id
         }
         stock_data = StockData.create(**data_to_create)
-        return make_response(jsonify(stock_data.to_dict()), 201)
+        if stock_data:
+            return make_response(jsonify(stock_data.to_dict()), 201)
+        return make_response("Creating error", 400)
 
     def put(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
         """A put method is used to send a specific PUT request to edit Stock Data by id
@@ -59,6 +65,9 @@ class StockDataView(MethodView):
         :param pk: Stock Data primary key
         :return: a Response object with specific data and status code
         """
+        response = middleware_body_parse_json(request)
+        if not response:
+            return make_response("Wrong data provided", 400)
         stock_data = StockData.get_by_id(pk=pk)
         if stock_data is None:
             return make_response("Can not find stock data, wrong id", 400)
@@ -70,13 +79,13 @@ class StockDataView(MethodView):
         if created_at:
             if not isinstance(created_at, str):
                 return make_response(
-                    "Incorrect created_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))",
+                    "Incorrect created_at specified, example '2020-09-19 01:55:19'(year/month,day hour:minute:second))",
                     400)
             try:
-                created_at = datetime.strptime(created_at, '%y/%m/%d %H:%M:%S')
+                created_at = datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
             except ValueError:
                 return make_response(
-                    "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                    "Incorrect date specified, example '2020-09-19 01:55:19'(year/month,day hour:minute:second))", 400)
         data_to_update = {
             "price": price,
             "created_at": created_at

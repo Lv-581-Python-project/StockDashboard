@@ -4,6 +4,7 @@ from flask import Blueprint, request, make_response, jsonify, Response
 from flask.views import MethodView
 
 from stock_dashboard_api.models.stock_model import Stock
+from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
 
 MAX_STOCK_NAME_LENGTH = 16
@@ -46,6 +47,7 @@ class StockView(MethodView):
 
         :return: Response with just created Stock
         """
+        middleware_body_parse_json(request)
         body = request.body
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
 
@@ -68,6 +70,7 @@ class StockView(MethodView):
         :param pk: Stock primary key (id)
         :return: Response with just updated Stock
         """
+        middleware_body_parse_json(request)
         stock = Stock.get_by_id(pk)
         if not stock:
             return make_response("Wrong data provided", 400)
