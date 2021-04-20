@@ -14,43 +14,43 @@ def connect_queue():
     return rabbitmq
 
 
-def get_queue1():
+def get_stock_names_queue():
     """
     Returns a created email queue.
     """
     connect = connect_queue()
     channel = connect.channel()
     channel.exchange_declare(
-        exchange='queue1',
+        exchange='get_stock_names_exchange',
         exchange_type='direct',
     )
-    channel.queue_declare(queue='queue1_queue', durable=True)
-    channel.queue_bind(exchange='queue1', queue='queue1_queue')
+    channel.queue_declare(queue='get_stock_names_queue', durable=True)
+    channel.queue_bind(exchange='get_stock_names_exchange', queue='get_stock_names_queue')
     email_queue = channel
     return email_queue
 
 
-def get_queue2():
+def get_stock_data_queue():
     """
     Returns a created email queue.
     """
     connect = connect_queue()
     channel = connect.channel()
     channel.exchange_declare(
-        exchange='queue2',
+        exchange='get_stock_data_exchange',
         exchange_type='direct',
     )
-    channel.queue_declare(queue='queue2_queue', durable=True)
-    channel.queue_bind(exchange='queue2', queue='queue2_queue')
+    channel.queue_declare(queue='get_stock_data_queue', durable=True)
+    channel.queue_bind(exchange='get_stock_data_exchange', queue='get_stock_data_queue')
     email_queue = channel
     return email_queue
 
 
-def publish_queue1_task(body):
-    queue = get_queue1()
+def publish_get_stock_names_task(body):
+    queue = get_stock_names_queue()
     queue.basic_publish(
-        exchange='queue1',
-        routing_key='queue1_queue',
+        exchange='get_stock_names_exchange',
+        routing_key='get_stock_names_queue',
         body=body,
         properties=pika.BasicProperties(
             delivery_mode=int(os.environ.get('RABBITMQ_DELIVERY_MODE')),
@@ -58,11 +58,11 @@ def publish_queue1_task(body):
     )
 
 
-def publish_queue2_task(body):
-    queue = get_queue2()
+def publish_get_stock_data_task(body):
+    queue = get_stock_data_queue()
     queue.basic_publish(
-        exchange='queue2',
-        routing_key='queue2_queue',
+        exchange='get_stock_data_exchange',
+        routing_key='get_stock_data_queue',
         body=body,
         properties=pika.BasicProperties(
             delivery_mode=int(os.environ.get('RABBITMQ_DELIVERY_MODE')),
@@ -73,10 +73,11 @@ def publish_queue2_task(body):
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
     dict_body = json.loads(body)
     queue = dict_body['queue']
-    if queue == 'queue1':
-        publish_queue1_task(body)
-    elif queue == 'queue2':
-        publish_queue2_task(body)
+    print(body)
+    if queue == 'get_stock_names_queue':
+        publish_get_stock_names_task(body)
+    elif queue == 'get_stock_data_queue':
+        publish_get_stock_data_task(body)
     channel.basic_ack(delivery_tag=method.delivery_tag)
 
 

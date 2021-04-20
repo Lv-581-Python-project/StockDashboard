@@ -15,6 +15,6 @@ if __name__ == '__main__':
         pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
     )
     channel = connection.channel()
-    channel.queue_declare(queue='queue1_queue', durable=True)
-    channel.basic_consume(queue='queue1_queue', on_message_callback=scheduler_function)
+    channel.queue_declare(queue='get_stock_names_queue', durable=True)
+    channel.basic_consume(queue='get_stock_names_queue', on_message_callback=scheduler_function)
     channel.start_consuming()
