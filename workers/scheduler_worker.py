@@ -42,8 +42,8 @@ def get_stock_data_queue():
     )
     channel.queue_declare(queue='get_stock_data_queue', durable=True)
     channel.queue_bind(exchange='get_stock_data_exchange', queue='get_stock_data_queue')
-    email_queue = channel
-    return email_queue
+    queue = channel
+    return queue
 
 
 def publish_get_stock_names_task(body):
