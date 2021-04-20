@@ -2,7 +2,7 @@ from pool import pool_manager
 from psycopg2 import DataError, ProgrammingError
 
 
-def in_use_check(stocks_name):
+def stock_in_use_check(stocks_name):
     """
     Function to look at in_use flag
     :param stocks_name: name of company
@@ -15,12 +15,13 @@ def in_use_check(stocks_name):
         try:
             conn.cursor.execute(query, {"stocks_name": stocks_name})
             in_use = conn.cursor.fetchone()
-            return in_use[0]
+            in_use_index = 0
+            return in_use[in_use_index]
         except (DataError, ProgrammingError, TypeError):
             return None
 
 
-def get_id(stocks_name):
+def stock_get_id(stocks_name):
     """
     Function to get id of stock
     :param stocks_name: name of company
@@ -33,12 +34,13 @@ def get_id(stocks_name):
         try:
             conn.cursor.execute(query, {"stocks_name": stocks_name})
             pk = conn.cursor.fetchone()
-            return pk[0]
+            id_index = 0
+            return pk[id_index]
         except (DataError, ProgrammingError, TypeError):
             return None
 
 
-def in_use_change(pk):
+def stock_in_use_change(pk):
     """
     Function to change in_use flag
     :param pk: id of stock
