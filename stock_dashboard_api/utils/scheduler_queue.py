@@ -25,8 +25,8 @@ def get_scheduler_queue():
     )
     channel.queue_declare(queue='scheduler_queue', durable=True)
     channel.queue_bind(exchange='scheduler', queue='scheduler_queue')
-    email_queue = channel
-    return email_queue
+    queue = channel
+    return queue
 
 
 def publish_task(body):
