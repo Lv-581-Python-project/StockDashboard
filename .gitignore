@@ -138,3 +138,4 @@ stock_dashboard_api/utils/test.py
 pytest.ini
 
 node_modules/
+**/package-lock.json

@@ -1,25 +1,25 @@
-import logo from './images/logo.svg';
+import {Component} from 'react';
 import './css/App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+import Header from './components/menu/header';
+import AutoComplete from './components/auto_complete_stocks/autoCompleteStocks'
+class App extends Component {
+    state = {message: "Message"}
+    setMessage = (message)=>{
+        this.setState({message: message})
+    }
+    render() {
+        return (
+            <div className="App">
+                <Header name="wfawfa" setMessage = {this.setMessage}/>
+                <Header/>
+                <Header/>
+                <Header/>
+                <Header/>
+                {this.state.message}
+                <AutoComplete/>
+            </div>
   );
+  }
 }
 
 export default App;
