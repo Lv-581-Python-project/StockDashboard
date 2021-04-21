@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, make_response, Response
 from flask.views import MethodView
 
 from stock_dashboard_api.models.dashboard_model import Dashboard
+from stock_dashboard_api.models.stock_model import Stock
 
 mod = Blueprint('stock_conf', __name__, url_prefix='/api/dashboard')
 
@@ -42,12 +43,11 @@ class StockDashboardView(MethodView):
 
 
 class StockDashboardStocksView(MethodView):
-
     def get(self) -> Response:
         stock_ids = request.args.get('stock_ids')
         try:
-            stocks = [Dashboard.get_by_id(stock_pk).to_dict() for stock_pk in stock_ids[1:-1].split(", ")]
-        except Exception:
+            stocks = [Stock.get_data_for_last_day(int(stock_pk)) for stock_pk in stock_ids[1:-1].split(", ")]
+        except Exception as ex:
             return make_response("Can not find stock config, wrong id", 400)
         return make_response(jsonify(stocks), 200)
 
