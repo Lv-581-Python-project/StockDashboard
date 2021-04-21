@@ -79,7 +79,10 @@ jobs:
           FLASK_APP: ${{ secrets.FLASK_APP }}
           APPLICATION_HOST: ${{ secrets.APPLICATION_HOST }}
           TEMPLATE_ROOT: ${{ secrets.TEMPLATE_ROOT }}
-          #/home/runner/work/StockDashboard/StockDashboard/stock_dashboard_api/logging.conf
+          FLASK_DEVELOPMENT_CONFIG: ${{ secrets.FLASK_DEVELOPMENT_CONFIG }}
+          FLASK_PRODUCTION_CONFIG: ${{ secrets.FLASK_PRODUCTION_CONFIG }}
+          FLASK_STAGING_CONFIG: ${{ secrets.FLASK_STAGING_CONFIG }}
+          FLASK_TESTING_CONFIG: ${{ secrets.FLASK_TESTING_CONFIG }}
       - name: Pylint
         run: pylint --rcfile=.pylintrc stock_dashboard_api workers --fail-under=9
           
