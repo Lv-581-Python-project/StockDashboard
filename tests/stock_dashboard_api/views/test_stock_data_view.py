@@ -1,12 +1,20 @@
 import json
+import os
+
 from unittest.mock import patch
 
 from stock_dashboard_api import app
 from stock_dashboard_api.models.stock_data_models import StockData
+from stock_dashboard_api.views import stocks_data_view
+
+# Flask app configuration for testing
+app.config.from_object(os.environ.get('FLASK_TESTING_CONFIG'))
+app.register_blueprint(stocks_data_view.test_mod)
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StockData.get_by_id')
 def test_get_pass(mock_get):
+
     with app.app_context():
         mock_get.return_value = StockData(stock_id=2, price=300, created_at="18/09/19 01:55:19", pk=1)
         with app.test_client() as client:

@@ -6,7 +6,7 @@ from flask.views import MethodView
 from stock_dashboard_api.models.stock_data_models import StockData
 from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
-
+test_mod = Blueprint('test_stocks_data', __name__, url_prefix='/stocks_data')
 
 class StockDataView(MethodView):
     """A StockDataView is a class-based view that inherits flask view - MethodView.
@@ -108,5 +108,6 @@ class StockDataView(MethodView):
 
 
 stock_data_view = StockDataView.as_view('stock_data_view')
-mod.add_url_rule('/', view_func=stock_data_view, methods=['POST', ])
-mod.add_url_rule('/<int:pk>', view_func=stock_data_view, methods=['GET', 'PUT', 'DELETE'])
+mod.add_url_rule('/<int:pk>', view_func=stock_data_view, methods=['GET'])
+test_mod.add_url_rule('/', view_func=stock_data_view, methods=['POST', ])
+test_mod.add_url_rule('/<int:pk>', view_func=stock_data_view, methods=['PUT', 'DELETE'])
