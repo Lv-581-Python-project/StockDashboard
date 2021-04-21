@@ -9,14 +9,13 @@ def stock_in_use_check(stocks_name):
     :return: in_use
     """
     with pool_manager() as conn:
-        query = f"""SELECT in_use
+        query = """SELECT in_use
                     FROM stocks
                     WHERE name = %(stocks_name)s"""
         try:
             conn.cursor.execute(query, {"stocks_name": stocks_name})
             in_use = conn.cursor.fetchone()
-            in_use_index = 0
-            return in_use[in_use_index]
+            return in_use[0]
         except (DataError, ProgrammingError, TypeError):
             return None
 
@@ -28,14 +27,13 @@ def stock_get_id(stocks_name):
     :return: id
     """
     with pool_manager() as conn:
-        query = f"""SELECT id
+        query = """SELECT id
                     FROM stocks
                     WHERE name = %(stocks_name)s"""
         try:
             conn.cursor.execute(query, {"stocks_name": stocks_name})
             pk = conn.cursor.fetchone()
-            id_index = 0
-            return pk[id_index]
+            return pk[0]
         except (DataError, ProgrammingError, TypeError):
             return None
 
@@ -47,7 +45,7 @@ def stock_in_use_change(pk):
     :return: True if success and None if not
     """
     with pool_manager() as conn:
-        query = f"""UPDATE stocks
+        query = """UPDATE stocks
                     SET in_use = true 
                     WHERE id = %(id)s
                     RETURNING id, in_use"""
@@ -67,7 +65,7 @@ def insert_new_stock(name, company_name):
     :return: True if success and None if not
     """
     with pool_manager() as conn:
-        query = f"""INSERT INTO stocks(name, company_name)
+        query = """INSERT INTO stocks(name, company_name)
                     VALUES 
                     (%(name)s, %(company_name)s)
                     RETURNING id, in_use"""
@@ -88,7 +86,7 @@ def insert_stock_data(stock_id, price, created_at):
     :return: True if success and None if not
     """
     with pool_manager() as conn:
-        query = f"""INSERT INTO stocks_data(stock_id, price, created_at)
+        query = """INSERT INTO stocks_data(stock_id, price, created_at)
                     VALUES 
                     (%(stock_id)s, %(price)s, %(created_at)s)
                     RETURNING id"""
@@ -106,12 +104,11 @@ def amount_of_stocks():
     :return: number of all stocks in table
     """
     with pool_manager() as conn:
-        query = f"""SELECT COUNT(id)
+        query = """SELECT COUNT(id)
                      FROM stocks"""
         try:
             conn.cursor.execute(query)
             amount = conn.cursor.fetchone()
-            amount_index = 0
-            return amount[amount_index]
+            return amount[0]
         except (DataError, ProgrammingError, TypeError):
             return None
