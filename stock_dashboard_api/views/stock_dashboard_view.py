@@ -44,14 +44,10 @@ class StockDashboardView(MethodView):
 class StockDashboardStocksView(MethodView):
 
     def get(self) -> Response:
-        dashboard_stocks = Dashboard.get_all()
-        if dashboard_stocks is None:
-            return make_response("Can not find any stocks", 400)
         stock_ids = request.args.get('stock_ids')
         try:
             stocks = [Dashboard.get_by_id(stock_pk).to_dict() for stock_pk in stock_ids[1:-1].split(", ")]
-        except Exception as ex:
-            print("222", ex)
+        except Exception:
             return make_response("Can not find stock config, wrong id", 400)
         return make_response(jsonify(stocks), 200)
 
