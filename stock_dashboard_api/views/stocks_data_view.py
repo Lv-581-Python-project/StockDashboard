@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, make_response, Response
 from flask.views import MethodView
 
 from stock_dashboard_api.models.stock_data_models import StockData
-
+import stock_dashboard_api
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
 
 
@@ -22,7 +22,9 @@ class StockDataView(MethodView):
         """
         stock_data = StockData.get_by_id(pk=pk)
         if stock_data is None:
-            return make_response("Can not find stock data, wrong id", 400)
+            message = "Can not find stock data, wrong id"
+            stock_dashboard_api.app.logger.info(message)
+            return make_response(message, 400)
         return make_response(jsonify(stock_data.to_dict()), 200)
 
     def post(self) -> Response:  # pylint: disable=R0201
@@ -34,17 +36,25 @@ class StockDataView(MethodView):
         create_at = request.body.get('create_at')
         stock_id = request.body.get('stock_id')
         if not isinstance(price, int):
-            return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
+            message = "Incorrect price specified, price should be integer (ex. 300)"
+            stock_dashboard_api.app.logger.info(message)
+            return make_response(message, 400)
         if not isinstance(stock_id, int):
-            return make_response("Incorrect stock id specified, stock id should be integer (ex. 1)", 400)
+            message = "Incorrect stock id specified, stock id should be integer (ex. 1)"
+            stock_dashboard_api.app.logger.info(message)
+            return make_response(message, 400)
         if not isinstance(create_at, str):
+            message = "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
+            stock_dashboard_api.app.logger.info(message)
             return make_response(
-                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                message, 400)
         try:
             create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
         except ValueError:
+            message = "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
+            stock_dashboard_api.app.logger.info(message)
             return make_response(
-                "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                message, 400)
         data_to_create = {
             'price': price,
             'create_at': create_at,
@@ -61,23 +71,31 @@ class StockDataView(MethodView):
         """
         stock_data = StockData.get_by_id(pk=pk)
         if stock_data is None:
-            return make_response("Can not find stock data, wrong id", 400)
+            message = "Can not find stock data, wrong id"
+            stock_dashboard_api.app.logger.info(message)
+            return make_response(message, 400)
         price, create_at = request.body.get('price'), request.body.get('create_at')
 
         if price is not None and not isinstance(price, int):
-            return make_response("Incorrect price specified, price should be integer (ex. 300)", 400)
-        print(price)
+            message = "Incorrect price specified, price should be integer (ex. 300)"
+            stock_dashboard_api.app.logger.info(message)
+            return make_response(message, 400)
+
         if create_at:
             if not isinstance(create_at, str):
+                message = "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
+                stock_dashboard_api.app.logger.info(message)
                 return make_response(
-                    "Incorrect create_at specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))",
+                    message,
                     400)
             try:
                 create_at = datetime.strptime(create_at, '%y/%m/%d %H:%M:%S')
 
             except ValueError:
+                message = "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
+                stock_dashboard_api.app.logger.info(message)
                 return make_response(
-                    "Incorrect date specified, example '18/09/19 01:55:19'(year/month,day hour:minute:second))", 400)
+                    message, 400)
         data_to_update = {
             "price": price,
             "create_at": create_at
@@ -85,7 +103,9 @@ class StockDataView(MethodView):
         stock_data_updated = stock_data.update(**data_to_update)
         if stock_data_updated:
             return make_response(jsonify(stock_data.to_dict()), 200)
-        return make_response("Stock Data is not updated, possible you input wrong data", 400)
+        message = "Stock Data is not updated, possible you input wrong data"
+        stock_dashboard_api.app.logger.info(message)
+        return make_response(message, 400)
 
     def delete(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
         """A delete method is used to send a specific DELETE request to delete Stock Data by id
@@ -96,7 +116,9 @@ class StockDataView(MethodView):
         stock_data_deleted = StockData.delete_by_id(pk=pk)
         if stock_data_deleted:
             return make_response("Stock data deleted", 200)
-        return make_response("Stock data not deleted", 400)
+        message = "Stock data not deleted"
+        stock_dashboard_api.app.logger.info(message)
+        return make_response(message, 400)
 
 
 stock_data_view = StockDataView.as_view('stock_data_view')
