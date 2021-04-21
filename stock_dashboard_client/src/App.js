@@ -1,25 +1,31 @@
 import {Component} from 'react';
 import './css/App.css';
 import Header from './components/menu/header';
-import AutoComplete from './components/auto_complete_stocks/autoCompleteStocks'
+import Dashboard from "./components/dashboard/dashboard";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect
+} from "react-router-dom";
+import Home from "./components/home/home";
+
 class App extends Component {
-    state = {message: "Message"}
-    setMessage = (message)=>{
-        this.setState({message: message})
-    }
     render() {
+
         return (
-            <div className="App">
-                <Header name="wfawfa" setMessage = {this.setMessage}/>
+            <div>
                 <Header/>
-                <Header/>
-                <Header/>
-                <Header/>
-                {this.state.message}
-                <AutoComplete/>
+                <Router>
+                    <Switch>
+                        <Route path="/dashboard" component={Dashboard}/>
+                        <Route path="/" component={Home}/>
+                        <Redirect path='*' to='/'/>
+                    </Switch>
+                </Router>
             </div>
-  );
-  }
+        );
+    }
 }
 
 export default App;
