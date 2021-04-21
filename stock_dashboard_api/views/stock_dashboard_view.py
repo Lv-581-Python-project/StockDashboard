@@ -3,7 +3,7 @@ from flask.views import MethodView
 
 from stock_dashboard_api.models.dashboard_model import Dashboard
 
-mod = Blueprint('stock_conf', __name__, url_prefix='/stock_conf')
+mod = Blueprint('stock_conf', __name__, url_prefix='/api/dashboard')
 
 
 class StockDashboardView(MethodView):
@@ -41,6 +41,23 @@ class StockDashboardView(MethodView):
         return make_response("Stock Config wasn't updated, check your input data", 400)
 
 
+class StockDashboardStocksView(MethodView):
+
+    def get(self) -> Response:
+        dashboard_stocks = Dashboard.get_all()
+        if dashboard_stocks is None:
+            return make_response("Can not find any stocks", 400)
+        stock_ids = request.args.get('stock_ids')
+        try:
+            stocks = [Dashboard.get_by_id(stock_pk).to_dict() for stock_pk in stock_ids[1:-1].split(", ")]
+        except Exception as ex:
+            print("222", ex)
+            return make_response("Can not find stock config, wrong id", 400)
+        return make_response(jsonify(stocks), 200)
+
+
 stock_config_view = StockDashboardView.as_view('stock_config_view')
+stock_dashboard_stocks_view = StockDashboardStocksView.as_view('stock_dashboard_stocks_view')
 mod.add_url_rule('/', view_func=stock_config_view, methods=['POST', ])
 mod.add_url_rule('/<int:pk>', view_func=stock_config_view, methods=['GET', 'PUT', 'DELETE'])
+mod.add_url_rule('/', view_func=stock_dashboard_stocks_view, methods=['GET', ])

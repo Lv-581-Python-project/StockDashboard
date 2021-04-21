@@ -81,6 +81,17 @@ class Dashboard:
             except(psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
 
+    @classmethod
+    def get_all(cls):
+        with pool_manager() as conn:
+            query = f"SELECT * FROM {cls._table}"
+            try:
+                conn.cursor.execute(query)
+                pk, config_hash = conn.cursor.fetchone()
+                return Dashboard(pk=pk, config_hash=config_hash)
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
+                return None
+
     def to_dict(self) -> dict:
         """
         Used to represent the instance in dictionary format
