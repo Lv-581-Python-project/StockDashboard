@@ -98,3 +98,20 @@ def insert_stock_data(stock_id, price, created_at):
             return True
         except (DataError, ProgrammingError, TypeError):
             return None
+
+
+def amount_of_stocks():
+    """
+    Function to count number of all stocks
+    :return: number of all stocks in table
+    """
+    with pool_manager() as conn:
+        query = f"""SELECT COUNT(id)
+                     FROM stocks"""
+        try:
+            conn.cursor.execute(query)
+            amount = conn.cursor.fetchone()
+            amount_index = 0
+            return amount[amount_index]
+        except (DataError, ProgrammingError, TypeError):
+            return None
