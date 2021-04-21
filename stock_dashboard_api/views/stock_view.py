@@ -27,16 +27,11 @@ class StockView(MethodView):
         :param pk: Stock primary key (id)
         :return: Response with one Stock
         """
-        if isinstance(pk, int):
-            stock = Stock.get_by_id(pk)
-            if stock:
-                return make_response(jsonify(stock.to_dict()), 200)
+        stock = Stock.get_by_id(pk)
+        if not stock:
             message = 'Wrong data provided'
             logger.info(message)
             return make_response(message, 400)
-        stock = Stock.get_by_id(pk)
-        if not stock:
-            return make_response('Wrong data provided', 400)
         datetime_from, datetime_to = request.args.get('from'), request.args.get('to')
         if datetime_from and datetime_to:
             try:
