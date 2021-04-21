@@ -1,16 +1,15 @@
 from flask import Blueprint, request, jsonify, make_response, Response
 from flask.views import MethodView
 
-from stock_dashboard_api.models.dashboard_config_model import DashboardConfig
-import stock_dashboard_api
+from stock_dashboard_api.models.dashboard_model import Dashboard
 
 mod = Blueprint('stock_conf', __name__, url_prefix='/stock_conf')
 
 
-class StockConfigView(MethodView):
+class StockDashboardView(MethodView):
 
     def get(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
-        stock_config = DashboardConfig.get_by_id(pk=pk)
+        stock_config = Dashboard.get_by_id(pk=pk)
         if stock_config is None:
             message = "Can not find stock config, wrong id"
             stock_dashboard_api.app.logger.info(message)
@@ -18,7 +17,7 @@ class StockConfigView(MethodView):
         return make_response(jsonify(stock_config.to_dict()), 200)
 
     def delete(self, pk):  # pylint: disable=C0103, R0201
-        stock_config_deleted = DashboardConfig.delete_by_id(pk=pk)
+        stock_config_deleted = Dashboard.delete_by_id(pk=pk)
         if stock_config_deleted:
             return make_response("Stock config deleted successfully", 200)
         message = "Stock config not deleted"
@@ -31,7 +30,7 @@ class StockConfigView(MethodView):
             message = "Please provide hash for config creation"
             stock_dashboard_api.app.logger.info(message)
             return make_response(message, 400)
-        stock_config = DashboardConfig.create(config_hash=config_hash)
+        stock_config = Dashboard.create(config_hash=config_hash)
         if not stock_config:
             message = "Please make sure that hash has correct length and format"
             stock_dashboard_api.app.logger.info(message)
@@ -39,7 +38,7 @@ class StockConfigView(MethodView):
         return make_response(jsonify(stock_config.to_dict()), 201)
 
     def put(self, pk):  # pylint: disable=C0103, R0201
-        stock_config = DashboardConfig.get_by_id(pk=pk)
+        stock_config = Dashboard.get_by_id(pk=pk)
         config_hash = str(request.body.get('config_hash'))
         if stock_config is None:
             message = "Cannot find stock config data, wrong id"
@@ -54,6 +53,6 @@ class StockConfigView(MethodView):
         return make_response(message, 400)
 
 
-stock_config_view = StockConfigView.as_view('stock_config_view')
+stock_config_view = StockDashboardView.as_view('stock_config_view')
 mod.add_url_rule('/', view_func=stock_config_view, methods=['POST', ])
 mod.add_url_rule('/<int:pk>', view_func=stock_config_view, methods=['GET', 'PUT', 'DELETE'])

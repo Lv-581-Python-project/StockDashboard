@@ -9,7 +9,7 @@ from stock_dashboard_api.models.stock_data_models import StockData
 @patch('stock_dashboard_api.models.stock_data_models.pool_manager')
 class TestStockDataModel(unittest.TestCase):
     def test_create_true(self, pool_manager):
-        data = {"id": 1, "stock_id": 1, "price": 441.5, "create_at": datetime(2021, 1, 2, 3, 4, 5)}
+        data = {"id": 1, "stock_id": 1, "price": 441.5, "created_at": datetime(2021, 1, 2, 3, 4, 5)}
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, 1, 441.5, datetime(2021, 1, 2, 3, 4, 5))
         self.assertEqual(StockData.create(1, 441.5, datetime(2021, 1, 2, 3, 4, 5)).to_dict(), data)
 
@@ -27,7 +27,7 @@ class TestStockDataModel(unittest.TestCase):
         self.assertEqual(StockData(2, 114.6, datetime(2020, 1, 2, 3, 4, 5)).update(441.5, datetime(2021, 1, 2, 3, 4, 5)), False)
 
     def test_get_by_id(self, pool_manager):
-        data = {"id": 1, "stock_id": 1, "price": 441.5, "create_at": datetime(2021, 1, 2, 3, 4, 6)}
+        data = {"id": 1, "stock_id": 1, "price": 441.5, "created_at": datetime(2021, 1, 2, 3, 4, 6)}
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, 1, 441.5, datetime(2021, 1, 2, 3, 4, 6))
         self.assertEqual(StockData.get_by_id(1).to_dict(), data)
 

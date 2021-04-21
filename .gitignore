@@ -136,3 +136,6 @@ rmq_data/
 
 stock_dashboard_api/utils/test.py
 pytest.ini
+
+node_modules/
+tests.env
