@@ -1,5 +1,4 @@
 import json
-from flask import make_response
 
 
 def middleware_body_parse_json(request):
