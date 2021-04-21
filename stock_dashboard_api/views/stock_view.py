@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from flask import Blueprint, request, make_response, jsonify, Response
+from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
-
+import stock_dashboard_api
 from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
@@ -25,6 +24,13 @@ class StockView(MethodView):
         :param pk: Stock primary key (id)
         :return: Response with one Stock
         """
+        if isinstance(pk, int):
+            stock = Stock.get_by_id(pk)
+            if stock:
+                return make_response(jsonify(stock.to_dict()), 200)
+        message = 'Wrong data provided'
+        stock_dashboard_api.app.logger.info(message)
+        return make_response(message, 400)
         stock = Stock.get_by_id(pk)
         if not stock:
             return make_response('Wrong data provided', 400)
@@ -57,12 +63,16 @@ class StockView(MethodView):
                 and len(stock_company_name) <= MAX_STOCK_COMPANY_NAME_LENGTH:
             stock_to_create = {'name': stock_name, 'company_name': stock_company_name}
         else:
-            return make_response("Wrong data provided", 400)
+            message = "Wrong data provided"
+            stock_dashboard_api.app.logger.info(message)
+            return make_response(message, 400)
 
         stock = Stock.create(**stock_to_create)
         if stock:
             return make_response(jsonify(stock.to_dict()), 200)
-        return make_response("Failed to create Stock. Check input data", 400)
+        message = "Failed to create Stock. Check input data"
+        stock_dashboard_api.app.logger.info(message)
+        return make_response(message, 400)
 
     def put(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
         """A method that update Stock if provided data is valid
@@ -73,7 +83,9 @@ class StockView(MethodView):
         middleware_body_parse_json(request)
         stock = Stock.get_by_id(pk)
         if not stock:
-            return make_response("Wrong data provided", 400)
+            message = "Wrong data provided"
+            stock_dashboard_api.app.logger.info(message)
+            return make_response(message, 400)
         body = request.body
 
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
@@ -87,7 +99,9 @@ class StockView(MethodView):
             stock.update(**stock_values_to_update)
             if stock:
                 return make_response(jsonify(stock.to_dict()), 200)
-        return make_response("An error occurred during entity updating", 400)
+        message = "An error occurred during entity updating"
+        stock_dashboard_api.app.logger.info(message)
+        return make_response(message, 400)
 
     def delete(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
         """A method that remove Stock if provided pk is valid
@@ -97,7 +111,9 @@ class StockView(MethodView):
         """
         if Stock.delete_by_id(pk):
             return make_response('Removed successfully', 200)
-        return make_response("Wrong data provided", 400)
+        message = "Wrong data provided"
+        stock_dashboard_api.app.logger.info(message)
+        return make_response(message, 400)
 
 
 mod = Blueprint('stock', __name__, url_prefix='/api/stocks')
