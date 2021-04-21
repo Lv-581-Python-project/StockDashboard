@@ -146,7 +146,7 @@ class StockViewsTestCase(TestCase):
         get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM')
         stock_id = 1
         with app.test_client() as client:
-            response = client.get(BASE_URL + '{stock_id}?from=2020/04/01 05:21:22&to=2020-05-11 04:22:30'
+            response = client.get(BASE_URL + '{stock_id}?from=2020-04-01 05:21:22&to=2020-05-11 04:22:30'
                                   .format(stock_id=stock_id))
             self.assertEqual(response.data,
                              b"Incorrect date specified, example '2018-09-19 01:55:19'"

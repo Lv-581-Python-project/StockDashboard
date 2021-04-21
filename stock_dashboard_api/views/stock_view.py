@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from flask import Blueprint, request, make_response, jsonify, Response
-from flask import Blueprint, request, make_response, jsonify
 from flask.views import MethodView
+
 import stock_dashboard_api
 from stock_dashboard_api.models.stock_model import Stock
-from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
+from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
+from stock_dashboard_api.utils.logger import views_logger as logger
 
 MAX_STOCK_NAME_LENGTH = 16
 MAX_STOCK_COMPANY_NAME_LENGTH = 128
@@ -28,9 +31,9 @@ class StockView(MethodView):
             stock = Stock.get_by_id(pk)
             if stock:
                 return make_response(jsonify(stock.to_dict()), 200)
-        message = 'Wrong data provided'
-        stock_dashboard_api.app.logger.info(message)
-        return make_response(message, 400)
+            message = 'Wrong data provided'
+            logger.info(message)
+            return make_response(message, 400)
         stock = Stock.get_by_id(pk)
         if not stock:
             return make_response('Wrong data provided', 400)
@@ -41,7 +44,7 @@ class StockView(MethodView):
                 datetime_to = datetime.strptime(datetime_to, DATETIME_PATTERN)
             except ValueError:
                 return make_response(
-                    "Incorrect date specified, example '2018-09-19 01:55:19'(year/month,day hour:minute:second)",
+                    "Incorrect date specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second)",
                     400)
             stock_data_for_time_period = stock.get_data_for_time_period(datetime_from, datetime_to)
             stock_data_for_time_period = [stock_data.to_dict() for stock_data in stock_data_for_time_period]
@@ -64,14 +67,14 @@ class StockView(MethodView):
             stock_to_create = {'name': stock_name, 'company_name': stock_company_name}
         else:
             message = "Wrong data provided"
-            stock_dashboard_api.app.logger.info(message)
+            logger.info(message)
             return make_response(message, 400)
 
         stock = Stock.create(**stock_to_create)
         if stock:
             return make_response(jsonify(stock.to_dict()), 200)
         message = "Failed to create Stock. Check input data"
-        stock_dashboard_api.app.logger.info(message)
+        logger.info(message)
         return make_response(message, 400)
 
     def put(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
@@ -84,7 +87,7 @@ class StockView(MethodView):
         stock = Stock.get_by_id(pk)
         if not stock:
             message = "Wrong data provided"
-            stock_dashboard_api.app.logger.info(message)
+            logger.info(message)
             return make_response(message, 400)
         body = request.body
 
@@ -100,7 +103,7 @@ class StockView(MethodView):
             if stock:
                 return make_response(jsonify(stock.to_dict()), 200)
         message = "An error occurred during entity updating"
-        stock_dashboard_api.app.logger.info(message)
+        logger.info(message)
         return make_response(message, 400)
 
     def delete(self, pk: int) -> Response:  # pylint: disable=C0103, R0201
@@ -112,7 +115,7 @@ class StockView(MethodView):
         if Stock.delete_by_id(pk):
             return make_response('Removed successfully', 200)
         message = "Wrong data provided"
-        stock_dashboard_api.app.logger.info(message)
+        logger.info(message)
         return make_response(message, 400)
 
 
