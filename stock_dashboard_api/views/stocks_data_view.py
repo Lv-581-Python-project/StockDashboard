@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, make_response, Response
 from flask.views import MethodView
 from stock_dashboard_api.utils.logger import views_logger as logger
 from stock_dashboard_api.models.stock_data_models import StockData
-from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
+from stock_dashboard_api.utils.json_parser import get_body
 mod = Blueprint('stocks_data', __name__, url_prefix='/stocks_data')
 
 
@@ -32,13 +32,13 @@ class StockDataView(MethodView):
 
         :return: a Response object with specific data and status code
         """
-        response = middleware_body_parse_json(request)
-        if not response:
+        body = get_body(request)
+        if not body:
             return make_response("Wrong data provided", 400)
 
-        price = request.body.get('price')
-        created_at = request.body.get('created_at')
-        stock_id = request.body.get('stock_id')
+        price = body.get('price')
+        created_at = body.get('created_at')
+        stock_id = body.get('stock_id')
 
         if not isinstance(price, int):
             message = "Incorrect price specified, price should be integer (ex. 300)"
@@ -78,15 +78,15 @@ class StockDataView(MethodView):
         :param pk: Stock Data primary key
         :return: a Response object with specific data and status code
         """
-        response = middleware_body_parse_json(request)
-        if not response:
+        body = get_body(request)
+        if not body:
             return make_response("Wrong data provided", 400)
         stock_data = StockData.get_by_id(pk=pk)
         if stock_data is None:
             message = "Can not find stock data, wrong id"
             logger.info(message)
             return make_response(message, 400)
-        price, created_at = request.body.get('price'), request.body.get('created_at')
+        price, created_at = body.get('price'), body.get('created_at')
 
         if price is not None and not isinstance(price, int):
             message = "Incorrect price specified, price should be integer (ex. 300)"
