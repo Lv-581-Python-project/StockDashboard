@@ -35,5 +35,5 @@ def send_email():
                            "template_name": "dashboard_invite_email"})
         publish_email(body)
 
-        return redirect(url_for('dashboard.home'))
+        return redirect(url_for('mail.home'))
     return render_template('send_email.html', form=form)
