@@ -68,7 +68,7 @@ class Dashboard:
         """
 
         with pool_manager() as conn:
-            query = f"SELECT * FROM {cls._table} WHERE id = %(id)s"
+            query = f"SELECT * FROM {cls._table} WHERE id = %(id)s;"
             try:
                 conn.cursor.execute(query, {'id': pk})
                 pk, config_hash = conn.cursor.fetchone()
@@ -83,7 +83,7 @@ class Dashboard:
         :return: instance of DashboardConfig model
         """
         with pool_manager() as conn:
-            get_dashboard_id_query = f"SELECT id FROM {cls._table} WHERE config_hash = %(config_hash)s"
+            get_dashboard_id_query = f"SELECT id FROM {cls._table} WHERE config_hash = %(config_hash)s;"
 
             try:
                 conn.cursor.execute(get_dashboard_id_query, {'config_hash': config_hash})
@@ -100,7 +100,7 @@ class Dashboard:
                                       FROM {_dashboard_has_stocks_table}
                                       JOIN {self._table}
                                       ON {_dashboard_has_stocks_table}.dashboard_id={self._table}.id
-                                      WHERE {_dashboard_has_stocks_table}.dashboard_id=%(id)s"""
+                                      WHERE {_dashboard_has_stocks_table}.dashboard_id=%(id)s;"""
             try:
                 conn.cursor.execute(get_stocks_id_query, {'id': self.pk})
                 list_of_stocks = conn.cursor.fetchall()
