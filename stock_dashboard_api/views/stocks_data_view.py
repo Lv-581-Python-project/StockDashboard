@@ -39,7 +39,6 @@ class StockDataView(MethodView):
         price = body.get('price')
         created_at = body.get('created_at')
         stock_id = body.get('stock_id')
-
         if not isinstance(price, int):
             message = "Incorrect price specified, price should be integer (ex. 300)"
             logger.info(message)
@@ -57,6 +56,7 @@ class StockDataView(MethodView):
         try:
             created_at = datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
         except ValueError:
+
             message = "Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
             logger.info(message)
             return make_response(

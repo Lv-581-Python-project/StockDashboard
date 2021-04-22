@@ -1,4 +1,5 @@
 import json
+from stock_dashboard_api.utils.logger import views_logger as logger
 
 
 def get_body(request):
@@ -9,4 +10,4 @@ def get_body(request):
         body = json.loads(request.data)
         return body
     except (ValueError, KeyError, TypeError):
-        return None
+        logger.info("Error while parsing body to JSON")
