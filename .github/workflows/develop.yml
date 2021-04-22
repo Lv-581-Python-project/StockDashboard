@@ -42,7 +42,6 @@ jobs:
           psql -U postgres -d postgresql://postgres@localhost/postgres -a -f ./db/stock_dashboard/INSERT_DATA.sql
         env:
           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-#           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       - name: Set up Python
         uses: actions/setup-python@v2
         with:

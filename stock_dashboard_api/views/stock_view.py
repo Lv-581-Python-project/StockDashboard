@@ -6,7 +6,7 @@ from flask.views import MethodView
 import stock_dashboard_api
 from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
-from stock_dashboard_api.utils.json_parser import middleware_body_parse_json
+from stock_dashboard_api.utils.json_parser import get_body
 from stock_dashboard_api.utils.logger import views_logger as logger
 
 MAX_STOCK_NAME_LENGTH = 16
@@ -51,8 +51,7 @@ class StockView(MethodView):
 
         :return: Response with just created Stock
         """
-        middleware_body_parse_json(request)
-        body = request.body
+        body = get_body(request)
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
 
         if isinstance(stock_name, str) \
@@ -78,13 +77,12 @@ class StockView(MethodView):
         :param pk: Stock primary key (id)
         :return: Response with just updated Stock
         """
-        middleware_body_parse_json(request)
+        body = get_body(request)
         stock = Stock.get_by_id(pk)
         if not stock:
             message = "Wrong data provided"
             logger.info(message)
             return make_response(message, 400)
-        body = request.body
 
         stock_name, stock_company_name = body.get('name'), body.get('company_name')
         stock_values_to_update = {}
