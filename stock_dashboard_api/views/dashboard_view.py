@@ -25,7 +25,6 @@ class DashboardView(MethodView):
             logger.info(message)
             return make_response(message, 400)
         stocks = dashboard.get_stocks()
-        print(stocks)
         if not stocks:
             return make_response("Can not find any stocks in dashboard", 400)
         return make_response(jsonify({"stocks": stocks}), 200)
