@@ -91,7 +91,7 @@ class Dashboard:
                 conn.cursor.execute(get_dashboard_id_query, {'config_hash': config_hash})
                 pk = conn.cursor.fetchone()[0]
                 return Dashboard(pk=pk, config_hash=config_hash)
-            except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError):
                 return None
             
     @classmethod
