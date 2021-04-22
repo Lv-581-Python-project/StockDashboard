@@ -8,13 +8,13 @@ from stock_dashboard_api.models.stock_data_models import StockData
 @patch('stock_dashboard_api.models.stock_data_models.StockData.get_by_id')
 def test_get_pass(mock_get):
     with app.app_context():
-        mock_get.return_value = StockData(stock_id=2, price=300, created_at="18/09/19 01:55:19", pk=1)
+        mock_get.return_value = StockData(stock_id=2, price=300, created_at="18-09-19 01:55:19", pk=1)
         with app.test_client() as client:
             response = client.get('/stocks_data/1')
             body = json.loads(response.data)
             assert response.status_code == 200
             assert body['id'] == 1
-            assert body['created_at'] == '18/09/19 01:55:19'
+            assert body['created_at'] == '18-09-19 01:55:19'
             assert body['price'] == 300
             assert body['stock_id'] == 2
 
@@ -33,17 +33,20 @@ def test_get_fail(mock_get):
 @patch('stock_dashboard_api.models.stock_data_models.StockData.create')
 def test_post_pass(mock_post):
     with app.app_context():
-        mock_post.return_value = StockData(stock_id=3, price=300, created_at="18/09/19 01:55:19")
+        mock_post.return_value = StockData(stock_id=1, price=500, created_at="2020-05-11 04:22:30")
         with app.test_client() as client:
-            data = {"stock_id": 3,
-                    "price": 300,
-                    "created_at": "18/09/19 01:55:19"}
+            data = {
+                    "price": 500,
+                    "created_at": "2020-05-11 04:22:30",
+                    "stock_id": 1
+}
             response = client.post('/stocks_data/', json=data)
+            assert response.status_code == 201
             body = json.loads(response.data)
             assert response.status_code == 201
-            assert body['created_at'] == '18/09/19 01:55:19'
-            assert body['price'] == 300
-            assert body['stock_id'] == 3
+            assert body['created_at'] == "2020-05-11 04:22:30"
+            assert body['price'] == 500
+            assert body['stock_id'] == 1
 
 
 def test_post_data_fail():
@@ -82,10 +85,10 @@ def test_post_data_fail_wrong_stock_id():
 
 def test_post_data_fail_wrong_create_at():
     with app.test_client() as client:
-        message = b"Incorrect created_at specified, example '18/09/19 01:55:19'(year/month/day hour:minute:second))"
+        message = b"Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
         data = {"stock_id": 3,
                 "price": 300,
-                "created_at": "2020-01-01"}
+                "created_at": "20-01-01"}
         response = client.post('/stocks_data/', json=data)
         assert response.status_code == 400
         assert response.data == message
@@ -94,7 +97,7 @@ def test_post_data_fail_wrong_create_at():
 @patch('stock_dashboard_api.models.stock_data_models.StockData.create')
 def test_post_create_fail(mock_post):
     with app.app_context():
-        message = b"Incorrect created_at specified, example '18/09/19 01:55:19'(year/month/day hour:minute:second))"
+        message = b"Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
         mock_post.return_value = None
         with app.test_client() as client:
             data = {"stock_id": 3,
@@ -109,16 +112,16 @@ def test_post_create_fail(mock_post):
 @patch('stock_dashboard_api.models.stock_data_models.StockData.update')
 def test_put_success(mock_get, mock_put):
     with app.app_context():
-        mock_get.return_value = StockData(stock_id=2, price=300, created_at="18/09/19 01:55:19", pk=1)
-        mock_put.return_value = StockData(stock_id=2, price=500, created_at="19/09/19 01:55:19", pk=1)
+        mock_get.return_value = StockData(stock_id=2, price=300, created_at="2020-08-19 01:55:19", pk=1)
+        mock_put.return_value = StockData(stock_id=2, price=500, created_at="2020-09-19 01:55:19", pk=1)
         with app.test_client() as client:
             data = {"price": 500,
-                    "created_at": "19/09/19 01:55:19"
+                    "created_at": "2020-09-19 01:55:19"
                     }
             response = client.put('/stocks_data/1', json=data)
             body = json.loads(response.data)
             assert response.status_code == 200
-            assert body['created_at'] == '19/09/19 01:55:19'
+            assert body['created_at'] == "2020-09-19 01:55:19"
             assert body['price'] == 500
             assert body['stock_id'] == 2
 
@@ -141,7 +144,7 @@ def test_put_not_existing_pk(mock_get):
 def test_put_wrong_json(mock_get):
     with app.app_context():
         message = b"Wrong data provided"
-        mock_get.return_value = StockData(stock_id=2, price=300, created_at="19/09/19 01:55:19", pk=1)
+        mock_get.return_value = StockData(stock_id=2, price=300, created_at="2020-09-19 01:55:19", pk=1)
         with app.test_client() as client:
             incorrect_json = '{ "stock_id:"12 "price":30 "created_at:"None" }'
             response = client.put('/stocks_data/2', data=incorrect_json)
@@ -166,12 +169,11 @@ def test_put_wrong_price(mock_get):
 @patch('stock_dashboard_api.models.stock_data_models.StockData.get_by_id')
 def test_put_wrong_create_at(mock_get):
     with app.app_context():
-        message = b"Incorrect date specified," \
-                  b" example '18/09/19 01:55:19'(year/month,day hour:minute:second))"
+        message = b"Incorrect date specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
         mock_get.return_value = StockData(stock_id=2, price=300, created_at="19/09/19 01:55:19", pk=1)
         with app.test_client() as client:
             data = {"price": 300,
-                    "created_at": "2021-01-08"
+                    "created_at": "2021/01/08"
                     }
             response = client.put('/stocks_data/2', json=data)
             assert response.status_code == 400
@@ -187,7 +189,7 @@ def test_put_unknown_error(mock_put, mock_get):
         mock_put.return_value = None
         with app.test_client() as client:
             data = {"price": 500,
-                    "created_at": "19/09/19 01:55:19"
+                    "created_at": "2020-09-19 01:55:19"
                     }
             response = client.put('/stocks_data/1', json=data)
             assert response.status_code == 400

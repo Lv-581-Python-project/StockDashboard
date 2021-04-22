@@ -41,7 +41,7 @@ class StockData:
         if price is not None:
             data_to_update.append("price = %(price)s")
         if created_at is not None:
-            data_to_update.append("create_at = %(create_at)s")
+            data_to_update.append("created_at = %(created_at)s")
             created_at = created_at.strftime("%Y-%m-%d %H:%M:%S")
         query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
                     WHERE id = %(id)s 

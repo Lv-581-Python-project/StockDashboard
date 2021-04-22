@@ -1,4 +1,21 @@
 INSERT INTO stocks(name, company_name) VALUES
     ('IBM', 'IBM'),
     ('AAPL', 'Apple'),
-    ('GOOGL', 'Google');
+    ('GOOGL', 'Google'),
+    ('B', 'Barnes Group Inc.'),
+    ('BA', 'The Boeing Company'),
+    ('BMRA', 'Biomerica, Inc.'),
+    ('BNL', 'Broadstone Net Lease, Inc.'),
+    ('BLUWU', 'Blue Water Acquisition Corp.'),
+    ('BPTS', 'Biophytis SA'),
+    ('BTNB', 'Bridgetown 2 Holdings Limited'),
+    ('BQ', 'Boqii Holding Limited'),
+    ('BENEW', 'Benessere Capital Acquisition Corp.'),
+    ('BOACU', 'Bluescape Opportunities Acquisition Corp.'),
+    ('C', 'Citigroup Inc.'),
+    ('CBAHU', 'CBRE Acquisition Holdings, Inc.'),
+    ('CAP-UN', 'Capitol Investment Corp. V'),
+    ('CPTKU', 'Crown PropTech Acquisitions'),
+    ('CLAAU', 'Colonnade Acquisition Corp. II'),
+    ('CCVIU', 'Churchill Capital Corp VI'),
+    ('COUR', 'Coursera, Inc.');
