@@ -152,7 +152,3 @@ def get_stocks_data_old_date(stock_id):
             return latest_update
         except (DataError, ProgrammingError, TypeError):
             return None
-
-
-if __name__ == "__main__":
-    print(get_all_stocks_in_use())
