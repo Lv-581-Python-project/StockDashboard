@@ -1,6 +1,5 @@
 from pool import pool_manager
 from psycopg2 import DataError, ProgrammingError
-from functools import reduce
 
 
 def stock_in_use_check(stocks_name):
@@ -119,7 +118,7 @@ def get_all_stocks_name():
 def get_all_stocks_in_use():
     """
     Function to find all stocks in use
-    :return: List of dicts with ids an names
+    :return: List of dicts with ids and names
     """
     with pool_manager() as conn:
         query = """SELECT id, name
