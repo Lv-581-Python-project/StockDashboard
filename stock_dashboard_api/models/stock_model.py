@@ -156,7 +156,7 @@ class Stock:
                 stock_data_for_last_day = conn.cursor.fetchall()
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as e:
                 pass
-        stock_data_for_last_day = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at).to_dict()
+        stock_data_for_last_day = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
                                           for pk, stock_id, price, created_at in stock_data_for_last_day]
         return stock_data_for_last_day
 

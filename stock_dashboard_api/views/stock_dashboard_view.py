@@ -45,8 +45,12 @@ class StockDashboardView(MethodView):
 class StockDashboardStocksView(MethodView):
     def get(self) -> Response:
         stock_ids = request.args.get('stock_ids')
+        if not stock_ids[1:-1]:
+            return make_response('Wrong data provided', 400)
         try:
-            stocks = [Stock.get_data_for_last_day(int(stock_pk)) for stock_pk in stock_ids[1:-1].split(", ")]
+            stocks = []
+            for stock_pk in stock_ids[1:-1].split(", "):
+                stocks.append([stock.to_dict() for stock in Stock.get_data_for_last_day(int(stock_pk))])
         except Exception as ex:
             return make_response("Can not find stock config, wrong id", 400)
         return make_response(jsonify(stocks), 200)
