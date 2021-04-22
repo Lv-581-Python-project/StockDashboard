@@ -1,4 +1,5 @@
 import yfinance as yf
+import time
 
 from stock_dashboard_api.utils.pool import pool_manager
 
@@ -18,8 +19,8 @@ def get_one_ticket(ticket):
         ticket_id_in_db = None
         with pool_manager() as conn:
             query = 'INSERT INTO public.stocks(name, company_name) VALUES (%(name)s, %(company_name)s) RETURNING id;'
-            conn.cursor.execute(query, {'name': name, 'company_name': company_name})
             ticket_id_in_db = conn.cursor.fetchone()
+            conn.cursor.execute(query, {'name': name, 'company_name': company_name})
 
             data = all_info.history('5d', interval='15m')
 
@@ -28,3 +29,6 @@ def get_one_ticket(ticket):
             for raw in data.itertuples():
                 conn.cursor.execute(query, {'stock_id': ticket_id_in_db, 'price': raw[2],
                                             'create_at': raw[0].astimezone(tz=None)})
+
+
+

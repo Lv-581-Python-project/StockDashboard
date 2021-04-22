@@ -1,47 +1,49 @@
 import time
 
 import requests
+import threading
 
-from db_service import stocks_counter
+#from db_service import stocks_counter
 
-UPDATING_TIME = 86400
+UPDATING_DAILY_TIME = 86400
+UPDATING_TIME = 900
 URL = "https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true"
 HEADER = {
     'user-agent':
         'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36'
 }
 
-def rmq(body):
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
-    )
-    channel = connection.channel()
-    channel.exchange_declare(
-        exchange='scheduler',
-        exchange_type='direct',
-    )
-    channel.queue_declare(queue='scheduler_queue', durable=True)
-    channel.queue_bind(exchange='scheduler', queue='scheduler_queue')
-    channel.basic_publish(
-        exchange='scheduler',
-        routing_key='scheduler_queue',
-        body=body,
-        properties=pika.BasicProperties(
-            delivery_mode=int(os.environ.get('RABBITMQ_DELIVERY_MODE')),
-        )
-    )
+response = requests.get(URL, headers=HEADER)
+
+def get_all_stocks_name():
+    return {'TSLA', 'AAPL'}
+
+def get_new_stock_data(ticket):
+    for data in response.json()['data']['rows']:
+        if data['symbol'] == ticket:
+            body = {'name': data['symbol'], 'company_name': data['name'], 'country': data['country'], 'industry': data['industry'], 'sector': data['sector']}
+            print(body)
 
 
-while True:
-    response = requests.get(URL, headers=HEADER)
-    counter_from_url = len(response.json()['data']['rows'])
-    counter_from_table = stocks_counter()
-    if counter_from_url > counter_from_table:
-        stocks_from_table = get_all_name() #list with all names from stock table
-        for stock_name in response.json()['data']['rows']['symbol']:
-            if stock_name not in stocks_from_table:
-                rmq(stock_name)
+def daily_stocks_check():
+    while True:
+        stocks_from_url = set()
+        stocks_from_db = get_all_stocks_name()
+        for ticket in response.json()['data']['rows']:
+            stocks_from_url.add(ticket['symbol'])
+        new_data = stocks_from_url - stocks_from_db
+        if len(new_data) != 0:
+            for ticket in new_data:
+                get_new_stock_data(ticket)
+        time.sleep(UPDATING_DAILY_TIME)
 
+def stocks_data_update():
+    while True:
 
+        time.sleep(1)
+#
+# t1 = threading.Thread(target=a)
+# t2 = threading.Thread(target=b)
+# t1.start()
+# t2.start()
 
-    time.sleep(UPDATING_TIME)
