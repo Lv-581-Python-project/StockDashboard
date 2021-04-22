@@ -1,7 +1,10 @@
+import datetime
+
 import yfinance as yf
-import time
 
 from stock_dashboard_api.utils.pool import pool_manager
+
+DELAY = 10
 
 
 def check_if_exist(ticket):
@@ -9,6 +12,15 @@ def check_if_exist(ticket):
     if len(all_info.info) == 1:
         raise False
     return True
+
+
+def update_stocks_data(stock_id, name, start):
+    if check_if_exist(name):
+        data_for_update = []
+        data = yf.Ticker(name).history(start=start, end=datetime.datetime.now(), period='15m')
+        for raw in data.itertuples():
+            data_for_update.append((stock_id, raw[2], str(raw[0].astimezone(tz=None)))
+        return data_for_update
 
 
 def get_one_ticket(ticket):
@@ -29,6 +41,3 @@ def get_one_ticket(ticket):
             for raw in data.itertuples():
                 conn.cursor.execute(query, {'stock_id': ticket_id_in_db, 'price': raw[2],
                                             'create_at': raw[0].astimezone(tz=None)})
-
-
-

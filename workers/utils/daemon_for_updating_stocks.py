@@ -1,9 +1,9 @@
 import time
 
 import requests
-import threading
 
-#from db_service import stocks_counter
+from db_service import insert_stock_data
+from yahoo_finance import update_stocks_data
 
 UPDATING_DAILY_TIME = 86400
 UPDATING_TIME = 900
@@ -15,14 +15,24 @@ HEADER = {
 
 response = requests.get(URL, headers=HEADER)
 
+
 def get_all_stocks_name():
-    return {'TSLA', 'AAPL'}
+    return {'TSLA', 'AAPL'}  # return set of name
+
+
+def get_all_stocks_in_use():
+    return [{'id': 1, 'name': 'TSLA', } {'id': 2, 'name': 'AAPL', }]
+
+
+def get_stocks_data_old_date(stock_id):
+    return '1234-12-12'
+
 
 def get_new_stock_data(ticket):
     for data in response.json()['data']['rows']:
         if data['symbol'] == ticket:
-            body = {'name': data['symbol'], 'company_name': data['name'], 'country': data['country'], 'industry': data['industry'], 'sector': data['sector']}
-            print(body)
+            body = {'name': data['symbol'], 'company_name': data['name'], 'country': data['country'],
+                    'industry': data['industry'], 'sector': data['sector']}
 
 
 def daily_stocks_check():
@@ -37,13 +47,19 @@ def daily_stocks_check():
                 get_new_stock_data(ticket)
         time.sleep(UPDATING_DAILY_TIME)
 
+
 def stocks_data_update():
     while True:
-
-        time.sleep(1)
+        all_in_use = get_all_stocks_in_use()
+        for data in all_in_use:
+            stock_id = data['id']
+            name = data['name']
+            start = get_stocks_data_old_date(stock_id)
+            data_for_update = update_stocks_data(stock_id, name, start)
+            insert_stock_data(data_for_update)
+        time.sleep(UPDATING_TIME)
 #
 # t1 = threading.Thread(target=a)
 # t2 = threading.Thread(target=b)
 # t1.start()
 # t2.start()
-
