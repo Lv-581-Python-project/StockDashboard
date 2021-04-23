@@ -71,6 +71,6 @@ class StockDashboardStocksView(MethodView):
 
 stock_config_view = StockDashboardView.as_view('stock_config_view')
 stock_dashboard_stocks_view = StockDashboardStocksView.as_view('stock_dashboard_stocks_view')
-mod.add_url_rule('/', view_func=stock_config_view, methods=['POST', ])
+mod.add_url_rule('/', view_func=stock_config_view, methods=['POST', 'GET'])
 mod.add_url_rule('/<int:pk>', view_func=stock_config_view, methods=['GET', 'PUT', 'DELETE'])
 mod.add_url_rule('/', view_func=stock_dashboard_stocks_view, methods=['GET', ])
