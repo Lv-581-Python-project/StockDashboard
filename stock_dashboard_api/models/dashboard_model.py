@@ -87,9 +87,12 @@ class Dashboard:
             query = f"SELECT * FROM {cls._table}"
             try:
                 conn.cursor.execute(query)
-                pk, config_hash = conn.cursor.fetchone()
-                return Dashboard(pk=pk, config_hash=config_hash)
+                all_dashboards = conn.cursor.fetchall()
+                dashboards_info = [Dashboard(pk=dashboard[0], config_hash=dashboard[1]).to_dict()
+                                   for dashboard in all_dashboards]
+                return dashboards_info
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
+                print("err + ", err)
                 return None
 
     def to_dict(self) -> dict:
