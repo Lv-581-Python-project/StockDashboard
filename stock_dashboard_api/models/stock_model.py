@@ -168,6 +168,4 @@ class Stock:
         """
 
         return {'id': self.pk, "name": self.name, "company_name": self.company_name, "in_use": self.in_use}
-
-
-
+        
