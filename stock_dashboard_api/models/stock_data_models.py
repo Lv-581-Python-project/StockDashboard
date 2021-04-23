@@ -39,9 +39,6 @@ class StockData:
                                             'price': price,
                                             'created_at': created_at.strftime("%Y-%m-%d %H:%M:%S")})
                 pk, stock_id, price, created_at = conn.cursor.fetchone()
-                query2 = f"""INSERT INTO public.dashboard_has_stocks (stock_id, dashboard_id)
-                             VALUES (%(stock_id)s, %(dashboard_id)s)"""
-                conn.cursor.execute(query2, {'stock_id': stock_id, 'dashboard_id': pk})
                 return StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
             except(DataError, ProgrammingError):
                 return None
