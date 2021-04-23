@@ -1,5 +1,14 @@
-from pool import pool_manager
+import logging
+import os
 from psycopg2 import DataError, ProgrammingError
+from logging.config import fileConfig
+
+from pool import pool_manager
+
+MESSAGE = "Something went wrong with DB or your params"
+LOGGING_CONF = os.getenv('LOGGING_CONF')
+fileConfig(LOGGING_CONF, disable_existing_loggers=True)
+logger = logging.getLogger('pool')
 
 
 def stock_in_use_check(stocks_name):
@@ -17,7 +26,7 @@ def stock_in_use_check(stocks_name):
             in_use = conn.cursor.fetchone()
             return in_use[0]
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
 
 
 def stock_get_id(stocks_name):
@@ -35,7 +44,7 @@ def stock_get_id(stocks_name):
             pk = conn.cursor.fetchone()
             return pk[0]
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
 
 
 def stock_in_use_change(pk):
@@ -54,7 +63,7 @@ def stock_in_use_change(pk):
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
 
 
 def insert_new_stock(name, company_name):
@@ -74,7 +83,7 @@ def insert_new_stock(name, company_name):
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
 
 
 def insert_stock_data(stock_id, price, created_at):
@@ -95,7 +104,7 @@ def insert_stock_data(stock_id, price, created_at):
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
 
 
 def get_all_stocks_name():
@@ -112,7 +121,7 @@ def get_all_stocks_name():
             stock_names = set(map(lambda x: x[0], stock_names))
             return stock_names
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
 
 
 def get_all_stocks_in_use():
@@ -131,7 +140,7 @@ def get_all_stocks_in_use():
             list(map(lambda x: stocks_in_use.append({"id": x[0], "name": x[1]}), data))
             return stocks_in_use
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
 
 
 def get_stocks_data_old_date(stock_id):
@@ -150,4 +159,4 @@ def get_stocks_data_old_date(stock_id):
             latest_update = max(list(map(lambda x: x[0], data)))
             return latest_update
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info(MESSAGE)
