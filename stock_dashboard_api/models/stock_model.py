@@ -4,6 +4,7 @@ import psycopg2
 
 from stock_dashboard_api.models.stock_data_models import StockData
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
+from stock_dashboard_api.utils.logger import views_logger as logger
 from stock_dashboard_api.utils.pool import pool_manager
 
 
@@ -155,7 +156,7 @@ class Stock:
                                             'today': datetime_now})
                 stock_data_for_last_day = conn.cursor.fetchall()
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as e:
-                pass
+                logger.info(f"Error! {e}")
         stock_data_for_last_day = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
                                    for pk, stock_id, price, created_at in stock_data_for_last_day]
         return stock_data_for_last_day
@@ -168,4 +169,3 @@ class Stock:
         """
 
         return {'id': self.pk, "name": self.name, "company_name": self.company_name, "in_use": self.in_use}
-        
