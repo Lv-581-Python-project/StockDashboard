@@ -3,7 +3,6 @@ from flask.views import MethodView
 
 from stock_dashboard_api.models.dashboard_model import Dashboard
 from stock_dashboard_api.models.stock_model import Stock
-from stock_dashboard_api.models.stock_data_models import StockData
 
 mod = Blueprint('stock_conf', __name__, url_prefix='/api/dashboard')
 
