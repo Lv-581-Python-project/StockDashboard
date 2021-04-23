@@ -146,9 +146,9 @@ class Stock:
         datetime_yesterday = (datetime.now() - timedelta(days=1)).strftime(DATETIME_PATTERN)
         with pool_manager() as conn:
             query = """SELECT * FROM stocks_data
-                        WHERE stock_id = %(stock_id)s
-                        AND %(yesterday)s <= created_at AND created_at < %(today)s
-                        ORDER BY created_at;"""
+                            WHERE stock_id = %(stock_id)s
+                            AND %(yesterday)s <= created_at AND created_at < %(today)s
+                            ORDER BY created_at;"""
             try:
                 conn.cursor.execute(query, {'stock_id': pk,
                                             'yesterday': datetime_yesterday,
