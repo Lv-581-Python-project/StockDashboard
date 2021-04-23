@@ -3,6 +3,7 @@ from flask.views import MethodView
 
 from stock_dashboard_api.models.dashboard_model import Dashboard
 from stock_dashboard_api.models.stock_model import Stock
+from stock_dashboard_api.models.stock_data_models import StockData
 
 mod = Blueprint('stock_conf', __name__, url_prefix='/api/dashboard')
 
@@ -47,12 +48,12 @@ class StockDashboardStocksView(MethodView):
         stock_ids = request.args.get('stock_ids')
         if not stock_ids[1:-1]:
             return make_response('Wrong data provided', 400)
-        try:
-            stocks = []
-            for stock_pk in stock_ids[1:-1].split(", "):
-                stocks.append([stock.to_dict() for stock in Stock.get_data_for_last_day(int(stock_pk))])
-        except Exception as ex:
-            return make_response("Can not find stock config, wrong id", 400)
+        stocks = []
+        for stock_pk in stock_ids[1:-1].split(", "):
+            taken_stock = Stock.get_by_id(stock_pk)
+            if not taken_stock:
+                return make_response(f"Can not find stock, wrong id", 400)
+            stocks.append([stock.to_dict() for stock in Stock.get_data_for_last_day(int(stock_pk))])
         return make_response(jsonify(stocks), 200)
 
 
