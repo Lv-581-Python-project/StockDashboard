@@ -135,7 +135,7 @@ class Stock:
                                             'datetime_to': datetime_to})
                 stock_data_for_time_period = conn.cursor.fetchall()
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as e:
-                return e
+                logger.info(e)
             stock_data_for_time_period = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
                                           for pk, stock_id, price, created_at in stock_data_for_time_period]
         return stock_data_for_time_period
