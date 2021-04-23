@@ -92,7 +92,6 @@ class Dashboard:
                                    for dashboard in all_dashboards]
                 return dashboards_info
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
-                print("err + ", err)
                 return None
 
     def to_dict(self) -> dict:
