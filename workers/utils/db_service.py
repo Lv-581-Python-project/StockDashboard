@@ -66,20 +66,27 @@ def stock_in_use_change(pk):
             logger.info("stock_in_use_change: maybe wrong id")
 
 
-def insert_new_stock(name, company_name):
+def insert_new_stock(name, company_name, country, industry, sector):
     """
     Function to insert data about new stock
     :param name: name of company on the stock
     :param company_name: company name
+    :param country: country of company
+    :param industry: industry
+    :param sector: sector
     :return: True if success and None if not
     """
     with pool_manager() as conn:
-        query = """INSERT INTO stocks(name, company_name)
+        query = """INSERT INTO stocks(name, company_name, country, industry, sector)
                     VALUES 
-                    (%(name)s, %(company_name)s)
+                    (%(name)s, %(company_name)s, %(country)s, %(industry)s, %(sector)s )
                     RETURNING id, in_use"""
         try:
-            conn.cursor.execute(query, {"name": name, "company_name": company_name})
+            conn.cursor.execute(query, {"name": name,
+                                        "company_name": company_name,
+                                        "country": country,
+                                        "industry": industry,
+                                        "sector": sector})
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):
@@ -143,7 +150,7 @@ def get_all_stocks_in_use():
             logger.info("get_all_stocks_in_use: fail to get data")
 
 
-def get_stocks_data_old_date(stock_id):
+def get_stocks_data_last_record(stock_id):
     """
     Get the date of the latest update by stock_id
     :param stock_id: id of stock
@@ -159,4 +166,4 @@ def get_stocks_data_old_date(stock_id):
             latest_update = max(list(map(lambda x: x[0], data)))
             return latest_update
         except (DataError, ProgrammingError, TypeError):
-            logger.info("get_stocks_data_old_date: fail to get data")
+            logger.info("get_stocks_data_last_record: fail to get data")
