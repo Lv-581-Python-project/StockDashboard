@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 import psycopg2
 
 from stock_dashboard_api.models.stock_data_models import StockData
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
+from stock_dashboard_api.utils.logger import views_logger as logger
 from stock_dashboard_api.utils.pool import pool_manager
 
 
@@ -13,7 +16,7 @@ class Stock:
     """
     _table = 'public.stocks'
 
-    def __init__(self, name: str, company_name: str, pk: int = None, in_use: bool = False) -> object:
+    def __init__(self, name: str, company_name: str, pk: int = None, in_use: bool = False):
         """
         :param name: short name of company stocks
         :param company_name: name of company
@@ -27,7 +30,7 @@ class Stock:
         self.in_use = in_use
 
     @classmethod
-    def create(cls, name: str, company_name: str) -> object:
+    def create(cls, name: str, company_name: str) -> Stock:
         """
         Create a new instance in database
 
@@ -45,7 +48,8 @@ class Stock:
                 pk, name, company_name, in_use = conn.cursor.fetchone()  # pylint: disable=C0103
                 return Stock(pk=pk, name=name, company_name=company_name, in_use=in_use)
             except (psycopg2.DataError, psycopg2.ProgrammingError):
-                return False
+                message = f"Could not create Stock with name={name}, company_name={company_name}"
+                logger.warning(message)
 
     def update(self, name: str = None, company_name: str = None) -> bool:
         """
@@ -95,7 +99,7 @@ class Stock:
                 return False
 
     @classmethod
-    def get_by_id(cls, pk: int) -> object:  # pylint: disable=C0103
+    def get_by_id(cls, pk: int) -> Stock:  # pylint: disable=C0103
         """
         Get instance from database by id
 
@@ -110,7 +114,27 @@ class Stock:
                 pk, name, company_name, in_use = conn.cursor.fetchone()
                 return Stock(pk=pk, name=name, company_name=company_name, in_use=in_use)
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
-                return None
+                message = f"Could not get stock by pk={pk}"
+                logger.warning(message)
+
+    @classmethod
+    def get_all(cls) -> list:
+        """
+        Get all stocks from database
+        """
+
+        stocks = []
+        with pool_manager() as conn:
+            query = f"SELECT * FROM {cls._table};"
+            try:
+                conn.cursor.execute(query)
+                stocks = conn.cursor.fetchall()
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
+                message = "Could not get stocks"
+                logger.warning(message)
+            stocks = [Stock(pk=pk, name=name, company_name=company_name, in_use=in_use)
+                      for pk, name, company_name, in_use in stocks]
+        return stocks
 
     def get_data_for_time_period(self, datetime_from: datetime, datetime_to: datetime) -> list:
         """
@@ -133,8 +157,10 @@ class Stock:
                                             'datetime_from': datetime_from,
                                             'datetime_to': datetime_to})
                 stock_data_for_time_period = conn.cursor.fetchall()
-            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as e:
-                pass
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
+                message = f"Could not get stock data for pk={self.pk}, datetime_from={datetime_from}, " \
+                          f"datetime_to={datetime_to}"
+                logger.warning(message)
             stock_data_for_time_period = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
                                           for pk, stock_id, price, created_at in stock_data_for_time_period]
         return stock_data_for_time_period
