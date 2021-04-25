@@ -6,7 +6,7 @@ import psycopg2
 
 from stock_dashboard_api.models.stock_data_models import StockData
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
-from stock_dashboard_api.utils.logger import views_logger as logger
+from stock_dashboard_api.utils.logger import models_logger as logger
 from stock_dashboard_api.utils.pool import pool_manager
 
 
