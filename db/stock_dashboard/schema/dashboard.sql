@@ -1,4 +1,6 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE IF NOT EXISTS dashboard(
     id serial PRIMARY KEY,
-    config_hash VARCHAR(8) UNIQUE NOT NULL
+    dashboard_uuid uuid DEFAULT uuid_generate_v4 ()
 );

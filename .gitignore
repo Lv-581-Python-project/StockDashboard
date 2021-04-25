@@ -139,3 +139,7 @@ pytest.ini
 
 node_modules/
 tests.env
+
+#Data files for insertion to DB
+db/stock_dashboard/data/scripts/data.csv
+db/stock_dashboard/data/scripts/data.tar.xz
