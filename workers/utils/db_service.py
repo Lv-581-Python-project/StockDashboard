@@ -1,14 +1,8 @@
-import logging
-import os
 from psycopg2 import DataError, ProgrammingError
-from logging.config import fileConfig
+
 
 from pool import pool_manager
-
-
-LOGGING_CONF = os.getenv('LOGGING_CONF')
-fileConfig(LOGGING_CONF, disable_existing_loggers=True)
-logger = logging.getLogger('pool')
+from logger import pool_logger as logger
 
 
 def stock_in_use_check(stocks_name):
