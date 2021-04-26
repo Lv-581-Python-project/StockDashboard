@@ -4,6 +4,7 @@ from psycopg2.pool import PoolError, SimpleConnectionPool
 
 from logger import pool_logger as logger
 
+POOL_DELAY = os.getenv('POOL_DELAY')
 TRAILS = 10
 
 
