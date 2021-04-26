@@ -1,13 +1,17 @@
-INSERT INTO dashboard(id) VALUES
-    (1),
-    (2),
-    (3),
-    (4),
-    (5),
-    (6),
-    (7),
-    (8),
-    (9),
-    (10),
-    (11),
-    (12);
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+INSERT INTO dashboard(dashboard_uuid) VALUES
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ()),
+    (uuid_generate_v4 ());
+

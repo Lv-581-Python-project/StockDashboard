@@ -21,13 +21,12 @@
 
 ### Database setup
 Before creating and inserting data to database you should:
-1.  Go to `StockDasbord/db/stock_dasboard/data/scripts` and run script
-to get data from Google Drive. To run script type command in your terminal:
+1.  Go to `StockDasbord/db/stock_dasboard/data` and run command in terminal to unzip data:
 ```bash
-bash script.sh
+   tar -xf data.tar.xz
 ```
 2. In folder `data` in file `stocks_data.sql` replace `YOUR_PATH_TO_DATA.CSV`
-by your absolute path to this file(which is in scripts directory)
+by your absolute path to `data.csv` file
 
 ### Database Init
 
