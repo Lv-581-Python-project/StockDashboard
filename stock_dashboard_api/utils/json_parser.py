@@ -1,12 +1,13 @@
 import json
+from stock_dashboard_api.utils.logger import views_logger as logger
 
 
-def middleware_body_parse_json(request):
+def get_body(request):
     """A function that executes before request,
     receive and validate json data for PUT and POST request methods.
     """
     try:
-        request.body = json.loads(request.data)
-        return request
+        body = json.loads(request.data)
+        return body
     except (ValueError, KeyError, TypeError):
-        pass
+        logger.info("Error while parsing body to JSON")

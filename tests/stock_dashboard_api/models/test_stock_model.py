@@ -17,7 +17,7 @@ class TestStock(unittest.TestCase):
 
     def test_create_false(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(sm.Stock.create("AAPL", "Apple"), False)
+        self.assertEqual(sm.Stock.create("AAPL", "Apple"), None)
 
     def test_update_true(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, "AAPL", "Apple", False)
@@ -82,6 +82,25 @@ class TestStock(unittest.TestCase):
         datetime_to = datetime.datetime(2020, 4, 1, 5, 22, 30)
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = TypeError
         self.assertEqual(sm.Stock(1, 'IBM', 'IBM').get_data_for_time_period(datetime_from, datetime_to), [])
+
+    def test_get_all(self, pool_manager):
+        data = [(1, 'IBM', 'IBM', False), (2, 'AAPL', 'Apple', False), (3, 'GOOGL', 'Google', False)]
+        expected_pks = [d[0] for d in data]
+        expected_names = [d[1] for d in data]
+        expected_company_names = [d[2] for d in data]
+        pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = data
+        stocks = sm.Stock.get_all()
+        pks = [stock.pk for stock in stocks]
+        names = [stock.name for stock in stocks]
+        company_names = [stock.company_name for stock in stocks]
+
+        self.assertEqual(expected_pks, pks)
+        self.assertEqual(expected_names, names)
+        self.assertEqual(expected_company_names, company_names)
+
+    def test_get_all_error(self, pool_manager):
+        pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
+        self.assertEqual(sm.Stock.get_all(), [])
 
 
 if __name__ == '__main__':

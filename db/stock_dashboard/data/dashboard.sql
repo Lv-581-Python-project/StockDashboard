@@ -1,13 +1,6 @@
-INSERT INTO dashboard(config_hash) VALUES
-    ('XJIOXJXL'),
-    ('LKJDFLKG'),
-    ('KLDGDPGD'),
-    ('XJIOX45s'),
-    ('X55OX45I'),
-    ('XJIOXТps'),
-    ('X72OX45s'),
-    ('XJIOqe5s'),
-    ('XJI2136s'),
-    ('XJIOQRCD'),
-    ('fdslmf55'),
-    ('XJIdfser');
+INSERT INTO dashboard(dashboard_hash) VALUES
+    ('f79ee4f2'),
+    ('582abfe2'),
+    ('5715fdef'),
+    ('52f0fa28'),
+    ('351dd39b');

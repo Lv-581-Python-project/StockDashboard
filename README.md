@@ -19,10 +19,19 @@
 
 - In case of editing some of this params you will likely have to remove `pg_data/` or `rmq-data/`
 
+### Database setup
+Before creating and inserting data to database you should:
+1.  Go to `StockDasbord/db/stock_dasboard/data` and run command in terminal to unzip data:
+```bash
+   tar -xf data.tar.xz
+```
+2. In folder `data` in file `stocks_data.sql` replace `YOUR_PATH_TO_DATA.CSV`
+by your absolute path to `data.csv` file
+
 ### Database Init
 
 To create and to fill database go to
-folder data/StockDashboard and type command to run script:
+folder data/stock_dashboard and type command to run script:
 ```bash
  psql -U <username> -d <dbname> -a -f <script_name>
 ```
