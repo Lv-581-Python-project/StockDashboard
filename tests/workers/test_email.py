@@ -1,7 +1,12 @@
+import json
+import os
+
+import pika
 import pytest
 from pytest_rabbitmq import factories
 
 from stock_dashboard_api import app
+from workers.email_sender.send_email_worker import create_email
 
 
 @pytest.fixture
@@ -24,7 +29,7 @@ def test_send_email_get(client):
     assert b'This is the dashboard page.' in response.data
 
 
-def test_send_email_post(client):  # <--------------
+def test_send_email_post(client):
     app.config['WTF_CSRF_ENABLED'] = False
     data = {
         "sender": "Test",
@@ -70,3 +75,23 @@ def test_send_email_invalid_no_data(client):
 
     assert b'This field is required' in response.data
     assert response.status_code == 200
+
+
+def test_create_email_function():
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
+    )
+    channel = connection.channel()
+
+    class Method:
+        delivery_tag = 0
+
+    method = Method
+
+    body = json.dumps({"sender": 'Test',
+                       "recipient": 'test_stock_dashboard581@gmail.com',
+                       "path": 'http://127.0.0.1:5000/mail/send_email',
+                       "template_name": "dashboard_invite_email"})
+
+    sent = create_email(ch=channel, method=method, properties=pika.BasicProperties(delivery_mode=2), body=body)
+    assert sent is True

@@ -1,10 +1,11 @@
 import json
 import os
 import smtplib
-import pika
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from smtplib import SMTPException
 
+import pika
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 
@@ -33,11 +34,15 @@ def create_email(ch, method, properties, body):
     email['To'] = recipient
     email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
     email.attach(MIMEText(html, 'html'))
+    try:
+        send_email(email)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        return True
+    except SMTPException:
+        return False
 
-    send_email(email, method)
 
-
-def send_email(email, method):  # pylint: disable=C0103,  W0613
+def send_email(email):  # pylint: disable=C0103,  W0613
     """
     Sends an email.
     """
@@ -45,8 +50,6 @@ def send_email(email, method):  # pylint: disable=C0103,  W0613
     smtp_conn.starttls()
     smtp_conn.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
     smtp_conn.send_message(email)
-
-    channel.basic_ack(delivery_tag=method.delivery_tag)
 
 
 if __name__ == '__main__':
