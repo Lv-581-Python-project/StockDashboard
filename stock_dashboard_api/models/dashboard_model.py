@@ -1,6 +1,6 @@
 import psycopg2
 
-from stock_dashboard_api.utils.dashboard_hash_generator import generate_uuid
+from stock_dashboard_api.utils.dashboard_hash_generator import generate_dashboard_hash
 from stock_dashboard_api.utils.pool import pool_manager
 
 
@@ -11,39 +11,37 @@ class Dashboard:
 
     _table = 'public.dashboard'
 
-    def __init__(self, config_hash: str, pk=None):  # pylint: disable=C0103,  W0613
+    def __init__(self, dashboard_hash: str, pk=None):  # pylint: disable=C0103,  W0613
         self.pk = pk  # pylint: disable=C0103,  W0613
-        self.config_hash = config_hash
+        self.dashboard_hash = dashboard_hash
 
     @classmethod
-    def create(cls, config_hash=None, stocks=None) -> object:
+    def create(cls, stocks=None) -> object:
         """Creates a new record in Dashboard table
 
         :param config_hash: specific config hash for record
         :param stocks: list of stocks for specific dashboard
         :return: instance of Dashboard
         """
-
-        if not config_hash:
-            all_config_hashes = Dashboard.get_all_hashes()
-            config_hash = generate_uuid(all_config_hashes)
+        stock_names = "".join([stock["stock_name"] for stock in stocks])
+        dashboard_hash = generate_dashboard_hash(stock_names=stock_names)
         with pool_manager() as conn:
             dashboard_has_stocks_table = 'public.dashboard_has_stocks'
-            insert_dashboard_query = f"""INSERT INTO {cls._table} (config_hash)
-                        VALUES (%(config_hash)s)
+            insert_dashboard_query = f"""INSERT INTO {cls._table} (dashboard_hash)
+                        VALUES (%(dashboard_hash)s)
                         RETURNING id, config_hash;"""
             try:
-                conn.cursor.execute(insert_dashboard_query, {'config_hash': config_hash})
-                pk, config_hash = conn.cursor.fetchone()  # pylint: disable=C0103,  W0613
+                conn.cursor.execute(insert_dashboard_query, {'dashboard_hash': dashboard_hash})
+                dashboard_hash = conn.cursor.fetchone()  # pylint: disable=C0103,  W0613
                 if stocks:
-                    stocks = [(stock["stock_id"], pk, stock["datetime_from"], stock["datetime_to"]) for stock in stocks]
+                    stocks = [(stock["stock_id"], dashboard_hash) for stock in stocks]
                     insert_dashboard_has_stocks_query = (f"INSERT INTO {dashboard_has_stocks_table} "
-                                                         "(stock_id, dashboard_id, datetime_from, datetime_to)"
-                                                         " VALUES (%s, %s, %s, %s);")
+                                                         "(stock_id, dashboard_hash)"
+                                                         " VALUES (%s, %s);")
                     conn.cursor.executemany(insert_dashboard_has_stocks_query, stocks)
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
                 return False
-            return Dashboard(pk=pk, config_hash=config_hash)
+            return Dashboard(dashboard_hash=dashboard_hash)
 
     def update(self, config_hash: str) -> bool:
         """
@@ -79,18 +77,18 @@ class Dashboard:
                 return None
 
     @classmethod
-    def get_by_hash(cls, config_hash: str):
+    def get_by_hash(cls, dashboard_hash: str):
         """Getting a dashboard by its hash from Dashboard table
 
         :return: instance of DashboardConfig model
         """
         with pool_manager() as conn:
-            get_dashboard_id_query = f"SELECT id FROM {cls._table} WHERE config_hash = %(config_hash)s;"
+            get_dashboard_id_query = f"SELECT dashboard_hash FROM {cls._table} WHERE dashboard_hash = %(dashboard_hash)s;"
 
             try:
-                conn.cursor.execute(get_dashboard_id_query, {'config_hash': config_hash})
-                pk = conn.cursor.fetchone()[0]
-                return Dashboard(pk=pk, config_hash=config_hash)
+                conn.cursor.execute(get_dashboard_id_query, {'dashboard_hash': dashboard_hash})
+                dashboard_hash = conn.cursor.fetchone()[0]
+                return Dashboard(dashboard_hash=dashboard_hash)
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError):
                 return None
             

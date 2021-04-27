@@ -19,7 +19,7 @@ class DashboardView(MethodView):
         :param config_hash: Dashboard unique field
         :return: a Response object with specific data and status code
         """
-        dashboard = Dashboard.get_by_hash(config_hash=config_hash)
+        dashboard = Dashboard.get_by_hash(dashboard_hash=config_hash)
         if dashboard is None:
             message = "Can not find dashboard, wrong hash"
             logger.info(message)
