@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import psycopg2
 
@@ -164,6 +164,28 @@ class Stock:
             stock_data_for_time_period = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
                                           for pk, stock_id, price, created_at in stock_data_for_time_period]
         return stock_data_for_time_period
+
+    @classmethod
+    def get_data_for_last_day(cls, pk: int) -> list:
+        stock_data_for_last_day = []
+        datetime_now = datetime.now().strftime(DATETIME_PATTERN)
+        datetime_yesterday = (datetime.now() - timedelta(days=1)).strftime(DATETIME_PATTERN)
+        with pool_manager() as conn:
+            query = """SELECT * FROM stocks_data
+                                WHERE stock_id = %(stock_id)s
+                                AND %(yesterday)s <= created_at AND created_at < %(today)s
+                                ORDER BY created_at;"""
+            try:
+                conn.cursor.execute(query, {'stock_id': pk,
+                                            'yesterday': datetime_yesterday,
+                                            'today': datetime_now})
+                stock_data_for_last_day = conn.cursor.fetchall()
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as err:
+                logger.info(f"Error! {err}")
+
+        stock_data_for_last_day = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
+                                   for pk, stock_id, price, created_at in stock_data_for_last_day]
+        return stock_data_for_last_day
 
     def to_dict(self) -> dict:
         """
