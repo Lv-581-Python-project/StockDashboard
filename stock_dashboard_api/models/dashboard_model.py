@@ -43,11 +43,11 @@ class Dashboard:
                 conn.cursor.execute(insert_dashboard_query, {'dashboard_hash': dashboard_hash})
                 dashboard_hash = conn.cursor.fetchone()
 
-                stocks = [(stock["stock_id"], dashboard_hash) for stock in stocks]
+                dashboard_has_stocks_insert_data = [(stock["stock_id"], dashboard_hash) for stock in stocks]
                 insert_dashboard_has_stocks_query = (f"INSERT INTO {dashboard_has_stocks_table} "
                                                      "(stock_id, dashboard_hash)"
                                                      " VALUES (%s, %s);")
-                conn.cursor.executemany(insert_dashboard_has_stocks_query, stocks)
+                conn.cursor.executemany(insert_dashboard_has_stocks_query, dashboard_has_stocks_insert_data)
                 return Dashboard(dashboard_hash=dashboard_hash)
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as error:
                 logger.info(f"Error Dashboard model create {error}")
@@ -99,12 +99,10 @@ class Dashboard:
             try:
                 conn.cursor.execute(get_stocks_id_query, {'dashboard_hash': self.dashboard_hash})
                 list_of_stocks = conn.cursor.fetchall()
-                print(list_of_stocks)
                 list_of_stocks = [Stock(pk=stock[0], name=stock[1], company_name=stock[2], in_use=stock[3]).to_dict()
                                   for stock in list_of_stocks]
                 return list_of_stocks
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as error:
-                print(error)
                 logger.info(f"Error Dashboard model get_stocks {error}")
 
     @classmethod
