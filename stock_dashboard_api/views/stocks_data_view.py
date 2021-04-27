@@ -48,7 +48,8 @@ class StockDataView(MethodView):
             logger.info(message)
             return make_response(message, 400)
         if not isinstance(created_at, str):
-            message = "Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
+            message = ("Incorrect created_at specified, "
+                       "example '2018-09-19 01:55:19'(year-month-day hour:minute:second))")
             logger.info(message)
             return make_response(
                 message, 400)
@@ -57,7 +58,8 @@ class StockDataView(MethodView):
             created_at = datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
         except ValueError:
 
-            message = "Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
+            message = ("Incorrect created_at specified, "
+                       "example '2018-09-19 01:55:19'(year-month-day hour:minute:second))")
             logger.info(message)
             return make_response(
                 message, 400)
@@ -95,7 +97,8 @@ class StockDataView(MethodView):
 
         if created_at:
             if not isinstance(created_at, str):
-                message = "Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second)"
+                message = ("Incorrect created_at specified, "
+                           "example '2018-09-19 01:55:19'(year-month-day hour:minute:second)")
                 logger.info(message)
                 return make_response(message, 400)
             try:

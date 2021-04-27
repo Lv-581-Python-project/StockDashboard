@@ -13,13 +13,13 @@ class DashboardView(MethodView):
     ``GET``, ``POST`` requests accordingly.
     """
 
-    def get(self, config_hash: str) -> Response:
+    def get(self, dashboard_hash: str) -> Response:
         """A get method is used to send a specific GET request to access Dashboard by config_hash
 
-        :param config_hash: Dashboard unique field
+        :param dashboard_hash: Dashboard unique field
         :return: a Response object with specific data and status code
         """
-        dashboard = Dashboard.get_by_hash(dashboard_hash=config_hash)
+        dashboard = Dashboard.get_by_hash(dashboard_hash=dashboard_hash)
         if dashboard is None:
             message = "Can not find dashboard, wrong hash"
             logger.info(message)
@@ -43,7 +43,30 @@ class DashboardView(MethodView):
             return make_response(jsonify(dashboard.to_dict()), 201)
         return make_response("Can not create a dashboard", 400)
 
+    def delete(self, dashboard_hash):
+        stock_config_deleted = Dashboard.delete_by_hash(dashboard_hash=dashboard_hash)
+        if stock_config_deleted:
+            return make_response("Stock config deleted successfully", 200)
+        message = "Stock config not deleted"
+        logger.info(message)
+        return make_response(message, 400)
+
+    def put(self, dashboard_hash):
+        stock_config = Dashboard.get_by_hash(dashboard_hash=dashboard_hash)
+        config_hash = str(request.body.get('config_hash'))
+        if stock_config is None:
+            message = "Cannot find stock config data, wrong id"
+            logger.info(message)
+            return make_response(message, 400)
+
+        stock_config_updated = stock_config.update(config_hash)
+        if stock_config_updated:
+            return make_response(jsonify(stock_config.to_dict()), 200)
+        message = "Stock Config wasn't updated, check your input data"
+        logger.info(message)
+        return make_response(message, 400)
+
 
 dashboard_view = DashboardView.as_view('dashboard')
-mod.add_url_rule('/<string:config_hash>', view_func=dashboard_view, methods=['GET'])
+mod.add_url_rule('/<string:dashboard_hash>', view_func=dashboard_view, methods=['GET'])
 mod.add_url_rule('/', view_func=dashboard_view, methods=['POST'])

@@ -10,74 +10,57 @@ from stock_dashboard_api.models import dashboard_model
 class TestStock(unittest.TestCase):
 
     def test_create_true(self, pool_manager):
-        data = {"pk": 1, "config_hash": "TESTHASH"}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, 'TESTHASH')
-        self.assertDictEqual(dashboard_model.Dashboard.create(config_hash="TESTHASH").to_dict(), data)
+        data = {"dashboard_hash": "TESTHASH"}
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = ('TESTHASH')
+        self.assertDictEqual(dashboard_model.Dashboard.create(
+            [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]).to_dict(), data)
 
     def test_create_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(dashboard_model.Dashboard.create('TESTHASH'), False)
+        self.assertEqual(dashboard_model.Dashboard.create(
+            [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]), False)
 
     def test_update_true(self, pool_manager):
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, 'TESTHASH')
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = ('TESTHASH')
         pool_manager.return_value.__exit__.return_value = True
-        self.assertEqual(dashboard_model.Dashboard('TESTHASH').update(config_hash='HASHTEST'), True)
+        self.assertEqual(dashboard_model.Dashboard('TESTHASH').update(dashboard_hash='HASHTEST'), True)
 
     def test_update_false(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(dashboard_model.Dashboard('TESTHASH').update(config_hash='HASHTEST'), False)
+        self.assertEqual(dashboard_model.Dashboard('TESTHASH').update(dashboard_hash='HASHTEST'), False)
 
-    @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_id')
-    def test_delete_true(self, get_by_id, pool_manager):
-        get_by_id.return_value = True
+    @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_hash')
+    def test_delete_true(self, get_by_hash, pool_manager):
+        get_by_hash.return_value = True
         pool_manager.return_value.__enter__.return_value.cursor.execute.return_value = True
-        self.assertEqual(dashboard_model.Dashboard.delete_by_id(1), True)
+        self.assertEqual(dashboard_model.Dashboard.delete_by_hash("TESTHASH"), True)
 
-    @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_id')
-    def test_delete_id_does_not_exist(self, get_by_id, pool_manager):
-        get_by_id.return_value = False
+    @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_hash')
+    def test_delete_hash_does_not_exist(self, get_by_hash, pool_manager):
+        get_by_hash.return_value = False
         pool_manager.return_value.__enter__.return_value.cursor.execute.return_value = True
-        self.assertEqual(dashboard_model.Dashboard.delete_by_id(1), False)
+        self.assertEqual(dashboard_model.Dashboard.delete_by_hash("TESTHASH"), False)
 
-    @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_id')
-    def test_delete_error(self, get_by_id, pool_manager):
-        get_by_id.return_value = True
+    @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_hash')
+    def test_delete_error(self, get_by_hash, pool_manager):
+        get_by_hash.return_value = True
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(dashboard_model.Dashboard.delete_by_id(1), False)
-
-    def test_get_by_id(self, pool_manager):
-        data = {"pk": 1, "config_hash": 'TESTHASH'}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, 'TESTHASH')
-        self.assertDictEqual(dashboard_model.Dashboard.get_by_id(1).to_dict(), data)
-
-    def test_get_by_id_error(self, pool_manager):
-        pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(dashboard_model.Dashboard.get_by_id(1), None)
+        self.assertEqual(dashboard_model.Dashboard.delete_by_hash("TESTHASH"), False)
 
     def test_get_by_hash_pass(self, pool_manager):
-        data = {"pk": 1, "config_hash": 'TESTHASH'}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, 'TESTHASH')
+        data = {"dashboard_hash": 'TESTHASH'}
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = ('TESTHASH')
         self.assertDictEqual(dashboard_model.Dashboard.get_by_hash('TESTHASH').to_dict(), data)
 
     def test_get_by_hash_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(dashboard_model.Dashboard.get_by_hash(1), None)
 
-    def test_get_all_hashes(self, pool_manager):
-        data = ["TESTSADF", "TESTSAD1", "TESTSAD2", "TESTSAD3", "TESTSAD4", "TESTSAD5"]
-        pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [("TESTSADF",), ("TESTSAD1",),
-                                                                                         ("TESTSAD2",), ("TESTSAD3",),
-                                                                                         ("TESTSAD4",), ("TESTSAD5",)]
-        self.assertEqual(dashboard_model.Dashboard.get_all_hashes(), data)
-
-    def test_get_all_hashes_error(self, pool_manager):
-        pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.ProgrammingError
-        self.assertEqual(dashboard_model.Dashboard.get_all_hashes(), None)
 
     def test_get_stocks_pass(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [(1,), (2,), (3,), (4,)]
-        self.assertEqual(dashboard_model.Dashboard(1, "TESTHASH").get_stocks(), [1, 2, 3, 4])
+        self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks(), [1, 2, 3, 4])
 
     def test_get_stocks_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.ProgrammingError
-        self.assertEqual(dashboard_model.Dashboard(1, "TESTHASH").get_stocks(), None)
+        self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks(), None)

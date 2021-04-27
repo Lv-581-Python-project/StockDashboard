@@ -1,6 +1,7 @@
-from stock_dashboard_api.utils.pool import pool_manager
 from datetime import datetime
 from psycopg2 import DataError, ProgrammingError
+
+from stock_dashboard_api.utils.pool import pool_manager
 
 
 class StockData:
