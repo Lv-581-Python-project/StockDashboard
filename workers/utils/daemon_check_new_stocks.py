@@ -12,7 +12,14 @@ HEADER = {
 }
 
 
-def save_new_stock_data(ticket):
+def save_new_stock_data(ticket: str) -> bool:
+    """
+    Save new stock in db
+
+    :param ticket: Ticket name
+    :return: True, if opertion was successful
+    """
+
     response = requests.get(URL, headers=HEADER)
     for data in response.json()['data']['rows']:
         if data['symbol'] == ticket:
@@ -21,6 +28,10 @@ def save_new_stock_data(ticket):
 
 
 def check_new_stocks():
+    """
+    Check every day if new stock is appeared
+
+    """
     stocks_from_url = set()
     stocks_from_db = get_all_stocks_name()
     response = requests.get(URL, headers=HEADER)

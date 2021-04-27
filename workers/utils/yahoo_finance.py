@@ -8,14 +8,28 @@ DATE_INDEX = 0
 QUEUE = 'get_stock_data_queue'
 
 
-def check_if_exist(ticket):
+def check_if_exist(ticket: str) -> bool:
+    """
+    Chech if exist stock with this name on yahoo finance
+
+    :param ticket: Name of stock
+    :return: True, if opertion was successful and False is not
+    """
     all_info = yf.Ticker(ticket)
     if len(all_info.info) == 1:
         return False
     return True
 
 
-def data_for_stocks_data_update(stock_id, name, start):
+def data_for_stocks_data_update(stock_id: int, name: str, start: datetime) -> list or bool:
+    """
+    Fetch data from yahoo finance
+
+    :param stock_id: stock id from stocks table
+    :param name: stock name
+    :param start: last record date from stocks_data
+    :return: list with data if opertion was successful and False if not
+    """
     if check_if_exist(name):
         data_for_update = []
         data = yf.Ticker(name).history(start=start, end=datetime.datetime.now(), interval='15m')

@@ -14,6 +14,10 @@ HEADER = {
 
 
 def updating_stocks():
+    """
+    Send new data for updating stocks to queue every 15 min
+
+    """
     all_stocks_in_use = get_all_stocks_in_use()
     for stock in all_stocks_in_use:
         stock_id = stock['id']
