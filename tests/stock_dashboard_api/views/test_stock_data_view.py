@@ -3,18 +3,21 @@ import os
 
 from unittest.mock import patch
 
+from flask import Blueprint
 from stock_dashboard_api import app
 from stock_dashboard_api.models.stock_data_models import StockData
 from stock_dashboard_api.views import stocks_data_view
 
 # Flask app configuration for testing
+test_mod = Blueprint('test_stocks_data', stocks_data_view.__name__, url_prefix='/stocks_data')
 app.config.from_object(os.environ.get('FLASK_TESTING_CONFIG'))
-app.register_blueprint(stocks_data_view.test_mod)
+test_mod.add_url_rule('/', view_func=stocks_data_view.stock_data_view, methods=['POST', ])
+test_mod.add_url_rule('/<int:pk>', view_func=stocks_data_view.stock_data_view, methods=['PUT', 'DELETE'])
+app.register_blueprint(test_mod)
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StockData.get_by_id')
 def test_get_pass(mock_get):
-
     with app.app_context():
         mock_get.return_value = StockData(stock_id=2, price=300, created_at="18-09-19 01:55:19", pk=1)
         with app.test_client() as client:
@@ -44,10 +47,10 @@ def test_post_pass(mock_post):
         mock_post.return_value = StockData(stock_id=1, price=500, created_at="2020-05-11 04:22:30")
         with app.test_client() as client:
             data = {
-                    "price": 500,
-                    "created_at": "2020-05-11 04:22:30",
-                    "stock_id": 1
-}
+                "price": 500,
+                "created_at": "2020-05-11 04:22:30",
+                "stock_id": 1
+            }
             response = client.post('/stocks_data/', json=data)
             assert response.status_code == 201
             body = json.loads(response.data)
