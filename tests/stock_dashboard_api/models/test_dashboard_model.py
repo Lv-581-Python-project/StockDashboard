@@ -56,10 +56,15 @@ class TestStock(unittest.TestCase):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(dashboard_model.Dashboard.get_by_hash(1), None)
 
-
     def test_get_stocks_pass(self, pool_manager):
-        pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [(1,), (2,), (3,), (4,)]
-        self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks(), [1, 2, 3, 4])
+        pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [
+            (1, "A", "Agilent Technologies Inc. Common Stock", False)]
+        self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks(), [{
+            "company_name": "Agilent Technologies Inc. Common Stock",
+            "id": 1,
+            "in_use": False,
+            "name": "A"
+        }])
 
     def test_get_stocks_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.ProgrammingError
