@@ -20,7 +20,7 @@ export default class CheckboxesTags extends Component {
                 id="checkboxes-tags-demo"
                 options={top100Films}
                 disableCloseOnSelect
-                getOptionLabel={(option) => option.name + " " + option.companyName}
+                getOptionLabel={(option) => option.name }
                 onChange={this.handleOnChange}
                 renderOption={(option, {selected}) => (
                     <React.Fragment>
