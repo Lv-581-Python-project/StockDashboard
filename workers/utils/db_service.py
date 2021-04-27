@@ -1,5 +1,8 @@
-from pool import pool_manager
 from psycopg2 import DataError, ProgrammingError
+
+
+from pool import pool_manager
+from logger import pool_logger as logger
 
 
 def stock_in_use_check(stocks_name):
@@ -17,7 +20,7 @@ def stock_in_use_check(stocks_name):
             in_use = conn.cursor.fetchone()
             return in_use[0]
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info("stock_in_use_check: maybe wrong stock_name")
 
 
 def stock_get_id(stocks_name):
@@ -35,7 +38,7 @@ def stock_get_id(stocks_name):
             pk = conn.cursor.fetchone()
             return pk[0]
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info("stock_get_id: maybe wrong id")
 
 
 def stock_in_use_change(pk):
@@ -54,27 +57,34 @@ def stock_in_use_change(pk):
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info("stock_in_use_change: maybe wrong id")
 
 
-def insert_new_stock(name, company_name):
+def insert_new_stock(name, company_name, country, industry, sector):
     """
     Function to insert data about new stock
     :param name: name of company on the stock
     :param company_name: company name
+    :param country: country of company
+    :param industry: industry
+    :param sector: sector
     :return: True if success and None if not
     """
     with pool_manager() as conn:
-        query = """INSERT INTO stocks(name, company_name)
+        query = """INSERT INTO stocks(name, company_name, country, industry, sector)
                     VALUES 
-                    (%(name)s, %(company_name)s)
+                    (%(name)s, %(company_name)s, %(country)s, %(industry)s, %(sector)s )
                     RETURNING id, in_use"""
         try:
-            conn.cursor.execute(query, {"name": name, "company_name": company_name})
+            conn.cursor.execute(query, {"name": name,
+                                        "company_name": company_name,
+                                        "country": country,
+                                        "industry": industry,
+                                        "sector": sector})
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info("insert_new_stock: maybe wrong name or company name")
 
 
 def insert_stock_data(stock_id, price, created_at):
@@ -95,20 +105,59 @@ def insert_stock_data(stock_id, price, created_at):
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info("insert_stock_data: maybe wrong parameters")
 
 
-def amount_of_stocks():
+def get_all_stocks_name():
     """
-    Function to count number of all stocks
-    :return: number of all stocks in table
+    Function to return set of all stocks names
+    :return: set of all stocks names
     """
     with pool_manager() as conn:
-        query = """SELECT COUNT(id)
+        query = """SELECT name
                      FROM stocks"""
         try:
             conn.cursor.execute(query)
-            amount = conn.cursor.fetchone()
-            return amount[0]
+            stock_names = conn.cursor.fetchall()
+            stock_names = set(map(lambda x: x[0], stock_names))
+            return stock_names
         except (DataError, ProgrammingError, TypeError):
-            return None
+            logger.info("get_all_stocks_name: fail to get data")
+
+
+def get_all_stocks_in_use():
+    """
+    Function to find all stocks in use
+    :return: List of dicts with ids and names
+    """
+    with pool_manager() as conn:
+        query = """SELECT id, name
+                     FROM stocks
+                     WHERE in_use = true"""
+        try:
+            conn.cursor.execute(query)
+            data = conn.cursor.fetchall()
+            stocks_in_use = list()
+            list(map(lambda x: stocks_in_use.append({"id": x[0], "name": x[1]}), data))
+            return stocks_in_use
+        except (DataError, ProgrammingError, TypeError):
+            logger.info("get_all_stocks_in_use: fail to get data")
+
+
+def get_stocks_data_last_record(stock_id):
+    """
+    Get the date of the latest update by stock_id
+    :param stock_id: id of stock
+    :return: the latest update
+    """
+    with pool_manager() as conn:
+        query = """SELECT created_at
+                     FROM stocks_data
+                     WHERE stock_id = (%(stock_id)s)"""
+        try:
+            conn.cursor.execute(query, {"stock_id": stock_id})
+            data = conn.cursor.fetchall()
+            latest_update = max(list(map(lambda x: x[0], data)))
+            return latest_update
+        except (DataError, ProgrammingError, TypeError):
+            logger.info("get_stocks_data_last_record: fail to get data")
