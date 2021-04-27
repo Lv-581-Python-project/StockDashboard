@@ -18,7 +18,7 @@ class TestStock(unittest.TestCase):
     def test_create_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(dashboard_model.Dashboard.create(
-            [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]), False)
+            [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]), None)
 
     def test_update_true(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = ('TESTHASH')
@@ -27,7 +27,7 @@ class TestStock(unittest.TestCase):
 
     def test_update_false(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(dashboard_model.Dashboard('TESTHASH').update(dashboard_hash='HASHTEST'), False)
+        self.assertEqual(dashboard_model.Dashboard('TESTHASH').update(dashboard_hash='HASHTEST'), None)
 
     @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_hash')
     def test_delete_true(self, get_by_hash, pool_manager):
@@ -45,7 +45,7 @@ class TestStock(unittest.TestCase):
     def test_delete_error(self, get_by_hash, pool_manager):
         get_by_hash.return_value = True
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(dashboard_model.Dashboard.delete_by_hash("TESTHASH"), False)
+        self.assertEqual(dashboard_model.Dashboard.delete_by_hash("TESTHASH"), None)
 
     def test_get_by_hash_pass(self, pool_manager):
         data = {"dashboard_hash": 'TESTHASH'}
