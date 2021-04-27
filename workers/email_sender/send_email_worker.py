@@ -39,7 +39,6 @@ def create_email(ch, method, properties, body):
         ch.basic_ack(delivery_tag=method.delivery_tag)
         return True
     except SMTPException:
-        ch.basic_ack(delivery_tag=method.delivery_tag)
         return False
 
 
