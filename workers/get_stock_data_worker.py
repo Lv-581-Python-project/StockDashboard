@@ -1,10 +1,8 @@
 import json
 import os
-import sys
 
 import pika
 
-sys.path.append('../workers/utils/')
 from workers.utils.db_service import insert_stock_data
 
 
