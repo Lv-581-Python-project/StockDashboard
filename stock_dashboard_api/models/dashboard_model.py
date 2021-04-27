@@ -1,6 +1,6 @@
 import psycopg2
 
-from stock_dashboard_api.utils.config_hash_generator import generate_uuid
+from stock_dashboard_api.utils.dashboard_hash_generator import generate_uuid
 from stock_dashboard_api.utils.pool import pool_manager
 
 
