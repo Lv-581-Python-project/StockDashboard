@@ -48,7 +48,8 @@ class StockDataView(MethodView):
             logger.info(message)
             return make_response(message, 400)
         if not isinstance(created_at, str):
-            message = "Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
+            message = ("Incorrect created_at specified, "
+                       "example '2018-09-19 01:55:19'(year-month-day hour:minute:second))")
             logger.info(message)
             return make_response(
                 message, 400)
@@ -56,7 +57,9 @@ class StockDataView(MethodView):
         try:
             created_at = datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
         except ValueError:
-            message = "Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
+
+            message = ("Incorrect created_at specified, "
+                       "example '2018-09-19 01:55:19'(year-month-day hour:minute:second))")
             logger.info(message)
             return make_response(
                 message, 400)
@@ -94,7 +97,8 @@ class StockDataView(MethodView):
 
         if created_at:
             if not isinstance(created_at, str):
-                message = "Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second)"
+                message = ("Incorrect created_at specified, "
+                           "example '2018-09-19 01:55:19'(year-month-day hour:minute:second)")
                 logger.info(message)
                 return make_response(message, 400)
             try:
@@ -132,3 +136,4 @@ class StockDataView(MethodView):
 
 stock_data_view = StockDataView.as_view('stock_data_view')
 mod.add_url_rule('/<int:pk>', view_func=stock_data_view, methods=['GET'])
+
