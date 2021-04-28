@@ -24,19 +24,21 @@ const data = [
 ];
 
 class ChartItem extends Component {
-    state = {stocks: []}
+    state = {stock_data: [],fromValue:"",toValue:""}
     setMessage = (message) => {
         this.setState({message: message})
     }
 
+    handleFromInput = (event)=>{
+        this.setState({fromValue: event.target.value})
+    }
+
+    handleToInput = (event)=>{
+        this.setState({fromValue: event.target.value})
+    }
+
     render() {
         return (
-            // <Paper>
-            //     {this.props.stock.name}
-            //     <input type="datetime-local"/>
-            //     <input type="datetime-local"/>
-            // </Paper>
-
             <Grid style={{marginLeft: "2vw"}} container>
                 <Grid item style={{margin: 40, textAlign: "center"}} xs={6} justify="center" alignItems="center">
                     <Paper elevation={0} style={{marginBottom: 10, fontSize: "1.4em"}}>Stock Name</Paper>
@@ -56,26 +58,26 @@ class ChartItem extends Component {
                     </Grid>
                     <Grid  xs={3}  direction="column" justify="center" alignItems="center" >
                         <Grid style={{marginLeft: "2vw"}} justify="center" alignItems="center">
-                            <Paper>
+                            <Paper elevation={0}>
                                 <div style={{marginBottom: "1vh", marginTop: "1vh"}}>
-                                    <label>From<input style={{width: "99%", height: "4vh"}}
+                                    <label>From<input value={this.state.fromValue} onChange={this.handleFromInput} style={{width: "99%", height: "4vh"}}
                                                       type="datetime-local"/></label>
                                 </div>
                                 <div>
-                                    <label>To<input style={{width: "99%", height: "4vh"}}
+                                    <label>To<input value={this.state.toValue} onChange={this.handleToInput} style={{width: "99%", height: "4vh"}}
                                                     type="datetime-local"/></label>
                                 </div>
 
                             </Paper>
                         </Grid>
                         <Grid style={{marginLeft: "2vw"}} justify="center" alignItems="center">
-                            <Paper style={{justifyContent:"center",alignItems:"center"}}>
+                            <Paper elevation={0} style={{justifyContent:"center",alignItems:"center", display:"flex"}}>
                             <Button
                             variant="contained"
                             color="primary"
                             endIcon={<TimelineIcon>Draw Chart</TimelineIcon>}
                             onClick={this.goToDashboard}
-                            style={{marginTop: 30, padding: 17, borderRadius: 15}}
+                            style={{marginTop: 30, padding: 17, borderRadius: 15,}}
                         >
                             Draw Chart
                         </Button>

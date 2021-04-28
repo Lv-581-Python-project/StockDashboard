@@ -17,9 +17,9 @@ class Dashboard extends Component {
         return (
             <div>
 
-                {/*{this.state.stocks.map((stock)=>{ console.log(stock);return(<ChartItem stock={stock} />)})}*/}
-                <ChartItem/>
-                <ChartItem/>
+                {this.state.stocks.map((stock)=>{ console.log(stock);return(<ChartItem stock={stock} />)})}
+                {/*<ChartItem/>*/}
+                {/*<ChartItem/>*/}
             </div>
         );
     }
