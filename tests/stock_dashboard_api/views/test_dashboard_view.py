@@ -88,5 +88,3 @@ def test_post_dashboard_fail_invalid_data():
         response = client.post('/api/dashboard/', data=incorrect_json)
         assert response.status_code == 400
         assert response.data == message
-
-
