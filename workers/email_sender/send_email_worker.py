@@ -48,7 +48,7 @@ def send_email(email):  # pylint: disable=C0103,  W0613
     Sends an email.
     """
     server = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
-    # server.starttls()
+    server.starttls()
     server.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
     server.send_message(email)
 
