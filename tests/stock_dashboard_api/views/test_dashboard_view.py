@@ -3,6 +3,7 @@ import json
 from unittest.mock import patch
 from stock_dashboard_api import app
 from stock_dashboard_api.models.dashboard_model import Dashboard
+from stock_dashboard_api.models.stock_model import Stock
 
 
 @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_stocks')
@@ -10,12 +11,19 @@ from stock_dashboard_api.models.dashboard_model import Dashboard
 def test_get_dashboard_pass(mock_get, mock_get_stocks):
     with app.app_context():
         mock_get.return_value = Dashboard(dashboard_hash='awf241af')
-        mock_get_stocks.return_value = [1, 2]
+        mock_get_stocks.return_value = [
+            Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)]
         with app.test_client() as client:
             response = client.get('/api/dashboard/awf241af')
             body = json.loads(response.data)
             assert response.status_code == 200
-            assert body['stocks'] == [1, 2]
+            assert body['stocks'] == [
+                {
+                    "company_name": "Agilent Technologies Inc. Common Stock",
+                    "id": 1,
+                    "in_use": False,
+                    "name": "A"
+                }]
 
 
 @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_hash')
@@ -44,12 +52,30 @@ def test_get_dashboard_fail_no_stocks(mock_get, mock_get_stocks):
 
 @patch('stock_dashboard_api.models.dashboard_model.Dashboard.create')
 def test_post_dashboard_pass(mock_post):
-    data = {"stocks": [{"stock_id": 1, "datetime_from": "2018-09-19 01:55:19", "datetime_to": "2018-09-25 01:55:19"},
-                       {"stock_id": 2, "datetime_from": "2018-09-19 01:55:19", "datetime_to": "2018-09-25 01:55:19"}]}
+    data = {"stocks": [
+        {
+            "company_name": "Agilent Technologies Inc. Common Stock",
+            "id": 1,
+            "in_use": False,
+            "name": "A"
+        },
+        {
+            "company_name": "Alcoa Corporation Common Stock ",
+            "id": 2,
+            "in_use": False,
+            "name": "AA"
+        },
+        {
+            "company_name": "Ares Acquisition Corporation Class A Ordinary Shares",
+            "id": 3,
+            "in_use": False,
+            "name": "AAC"
+        }
+    ]}
     with app.app_context():
         mock_post.return_value = Dashboard(dashboard_hash='00e947a3')
         with app.test_client() as client:
-            response = client.post('/api/dashboard/', json=data)
+            response = client.post('/api/dashboard/', json={"stock_ids": [1, 2, 3]})
             body = json.loads(response.data)
             assert response.status_code == 201
             assert body["dashboard_hash"] == "00e947a3"
@@ -64,15 +90,3 @@ def test_post_dashboard_fail_invalid_data():
         assert response.data == message
 
 
-@patch('stock_dashboard_api.models.dashboard_model.Dashboard.create')
-def test_post_dashboard_fail_invalid_date(mock_post):
-    message = b"Can not create a dashboard"
-    data = {"stocks": [{"stock_id": 1, "datetime_from": "18-09-19 01:55:19", "datetime_to": "2018-09-25 01:55:19"},
-                       {"stock_id": 2, "datetime_from": "18-09-19 01:55:19", "datetime_to": "2018-09-25 01:55:19"}]}
-
-    with app.app_context():
-        mock_post.return_value = None
-        with app.test_client() as client:
-            response = client.post('/api/dashboard/', json=data)
-            assert response.status_code == 400
-            assert response.data == message

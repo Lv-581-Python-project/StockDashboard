@@ -4,8 +4,10 @@ from unittest.mock import patch
 import psycopg2
 
 from stock_dashboard_api.models import dashboard_model
+from stock_dashboard_api.models.stock_model import Stock
 
-FETCH_ONE_RETURN_VALUE = ('TESTHASH', )
+FETCH_ONE_RETURN_VALUE = ('TESTHASH',)
+
 
 @patch('stock_dashboard_api.models.dashboard_model.pool_manager')
 class TestStock(unittest.TestCase):
@@ -14,12 +16,13 @@ class TestStock(unittest.TestCase):
         data = {"dashboard_hash": "TESTHASH"}
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = FETCH_ONE_RETURN_VALUE
         self.assertDictEqual(dashboard_model.Dashboard.create(
-            [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]).to_dict(), data)
+            [Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)]).to_dict(),
+                             data)
 
     def test_create_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(dashboard_model.Dashboard.create(
-            [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]), None)
+            [Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)]), None)
 
     def test_update_true(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = FETCH_ONE_RETURN_VALUE
@@ -35,12 +38,6 @@ class TestStock(unittest.TestCase):
         get_by_hash.return_value = True
         pool_manager.return_value.__enter__.return_value.cursor.execute.return_value = True
         self.assertEqual(dashboard_model.Dashboard.delete_by_hash("TESTHASH"), True)
-
-    @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_hash')
-    def test_delete_hash_does_not_exist(self, get_by_hash, pool_manager):
-        get_by_hash.return_value = False
-        pool_manager.return_value.__enter__.return_value.cursor.execute.return_value = True
-        self.assertEqual(dashboard_model.Dashboard.delete_by_hash("TESTHASH"), False)
 
     @patch('stock_dashboard_api.models.dashboard_model.Dashboard.get_by_hash')
     def test_delete_error(self, get_by_hash, pool_manager):
@@ -60,12 +57,8 @@ class TestStock(unittest.TestCase):
     def test_get_stocks_pass(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [
             (1, "A", "Agilent Technologies Inc. Common Stock", False)]
-        self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks(), [{
-            "company_name": "Agilent Technologies Inc. Common Stock",
-            "id": 1,
-            "in_use": False,
-            "name": "A"
-        }])
+        self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks()[0].pk,
+                         Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False).pk)
 
     def test_get_stocks_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.ProgrammingError

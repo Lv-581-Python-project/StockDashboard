@@ -39,6 +39,8 @@ class DashboardView(MethodView):
         if not body:
             return make_response("Wrong data provided", 400)
         stock_ids = body.get('stock_ids')
+        if not stock_ids:
+            return make_response("No stock ids provided", 400)
         stocks = Stock.get_stock_by_ids(stock_ids)
         if not stocks:
             return make_response("Wrong stock ids provided", 400)
