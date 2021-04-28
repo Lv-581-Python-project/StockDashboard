@@ -4,7 +4,15 @@ import pika
 import json
 
 
-def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
+def get_stock_names(ch, method, properties, body):  # pylint: disable=C0103,  W0613
+    """
+    The scheduler function used to publish tasks to different queues.
+
+    :param ch: channel that the function belongs to.
+    :param method: task delivery method.
+    :param properties: pika properties.
+    :param body: body of the task in json format.
+    """
     body = json.loads(body)
     print(body)
     channel.basic_ack(delivery_tag=method.delivery_tag)
@@ -16,5 +24,5 @@ if __name__ == '__main__':
     )
     channel = connection.channel()
     channel.queue_declare(queue='get_stock_names_queue', durable=True)
-    channel.basic_consume(queue='get_stock_names_queue', on_message_callback=scheduler_function)
+    channel.basic_consume(queue='get_stock_names_queue', on_message_callback=get_stock_names)
     channel.start_consuming()
