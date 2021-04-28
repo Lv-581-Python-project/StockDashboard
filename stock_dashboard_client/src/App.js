@@ -15,8 +15,9 @@ class App extends Component {
 
         return (
             <div>
-                <Header/>
+
                 <Router>
+                    <Header/>
                     <Switch>
                         <Route path="/dashboard" component={Dashboard}/>
                         <Route path="/" component={Home}/>

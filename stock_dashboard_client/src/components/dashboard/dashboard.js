@@ -1,10 +1,10 @@
 import {Component} from 'react';
-import Chart from './chart';
+import ChartItem from './chart';
 import AutoComplete from "../auto_complete_stocks/autoCompleteStocks";
 import {withRouter} from 'react-router-dom';
 
 class Dashboard extends Component {
-    state = {stocks: []}
+    state = {stocks: [1,2]}
     setStocks = (stocks)=>{
         this.setState({stocks: stocks})
     }
@@ -17,9 +17,9 @@ class Dashboard extends Component {
         return (
             <div>
 
-                {this.state.stocks.map((stock)=>{ console.log(stock);return(<Chart stock={stock} />)})}
-                {/*<Chart/>*/}
-                {/*<Chart/>*/}
+                {/*{this.state.stocks.map((stock)=>{ console.log(stock);return(<ChartItem stock={stock} />)})}*/}
+                <ChartItem/>
+                <ChartItem/>
             </div>
         );
     }

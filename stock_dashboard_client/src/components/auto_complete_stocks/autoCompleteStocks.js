@@ -20,24 +20,26 @@ export default class CheckboxesTags extends Component {
                 id="checkboxes-tags-demo"
                 options={top100Films}
                 disableCloseOnSelect
+                disableListWrap
                 getOptionLabel={(option) => option.name }
                 onChange={this.handleOnChange}
+                style={{width: "40vw"}}
                 renderOption={(option, {selected}) => (
                     <React.Fragment>
                         <Checkbox
                             icon={icon}
                             checkedIcon={checkedIcon}
-                            style={{marginRight: 8}}
+                            style={{marginRight: 8,}}
                             checked={selected}
 
                         />
                         {option.name + " " + option.companyName}
                     </React.Fragment>
                 )}
-                style={{width: 500}}
+
                 renderInput={(params) => {
                     return (
-                        <TextField {...params} variant="outlined" label="Checkboxes" placeholder="Favorites"/>
+                        <TextField {...params} variant="outlined" label="Stocks" placeholder="Favorites"/>
                     )
                 }}
             />
