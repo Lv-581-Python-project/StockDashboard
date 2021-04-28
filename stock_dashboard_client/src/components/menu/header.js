@@ -13,9 +13,13 @@ export default class Header extends Component {
         return (
             <div>
                 <AppBar position="static">
-                    <Link to='/' style={{textDecoration: 'none',color:"#fff"}}>
-                        <Typography style={{margin:10}} variant="h3">Stock Dashboard</Typography>
-                    </Link>
+
+                    <Typography style={{margin: 10}} variant="h3">
+                        <Link to='/' style={{textDecoration: 'none', color: "#fff"}}>
+                            Stock Dashboard
+                        </Link>
+                    </Typography>
+
                 </AppBar>
 
             </div>

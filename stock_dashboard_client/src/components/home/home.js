@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {Component} from 'react';
 import AutoComplete from "../auto_complete_stocks/autoCompleteStocks";
 import Button from '@material-ui/core/Button';
@@ -6,6 +7,8 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {withRouter} from 'react-router-dom';
 import "../../css/home.css";
+
+
 class Home extends Component {
     state = {stocks: []}
     setStocks = (stocks) => {
@@ -13,7 +16,7 @@ class Home extends Component {
     }
     goToDashboard = () => {
         let stocks = this.state.stocks.map((stock) => stock.id)
-        this.props.history.push(`/dashboard?stocks=[${stocks.toString()}]`)
+        this.props.history.push(`/dashboard?stocks=[${stocks.toString()}]`, {stocks: this.state.stocks})
     }
 
     render() {
@@ -21,7 +24,7 @@ class Home extends Component {
         return (
             <Grid
                 container
-                xs = {12}
+                xs={12}
                 spacing={3}
                 direction="column"
                 alignItems="center"
@@ -29,48 +32,52 @@ class Home extends Component {
                 style={{marginTop: "2%"}}
             >
                 <Grid item xs={8}>
-                    <Paper className="textStyle" elevation={0}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non eros
-                        vehicula, lobortis
-                        dui a, efficitur sapien. Proin vel pretium dolor, a maximus quam. Praesent ut nisl posuere,
-                        aliquet felis sed, varius tortor. Donec finibus tellus a sapien facilisis, a hendrerit lacus
-                        bibendum. Donec pretium tellus sed dui rutrum luctus id a sapien. In pellentesque odio sed ipsum
-                        vestibulum blandit. Donec orci mauris, facilisis in elit placerat, venenatis faucibus nibh. In
-                        placerat enim vel tortor mollis ullamcorper efficitur aliquet ipsum. Fusce in tincidunt quam. In
-                        urna mauris, eleifend at suscipit vel, vestibulum non sem. Sed eget augue ut nibh blandit
-                        feugiat.
+                    <Paper style={{textAlign: "justify"}} className="textStyle" elevation={0}>Stock (also capital stock)
+                        is all of the shares into
+                        which ownership of a corporation is divided. In American English, the shares are collectively
+                        known as "stock". A single share of the stock represents fractional ownership of the
+                        corporation in proportion to the total number of shares. This typically entitles the stockholder
+                        to that fraction of the company's earnings, proceeds from liquidation of assets (after discharge
+                        of all senior claims such as secured and unsecured debt), or voting power, often dividing
+                        these up in proportion to the amount of money each stockholder has invested. Not all stock is
+                        necessarily equal, as certain classes of stock may be issued for example without voting rights,
+                        with enhanced voting rights, or with a certain priority to receive profits or liquidation
+                        proceeds before or after other classes of shareholders.
                     </Paper>
                 </Grid>
                 <Grid item xs={8}>
-                    <Paper className="textStyle" elevation={0}>Donec vel est eget libero tempor convallis. Proin sed urna ut nibh blandit
-                        sodales. Nunc sollicitudin ipsum quis felis laoreet placerat. Nam quis ligula nec eros lobortis
-                        consequat non ac erat. Duis cursus hendrerit erat ac vehicula. Proin in pellentesque ex. Integer
-                        nec urna auctor, sagittis arcu tempus, sollicitudin elit.
+                    <Paper style={{textAlign: "justify"}} className="textStyle" elevation={0}>Stock can be bought and
+                        sold privately or on stock
+                        exchanges, and such transactions are typically heavily regulated by governments to prevent
+                        fraud, protect investors, and benefit the larger economy. The stocks are deposited with the
+                        depositories in the electronic format also known as Demat account. As new shares are issued by a
+                        company, the ownership and rights of existing shareholders are diluted in return for cash to
+                        sustain or grow the business.
                     </Paper>
                 </Grid>
                 <Grid item xs={8}>
-                    <Paper className="textStyle" elevation={0}>Donec maximus lacus orci, id efficitur lorem rhoncus ac. Quisque dictum, turpis
-                        pretium aliquet rutrum, velit sapien vestibulum nisl, et interdum sapien lacus in tortor. Nam a
-                        arcu eget lacus sodales tempor. Phasellus sit amet sapien mi. Aenean vel diam magna. Nam rhoncus
-                        tincidunt magna sit amet eleifend. Ut nulla risus, hendrerit sed aliquam id, faucibus at mauris.
-                        Nulla molestie, magna vitae vulputate luctus, sapien nibh ornare leo, nec pulvinar ipsum nunc
-                        vitae magna. Cras tempus purus facilisis dui sodales mattis. Integer nec ante egestas, maximus
-                        nisl vel, euismod ligula. Donec felis mi, tristique in commodo vel, aliquam at erat. Mauris
-                        sollicitudin porttitor enim, nec accumsan purus. Quisque quis libero sagittis, maximus ante id,
-                        aliquet massa. In maximus sem at lacus congue, quis dapibus ex pharetra.
+                    <Paper style={{textAlign: "justify"}} className="textStyle" elevation={0}>Companies can also buy
+                        back stock, which often lets investors
+                        recoup the initial investment plus capital gains from subsequent rises in stock price. Stock
+                        options, issued by many companies as part of employee compensation, do not represent ownership,
+                        but represent the right to buy ownership at a future time at a specified price. This would
+                        represent a windfall to the employees if the option is exercised when the market price is higher
+                        than the promised price, since if they immediately sold the stock they would keep the difference
+                        (minus taxes).
                     </Paper>
                 </Grid>
-                <Grid xs={6} container className="autoComplete" direction="row"  alignItems='center' justify='center'>
-                <AutoComplete setStocks={this.setStocks}/>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    endIcon={<TimelineIcon>Show Charts</TimelineIcon>}
-                    onClick={this.goToDashboard}
-                    style={{marginTop:30,padding:17,borderRadius:15}}
-                >
-                    Show Charts
-                </Button>
-                    </Grid>
+                <Grid xs={6} container className="autoComplete" direction="row" alignItems='center' justify='center'>
+                    <AutoComplete setStocks={this.setStocks}/>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        endIcon={<TimelineIcon>Show Charts</TimelineIcon>}
+                        onClick={this.goToDashboard}
+                        style={{marginTop: 30, padding: 17, borderRadius: 15}}
+                    >
+                        Show Charts
+                    </Button>
+                </Grid>
             </Grid>
         );
     }
