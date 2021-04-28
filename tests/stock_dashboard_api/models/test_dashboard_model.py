@@ -5,13 +5,14 @@ import psycopg2
 
 from stock_dashboard_api.models import dashboard_model
 
+FETCH_ONE_RETURN_VALUE = ('TESTHASH', )
 
 @patch('stock_dashboard_api.models.dashboard_model.pool_manager')
 class TestStock(unittest.TestCase):
 
     def test_create_true(self, pool_manager):
         data = {"dashboard_hash": "TESTHASH"}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = ('TESTHASH')
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = FETCH_ONE_RETURN_VALUE
         self.assertDictEqual(dashboard_model.Dashboard.create(
             [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]).to_dict(), data)
 
@@ -21,7 +22,7 @@ class TestStock(unittest.TestCase):
             [{"stock_id": 2, "stock_name": "IBM"}, {"stock_id": 3, "stock_name": "Google"}]), None)
 
     def test_update_true(self, pool_manager):
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = ('TESTHASH')
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = FETCH_ONE_RETURN_VALUE
         pool_manager.return_value.__exit__.return_value = True
         self.assertEqual(dashboard_model.Dashboard('TESTHASH').update(dashboard_hash='HASHTEST'), True)
 
@@ -49,7 +50,7 @@ class TestStock(unittest.TestCase):
 
     def test_get_by_hash_pass(self, pool_manager):
         data = {"dashboard_hash": 'TESTHASH'}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = ('TESTHASH')
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = FETCH_ONE_RETURN_VALUE
         self.assertDictEqual(dashboard_model.Dashboard.get_by_hash('TESTHASH').to_dict(), data)
 
     def test_get_by_hash_fail(self, pool_manager):

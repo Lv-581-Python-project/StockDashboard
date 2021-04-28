@@ -2,8 +2,8 @@ from flask.views import MethodView
 from flask import Blueprint, request, jsonify, make_response, Response
 from stock_dashboard_api.utils.logger import views_logger as logger
 from stock_dashboard_api.models.dashboard_model import Dashboard
+from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api.utils.json_parser import get_body
-
 mod = Blueprint('dashboard', __name__, url_prefix='/api/dashboard')
 
 
@@ -27,6 +27,7 @@ class DashboardView(MethodView):
         stocks = dashboard.get_stocks()
         if not stocks:
             return make_response("Can not find any stocks in dashboard", 400)
+        stocks = [stock.to_dict() for stock in stocks]
         return make_response(jsonify({"stocks": stocks}), 200)
 
     def post(self) -> Response:
@@ -37,7 +38,10 @@ class DashboardView(MethodView):
         body = get_body(request)
         if not body:
             return make_response("Wrong data provided", 400)
-        stocks = body.get('stocks')
+        stock_ids = body.get('stock_ids')
+        stocks = Stock.get_stock_by_ids(stock_ids)
+        if not stocks:
+            return make_response("Wrong stock ids provided", 400)
         dashboard = Dashboard.create(stocks=stocks)
         if dashboard:
             return make_response(jsonify(dashboard.to_dict()), 201)
