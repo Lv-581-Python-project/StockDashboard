@@ -20,17 +20,18 @@ class Dashboard:
     def create(cls, stocks: list) -> object:
         """Creates a new record in Dashboard table
 
-        :param stocks: list of stocks for specific dashboard
+        :param stock_ids: list of stock ids for specific dashboard
         :return: instance of Dashboard
         """
-        stock_names = [stock["stock_name"] for stock in stocks]
+
+        stock_names = [stock.name for stock in stocks]
         stock_names.sort()
         stock_names = " ".join(stock_names)
         dashboard_hash = generate_dashboard_hash(stock_names=stock_names)
 
         # Check if dashboard already exists returning it
         existing_dashboard = Dashboard.get_by_hash(dashboard_hash)
-        if existing_dashboard and existing_dashboard.dashboard_hash:
+        if existing_dashboard:
             return existing_dashboard
 
         with pool_manager() as conn:
@@ -43,7 +44,7 @@ class Dashboard:
                 conn.cursor.execute(insert_dashboard_query, {'dashboard_hash': dashboard_hash})
                 dashboard_hash = conn.cursor.fetchone()
 
-                dashboard_has_stocks_insert_data = [(stock["stock_id"], dashboard_hash) for stock in stocks]
+                dashboard_has_stocks_insert_data = [(stock.pk, dashboard_hash) for stock in stocks]
                 insert_dashboard_has_stocks_query = (f"INSERT INTO {dashboard_has_stocks_table} "
                                                      "(stock_id, dashboard_hash)"
                                                      " VALUES (%s, %s);")
@@ -82,8 +83,9 @@ class Dashboard:
 
             try:
                 conn.cursor.execute(get_dashboard_id_query, {'dashboard_hash': dashboard_hash})
-                dashboard_hash = conn.cursor.fetchone()
-                return Dashboard(dashboard_hash=dashboard_hash)
+                dashboard_hash = conn.cursor.fetchone()[0]
+                if dashboard_hash:
+                    return Dashboard(dashboard_hash=dashboard_hash)
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as error:
                 logger.info(f"Error Dashboard model get_by_hash {error}")
 
@@ -99,7 +101,7 @@ class Dashboard:
             try:
                 conn.cursor.execute(get_stocks_id_query, {'dashboard_hash': self.dashboard_hash})
                 list_of_stocks = conn.cursor.fetchall()
-                list_of_stocks = [Stock(pk=stock[0], name=stock[1], company_name=stock[2], in_use=stock[3]).to_dict()
+                list_of_stocks = [Stock(pk=stock[0], name=stock[1], company_name=stock[2], in_use=stock[3])
                                   for stock in list_of_stocks]
                 return list_of_stocks
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as error:
@@ -110,9 +112,6 @@ class Dashboard:
         """
         Deletes a Dashboard instance by its dashboard_hash.
         """
-
-        if not Dashboard.get_by_hash(dashboard_hash):
-            return False
 
         with pool_manager() as conn:
             query = f"DELETE FROM {cls._table} WHERE dashboard_hash = %(dashboard_hash)s;"

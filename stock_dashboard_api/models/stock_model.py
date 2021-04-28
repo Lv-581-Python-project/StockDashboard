@@ -136,6 +136,20 @@ class Stock:
                       for pk, name, company_name, in_use in stocks]
         return stocks
 
+    @classmethod
+    def get_stock_by_ids(cls, stock_ids):
+        stock_ids = tuple(stock_ids)
+        select_stocks_query = f"""SELECT id, name, company_name, in_use FROM {cls._table} WHERE id IN %(stock_ids)s"""
+        with pool_manager() as conn:
+            try:
+                conn.cursor.execute(select_stocks_query, {'stock_ids': stock_ids})
+                stocks = conn.cursor.fetchall()
+                stocks = [Stock(pk=stock[0], name=stock[1],company_name= stock[2], in_use=stock[3]) for stock in stocks]
+                return stocks
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
+                message = "Could not get stocks"
+                logger.warning(message)
+
     def get_data_for_time_period(self, datetime_from: datetime, datetime_to: datetime) -> list:
         """
         Return list of stock datas for current stock in specified period of time

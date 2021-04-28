@@ -44,6 +44,14 @@ Insert to `.env`:
 ```
    export FLASK_APP=your_path_to_app
    export FLASK_SECRET_KEY=your_flask_secret_key
+   
+   Choose one FLASK config:
+   export FLASK_CONFIG=stock_dashboard_api.config.DevelopmentConfig 
+   export FLASK_CONFIG=stock_dashboard_api.config.ProductionConfig
+   export FLASK_CONFIG=stock_dashboard_api.config.StagingConfig
+   
+   export FLASK_TESTING_CONFIG=stock_dashboard_api.config.TestingConfig
+   
    export APPLICATION_HOST=your_application_host_address
    export PROD_ROOT=your_full_path_to_app
    
