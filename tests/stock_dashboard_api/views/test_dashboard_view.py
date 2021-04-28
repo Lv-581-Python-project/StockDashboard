@@ -51,9 +51,11 @@ def test_get_dashboard_fail_no_stocks(mock_get, mock_get_stocks):
 
 
 @patch('stock_dashboard_api.models.dashboard_model.Dashboard.create')
-def test_post_dashboard_pass(mock_post):
+@patch('stock_dashboard_api.models.stock_model.Stock.get_stock_by_ids')
+def test_post_dashboard_pass(mock_get_ids, mock_post):
     data = {"stock_ids": [1,2]}
     with app.app_context():
+        mock_get_ids.return_value = Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)
         mock_post.return_value = Dashboard(dashboard_hash='f79ee4f2')
         with app.test_client() as client:
             response = client.post('/api/dashboard/', json=data)

@@ -173,7 +173,7 @@ class Stock:
             try:
                 conn.cursor.execute(select_stocks_query, {'stock_ids': stock_ids})
                 stocks = conn.cursor.fetchall()
-                stocks = [Stock(pk = stock[0], name=stock[1],company_name= stock[2], in_use=stock[3]) for stock in stocks]
+                stocks = [Stock(pk=stock[0], name=stock[1],company_name= stock[2], in_use=stock[3]) for stock in stocks]
                 return stocks
             except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
                 message = "Could not get stocks"
