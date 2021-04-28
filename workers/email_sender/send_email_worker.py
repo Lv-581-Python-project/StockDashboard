@@ -1,6 +1,7 @@
 import json
 import os
 import smtplib
+import imaplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from smtplib import SMTPException
@@ -46,10 +47,10 @@ def send_email(email):  # pylint: disable=C0103,  W0613
     """
     Sends an email.
     """
-    smtp_conn = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
-    smtp_conn.starttls()
-    smtp_conn.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
-    smtp_conn.send_message(email)
+    server = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
+    # server.starttls()
+    server.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
+    server.send_message(email)
 
 
 if __name__ == '__main__':
