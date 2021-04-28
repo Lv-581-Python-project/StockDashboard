@@ -76,9 +76,8 @@ def test_post_dashboard_pass(mock_post):
         mock_post.return_value = Dashboard(dashboard_hash='00e947a3')
         with app.test_client() as client:
             response = client.post('/api/dashboard/', json={"stock_ids": [1, 2, 3]})
-            body = json.loads(response.data)
             assert response.status_code == 201
-            assert body["dashboard_hash"] == "00e947a3"
+
 
 
 def test_post_dashboard_fail_invalid_data():
