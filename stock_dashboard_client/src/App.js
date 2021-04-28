@@ -19,7 +19,7 @@ class App extends Component {
                 <Router>
                     <Header/>
                     <Switch>
-                        <Route path="/dashboard" component={Dashboard}/>
+                        <Route path="/dashboard/:param1" component={Dashboard}/>
                         <Route path="/" component={Home}/>
                         <Redirect path='*' to='/'/>
                     </Switch>

@@ -16,7 +16,14 @@ class Home extends Component {
     }
     goToDashboard = () => {
         let stocks = this.state.stocks.map((stock) => stock.id)
-        this.props.history.push(`/dashboard?stocks=[${stocks.toString()}]`, {stocks: this.state.stocks})
+         axios({
+            method: 'post',
+            url: 'http://localhost:5000/api/dashboard/',
+            data: {stock_ids:stocks},
+            config: { headers: { 'Content-Type': 'application/json' } }
+        }).then(response => this.props.history.push(`/dashboard/${response.data.dashboard_hash}`))
+            .catch(errors => console.log(errors))
+
     }
 
     render() {

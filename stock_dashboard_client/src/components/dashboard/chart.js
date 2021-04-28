@@ -30,21 +30,28 @@ class ChartItem extends Component {
     }
 
     handleFromInput = (event)=>{
+        // let fromDate = event.target.value
+        // fromDate = fromDate.replace("T"," ")+":00"
         this.setState({fromValue: event.target.value})
+        console.log(this.state.fromValue)
     }
 
     handleToInput = (event)=>{
         this.setState({fromValue: event.target.value})
+        console.log(this.state.toValue)
+    }
+    handleDrawChart = ()=>{
+
     }
 
     render() {
         return (
-            <Grid style={{marginLeft: "2vw"}} container>
-                <Grid item style={{margin: 40, textAlign: "center"}} xs={6} justify="center" alignItems="center">
-                    <Paper elevation={0} style={{marginBottom: 10, fontSize: "1.4em"}}>Stock Name</Paper>
+            <Grid style={{marginLeft: "2vw",marginBottom:20}} container>
+                <Grid item style={{margin: 40, textAlign: "center"}} xs={7} >
+                    <Paper elevation={0} style={{marginBottom: 10, fontSize: "1.4em"}}>{this.props.stock.company_name}</Paper>
                 </Grid>
                 <Grid container>
-                    <Grid xs={6} justify="center" alignItems="center">
+                    <Grid item xs={7} >
                         <Paper>
                             <Chart
                                 data={data}
@@ -56,8 +63,8 @@ class ChartItem extends Component {
                             </Chart>
                         </Paper>
                     </Grid>
-                    <Grid  xs={3}  direction="column" justify="center" alignItems="center" >
-                        <Grid style={{marginLeft: "2vw"}} justify="center" alignItems="center">
+                    <Grid item xs={3} >
+                        <Grid style={{marginLeft: "2vw"}} >
                             <Paper elevation={0}>
                                 <div style={{marginBottom: "1vh", marginTop: "1vh"}}>
                                     <label>From<input value={this.state.fromValue} onChange={this.handleFromInput} style={{width: "99%", height: "4vh"}}
@@ -70,13 +77,13 @@ class ChartItem extends Component {
 
                             </Paper>
                         </Grid>
-                        <Grid style={{marginLeft: "2vw"}} justify="center" alignItems="center">
+                        <Grid style={{marginLeft: "2vw"}} >
                             <Paper elevation={0} style={{justifyContent:"center",alignItems:"center", display:"flex"}}>
                             <Button
                             variant="contained"
                             color="primary"
                             endIcon={<TimelineIcon>Draw Chart</TimelineIcon>}
-                            onClick={this.goToDashboard}
+                            onClick={this.handleDrawChart}
                             style={{marginTop: 30, padding: 17, borderRadius: 15,}}
                         >
                             Draw Chart

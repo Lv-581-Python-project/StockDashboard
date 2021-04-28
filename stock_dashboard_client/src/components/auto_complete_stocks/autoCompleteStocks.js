@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -9,16 +10,24 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
 
 export default class CheckboxesTags extends Component {
+    state = {stock_options:[]}
     handleOnChange = (event, value) => {
         this.props.setStocks(value);
     }
-
+    componentWillMount(){
+        axios({
+            method: 'get',
+            url: 'http://localhost:5000//api/stocks/',
+            config: { headers: { 'Content-Type': 'application/json' } }
+        }).then(response => this.setState({stock_options:response.data}))
+            .catch(errors => console.log(errors))
+    }
     render() {
         return (
             <Autocomplete
                 multiple
                 id="checkboxes-tags-demo"
-                options={top100Films}
+                options={this.state.stock_options}
                 disableCloseOnSelect
                 disableListWrap
                 getOptionLabel={(option) => option.name }
@@ -33,7 +42,7 @@ export default class CheckboxesTags extends Component {
                             checked={selected}
 
                         />
-                        {option.name + " " + option.companyName}
+                        {option.name + " " + option.company_name}
                     </React.Fragment>
                 )}
 
