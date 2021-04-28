@@ -3,15 +3,12 @@ from pytest_rabbitmq import factories
 
 from stock_dashboard_api import app
 
-rabbitmq_my_proc = factories.rabbitmq_proc(
-    port=8888, logsdir='/tmp'
-)
-rabbitmq_my = factories.rabbitmq('rabbitmq_my_proc')
-
 
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
+    rabbitmq_my_proc = factories.rabbitmq_proc(port=8888)
+    rabbitmq = factories.rabbitmq('rabbitmq_my_proc')
 
     with app.test_client() as client:
         yield client
@@ -27,7 +24,7 @@ def test_send_email_get(client):
     assert b'This is the dashboard page.' in response.data
 
 
-def test_send_email_post(client):
+def test_send_email_post(client):  # <--------------
     app.config['WTF_CSRF_ENABLED'] = False
     data = {
         "sender": "Test",
@@ -40,6 +37,7 @@ def test_send_email_post(client):
 
 
 def test_send_email_invalid_no_sender(client):
+    app.config['WTF_CSRF_ENABLED'] = False
     data = {
         "sender": "",
         "recipient": "test_stock_dashboard581@gmail.com",
@@ -51,6 +49,7 @@ def test_send_email_invalid_no_sender(client):
 
 
 def test_send_email_invalid_no_recipient(client):
+    app.config['WTF_CSRF_ENABLED'] = False
     data = {
         "sender": "Test",
         "recipient": "",
@@ -62,6 +61,7 @@ def test_send_email_invalid_no_recipient(client):
 
 
 def test_send_email_invalid_no_data(client):
+    app.config['WTF_CSRF_ENABLED'] = False
     data = {
         "sender": "",
         "recipient": "",

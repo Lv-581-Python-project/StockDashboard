@@ -1,20 +1,31 @@
 import json
+import os
+
 from unittest.mock import patch
 
+from flask import Blueprint
 from stock_dashboard_api import app
 from stock_dashboard_api.models.stock_data_models import StockData
+from stock_dashboard_api.views import stocks_data_view
+
+# Flask app configuration for testing
+test_mod = Blueprint('test_stocks_data', stocks_data_view.__name__, url_prefix='/stocks_data')
+app.config.from_object(os.environ.get('FLASK_TESTING_CONFIG'))
+test_mod.add_url_rule('/', view_func=stocks_data_view.stock_data_view, methods=['POST', ])
+test_mod.add_url_rule('/<int:pk>', view_func=stocks_data_view.stock_data_view, methods=['PUT', 'DELETE'])
+app.register_blueprint(test_mod)
 
 
 @patch('stock_dashboard_api.models.stock_data_models.StockData.get_by_id')
 def test_get_pass(mock_get):
     with app.app_context():
-        mock_get.return_value = StockData(stock_id=2, price=300, created_at="18/09/19 01:55:19", pk=1)
+        mock_get.return_value = StockData(stock_id=2, price=300, created_at="18-09-19 01:55:19", pk=1)
         with app.test_client() as client:
             response = client.get('/stocks_data/1')
             body = json.loads(response.data)
             assert response.status_code == 200
             assert body['id'] == 1
-            assert body['created_at'] == '18/09/19 01:55:19'
+            assert body['created_at'] == '18-09-19 01:55:19'
             assert body['price'] == 300
             assert body['stock_id'] == 2
 
@@ -36,10 +47,10 @@ def test_post_pass(mock_post):
         mock_post.return_value = StockData(stock_id=1, price=500, created_at="2020-05-11 04:22:30")
         with app.test_client() as client:
             data = {
-                    "price": 500,
-                    "created_at": "2020-05-11 04:22:30",
-                    "stock_id": 1
-}
+                "price": 500,
+                "created_at": "2020-05-11 04:22:30",
+                "stock_id": 1
+            }
             response = client.post('/stocks_data/', json=data)
             assert response.status_code == 201
             body = json.loads(response.data)
@@ -85,7 +96,7 @@ def test_post_data_fail_wrong_stock_id():
 
 def test_post_data_fail_wrong_create_at():
     with app.test_client() as client:
-        message = b"Incorrect created_at specified, example '2020-09-19 01:55:19'(year/month/day hour:minute:second))"
+        message = b"Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
         data = {"stock_id": 3,
                 "price": 300,
                 "created_at": "20-01-01"}
@@ -97,7 +108,7 @@ def test_post_data_fail_wrong_create_at():
 @patch('stock_dashboard_api.models.stock_data_models.StockData.create')
 def test_post_create_fail(mock_post):
     with app.app_context():
-        message = b"Incorrect created_at specified, example '2020-09-19 01:55:19'(year/month/day hour:minute:second))"
+        message = b"Incorrect created_at specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
         mock_post.return_value = None
         with app.test_client() as client:
             data = {"stock_id": 3,
@@ -169,12 +180,11 @@ def test_put_wrong_price(mock_get):
 @patch('stock_dashboard_api.models.stock_data_models.StockData.get_by_id')
 def test_put_wrong_create_at(mock_get):
     with app.app_context():
-        message = b"Incorrect date specified," \
-                  b" example '2020-09-19 01:55:19'(year/month,day hour:minute:second))"
+        message = b"Incorrect date specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second))"
         mock_get.return_value = StockData(stock_id=2, price=300, created_at="19/09/19 01:55:19", pk=1)
         with app.test_client() as client:
             data = {"price": 300,
-                    "created_at": "2021-01-08"
+                    "created_at": "2021/01/08"
                     }
             response = client.put('/stocks_data/2', json=data)
             assert response.status_code == 400

@@ -143,12 +143,28 @@ class StockViewsTestCase(TestCase):
 
     def test_get_stock_data_for_time_period_wrong_time(self):
         get_by_id = self.stock_mock.get_by_id
-        get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM')
+        get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM', False)
+        self.stock_mock.to_dict.return_value = {'pk': 1,
+                                                'name': 'IBM',
+                                                'company_name': 'IBM',
+                                                'in_use': False}
         stock_id = 1
         with app.test_client() as client:
-            response = client.get(BASE_URL + '{stock_id}?from=2020/04/01 05:21:22&to=2020-05-11 04:22:30'
+            response = client.get(BASE_URL + '{stock_id}?from=2020/01 05:21:22&to=2020-05-11 04:22:30'
                                   .format(stock_id=stock_id))
             self.assertEqual(response.data,
                              b"Incorrect date specified, example '2018-09-19 01:55:19'"
-                             b"(year/month,day hour:minute:second)")
+                             b"(year-month-day hour:minute:second)")
             self.assertEqual(response.status, STATUS_400)
+
+    def test_get_all(self):
+        data = {'pk': 1, 'name': 'IBM', 'company_name': 'IBM'}
+        expected_result = [data]
+        stock = self.stock_mock(**data)
+        stock.to_dict.return_value = data.copy()
+        get_all = self.stock_mock.get_all
+        get_all.return_value = [stock]
+
+        with app.test_client() as client:
+            response = client.get(BASE_URL)
+            self.assertEqual(expected_result, json.loads(response.data))

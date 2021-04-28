@@ -7,9 +7,9 @@ from psycopg2.pool import PoolError, SimpleConnectionPool
 
 POOL_DELAY = os.getenv('POOL_DELAY')
 LOGGING_CONF = os.getenv('LOGGING_CONF')
-print(LOGGING_CONF)
 fileConfig(LOGGING_CONF, disable_existing_loggers=True)
 logger = logging.getLogger('pool')
+TRAILS = 10
 
 
 class Connection:
@@ -33,7 +33,7 @@ class Connection:
 
     def __enter__(self):
         logger.info('Get connection from pool %s', id(self.conn))
-        for _ in range(10):
+        for _ in range(TRAILS):
             try:
                 self.conn = Connection.connection_pool.getconn()
                 self.conn.autocommit = False
