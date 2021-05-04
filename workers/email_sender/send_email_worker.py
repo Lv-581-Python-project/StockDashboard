@@ -7,6 +7,7 @@ from smtplib import SMTPException
 
 import pika
 from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2.exceptions import TemplateNotFound
 
 
 def create_email(ch, method, properties, body):
@@ -26,19 +27,18 @@ def create_email(ch, method, properties, body):
         loader=PackageLoader('workers', 'email_sender/templates'),
         autoescape=select_autoescape(['html', 'xml'])
     )
-
-    template = env.get_template(template_name + '.html')
-    html = template.render(sender=sender, recipient=recipient, link=link)
-
-    email['From'] = sender
-    email['To'] = recipient
-    email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
-    email.attach(MIMEText(html, 'html'))
     try:
+        template = env.get_template(template_name + '.html')
+        html = template.render(sender=sender, recipient=recipient, link=link)
+
+        email['From'] = sender
+        email['To'] = recipient
+        email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
+        email.attach(MIMEText(html, 'html'))
         send_email(email)
         ch.basic_ack(delivery_tag=method.delivery_tag)
         return True
-    except SMTPException:
+    except (SMTPException, TemplateNotFound):
         return False
 
 

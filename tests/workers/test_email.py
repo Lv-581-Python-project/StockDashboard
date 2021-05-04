@@ -1,5 +1,7 @@
 import json
 import os
+import unittest
+from unittest.mock import patch
 
 import pika
 import pytest
@@ -77,21 +79,44 @@ def test_send_email_invalid_no_data(client):
     assert response.status_code == 200
 
 
-def test_create_email_function():
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
-    )
-    channel = connection.channel()
+class SendEmailTest(unittest.TestCase):
+    def test_send_email(self):
+        with patch('smtplib.SMTP') as smtp:
+            connection = pika.BlockingConnection(
+                pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
+            )
+            channel = connection.channel()
 
-    class Method:
-        delivery_tag = 0
+            class Method:
+                delivery_tag = 0
 
-    method = Method
+            method = Method
 
-    body = json.dumps({"sender": 'Test',
-                       "recipient": 'test_stock_dashboard581@gmail.com',
-                       "path": 'http://127.0.0.1:5000/mail/send_email',
-                       "template_name": "dashboard_invite_email"})
+            body = json.dumps({"sender": 'Test',
+                               "recipient": 'test_stock_dashboard581@gmail.com',
+                               "path": 'http://127.0.0.1:5000/mail/send_email',
+                               "template_name": "dashboard_invite_email"})
 
-    sent = create_email(ch=channel, method=method, properties=pika.BasicProperties(delivery_mode=2), body=body)
-    assert sent is True
+            create_email(ch=channel, method=method, properties=pika.BasicProperties(delivery_mode=2), body=body)
+            instance = smtp.return_value
+            self.assertTrue(instance.send_message.called)
+            self.assertEqual(instance.send_message.call_count, 1)
+
+    def test_send_email_fail(self):
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
+        )
+        channel = connection.channel()
+
+        class Method:
+            delivery_tag = 0
+
+        method = Method
+
+        body = json.dumps({"sender": 'Test',
+                           "recipient": 'test_stock_dashboard581@gmail.com',
+                           "path": 'http://127.0.0.1:5000/mail/send_email',
+                           "template_name": "dashboard_invite"})
+
+        email = create_email(ch=channel, method=method, properties=pika.BasicProperties(delivery_mode=2), body=body)
+        self.assertEqual(email, False)
