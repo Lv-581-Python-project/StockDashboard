@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import psycopg2
 
@@ -136,6 +136,20 @@ class Stock:
                       for pk, name, company_name, in_use in stocks]
         return stocks
 
+    @classmethod
+    def get_stock_by_ids(cls, stock_ids):
+        stock_ids = tuple(stock_ids)
+        select_stocks_query = f"""SELECT id, name, company_name, in_use FROM {cls._table} WHERE id IN %(stock_ids)s"""
+        with pool_manager() as conn:
+            try:
+                conn.cursor.execute(select_stocks_query, {'stock_ids': stock_ids})
+                stocks = conn.cursor.fetchall()
+                stocks = [Stock(pk=stock[0], name=stock[1],company_name= stock[2], in_use=stock[3]) for stock in stocks]
+                return stocks
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
+                message = "Could not get stocks"
+                logger.warning(message)
+
     def get_data_for_time_period(self, datetime_from: datetime, datetime_to: datetime) -> list:
         """
         Return list of stock datas for current stock in specified period of time
@@ -166,18 +180,26 @@ class Stock:
         return stock_data_for_time_period
 
     @classmethod
-    def get_stock_by_ids(cls, stock_ids):
-        stock_ids = tuple(stock_ids)
-        select_stocks_query = f"""SELECT id, name, company_name, in_use FROM {cls._table} WHERE id IN %(stock_ids)s"""
+    def get_data_for_last_day(cls, pk: int) -> list:
+        stock_data_for_last_day = []
+        datetime_now = datetime.now().strftime(DATETIME_PATTERN)
+        datetime_yesterday = (datetime.now() - timedelta(days=1)).strftime(DATETIME_PATTERN)
         with pool_manager() as conn:
+            query = """SELECT * FROM stocks_data
+                                WHERE stock_id = %(stock_id)s
+                                AND %(yesterday)s <= created_at AND created_at < %(today)s
+                                ORDER BY created_at;"""
             try:
-                conn.cursor.execute(select_stocks_query, {'stock_ids': stock_ids})
-                stocks = conn.cursor.fetchall()
-                stocks = [Stock(pk=stock[0], name=stock[1],company_name= stock[2], in_use=stock[3]) for stock in stocks]
-                return stocks
-            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError):
-                message = "Could not get stocks"
-                logger.warning(message)
+                conn.cursor.execute(query, {'stock_id': pk,
+                                            'yesterday': datetime_yesterday,
+                                            'today': datetime_now})
+                stock_data_for_last_day = conn.cursor.fetchall()
+            except (psycopg2.DataError, psycopg2.ProgrammingError, TypeError) as err:
+                logger.info(f"Error! {err}")
+
+        stock_data_for_last_day = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
+                                   for pk, stock_id, price, created_at in stock_data_for_last_day]
+        return stock_data_for_last_day
 
     def to_dict(self) -> dict:
         """
