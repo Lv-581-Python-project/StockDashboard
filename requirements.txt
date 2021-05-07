@@ -12,3 +12,4 @@ wtforms[email]==2.3.3
 pytest==6.2.3
 pytest-rabbitmq==2.1.0
 coverage==5.5
+yfinance==0.1.59
