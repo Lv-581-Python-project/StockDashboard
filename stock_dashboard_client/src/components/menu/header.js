@@ -5,10 +5,6 @@ import {Link} from "react-router-dom";
 
 export default class Header extends Component {
 
-    // handleHomeClick = ()=>{
-    //     this.props.history.push(`/`)
-    // }
-
     render() {
         return (
             <div>

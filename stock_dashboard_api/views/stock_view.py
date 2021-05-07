@@ -101,7 +101,7 @@ class StockView(MethodView):
         A method that return all Stocks
         :return: Response with all Stocks
         """
-        stocks = [stock.to_dict() for stock in Stock.get_all()[:100]]
+        stocks = [stock.to_dict() for stock in Stock.get_all()]
         return make_response(jsonify(stocks), 200)
 
     def _get_by_id(self, pk: int):  # pylint: disable=C0103, R0201

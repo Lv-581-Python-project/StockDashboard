@@ -33,7 +33,7 @@ class Dashboard extends Component {
 
             <Grid container style={{marginTop:40}}>
                 <Grid item xs={10}>
-                {this.state.stocks.map((stock)=>{ console.log(stock);return(<ChartItem key={stock.id} stock={stock} />)})}
+                {this.state.stocks.map((stock)=>{return(<ChartItem key={stock.id} stock={stock} />)})}
                     </Grid>
                 <Grid xs={2}>
                     <Button
