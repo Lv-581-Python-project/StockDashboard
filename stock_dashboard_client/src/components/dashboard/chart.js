@@ -10,6 +10,7 @@ import {
     LineSeries,
 } from '@devexpress/dx-react-chart-material-ui';
 import TimelineIcon from "@material-ui/icons/Timeline";
+import axios from "axios";
 
 const data = [
     {argument: 1, value: 10},
@@ -24,7 +25,7 @@ const data = [
 ];
 
 class ChartItem extends Component {
-    state = {stock_data: [],fromValue:"",toValue:""}
+    state = {stock_data: [],fromValue:"",toValue:"",chart_data:[]}
     setMessage = (message) => {
         this.setState({message: message})
     }
@@ -37,11 +38,29 @@ class ChartItem extends Component {
     }
 
     handleToInput = (event)=>{
-        this.setState({fromValue: event.target.value})
+        // let toDate = event.target.value
+        // toDate = toDate.replace("T"," ")+":00"
+        this.setState({toValue: event.target.value})
         console.log(this.state.toValue)
     }
     handleDrawChart = ()=>{
-
+        let toDate = this.state.toValue
+        toDate = toDate.replace("T"," ")+":00"
+        let fromDate = this.state.fromValue
+        fromDate = fromDate.replace("T"," ")+":00"
+        axios({
+            method: 'get',
+            url: `http://localhost:5000/api/stocks/${this.props.stock.id}?from=${fromDate}&to=${toDate}`,
+            config: {headers: {'Content-Type': 'application/json'}}
+        }).then(response => {
+            this.setState({stock_data: response.data})
+            let data_for_chart = []
+            response.data.forEach((stock)=>{
+                data_for_chart.push({argument:stock.created_at, value:stock.price})
+            })
+            this.setState({chart_data:data_for_chart})
+        })
+            .catch(errors => console.log(errors))
     }
 
     render() {
@@ -54,7 +73,7 @@ class ChartItem extends Component {
                     <Grid item xs={7} >
                         <Paper>
                             <Chart
-                                data={data}
+                                data={this.state.chart_data}
                             >
                                 <ArgumentAxis/>
                                 <ValueAxis/>
