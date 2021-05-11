@@ -7,6 +7,8 @@ import json
 def connect_queue():
     """
     Connects to the RMQ server.
+
+    :return: rabbitmq server.
     """
     rabbitmq = pika.BlockingConnection(
         pika.ConnectionParameters(os.environ.get('RABBITMQ_CONNECTION_HOST'))
@@ -16,7 +18,9 @@ def connect_queue():
 
 def get_stock_names_queue():
     """
-    Returns a created email queue.
+    Function to create a get_stock_names queue.
+
+    :return: get_stock_names queue.
     """
     connect = connect_queue()
     channel = connect.channel()
@@ -32,7 +36,9 @@ def get_stock_names_queue():
 
 def get_stock_data_queue():
     """
-    Returns a created email queue.
+    Returns a created get_stock_data queue.
+
+    :return: get_stock_data queue.
     """
     connect = connect_queue()
     channel = connect.channel()
@@ -47,6 +53,11 @@ def get_stock_data_queue():
 
 
 def publish_get_stock_names_task(body):
+    """
+    A function to publish a task to get_stock_names queue.
+
+    :param body: body of the task in json format.
+    """
     queue = get_stock_names_queue()
     queue.basic_publish(
         exchange='get_stock_names_exchange',
@@ -59,6 +70,11 @@ def publish_get_stock_names_task(body):
 
 
 def publish_get_stock_data_task(body):
+    """
+    A function to publish a task to get_stock_data queue.
+
+    :param body: body of the task in json format.
+    """
     queue = get_stock_data_queue()
     queue.basic_publish(
         exchange='get_stock_data_exchange',
@@ -71,6 +87,14 @@ def publish_get_stock_data_task(body):
 
 
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
+    """
+    The scheduler function used to publish tasks to different queues.
+
+    :param ch: channel that the function belongs to.
+    :param method: task delivery method.
+    :param properties: pika properties.
+    :param body: body of the task in json format.
+    """
     dict_body = json.loads(body)
     queue = dict_body['queue']
     print(body)

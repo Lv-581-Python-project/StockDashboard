@@ -1,11 +1,13 @@
 import json
 import os
 import smtplib
-import pika
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from smtplib import SMTPException
 
+import pika
 from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2.exceptions import TemplateNotFound
 
 
 def create_email(ch, method, properties, body):
@@ -25,28 +27,29 @@ def create_email(ch, method, properties, body):
         loader=PackageLoader('workers', 'email_sender/templates'),
         autoescape=select_autoescape(['html', 'xml'])
     )
+    try:
+        template = env.get_template(template_name + '.html')
+        html = template.render(sender=sender, recipient=recipient, link=link)
 
-    template = env.get_template(template_name + '.html')
-    html = template.render(sender=sender, recipient=recipient, link=link)
+        email['From'] = sender
+        email['To'] = recipient
+        email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
+        email.attach(MIMEText(html, 'html'))
+        send_email(email)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        return True
+    except (SMTPException, TemplateNotFound):
+        return False
 
-    email['From'] = sender
-    email['To'] = recipient
-    email['Subject'] = 'Invite to view a Stock Dashboard from {}'.format(sender)
-    email.attach(MIMEText(html, 'html'))
 
-    send_email(email, method)
-
-
-def send_email(email, method):  # pylint: disable=C0103,  W0613
+def send_email(email):  # pylint: disable=C0103,  W0613
     """
     Sends an email.
     """
-    smtp_conn = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
-    smtp_conn.starttls()
-    smtp_conn.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
-    smtp_conn.send_message(email)
-
-    channel.basic_ack(delivery_tag=method.delivery_tag)
+    server = smtplib.SMTP(host=os.environ.get('MAIL_HOST'), port=os.environ.get('MAIL_PORT'))
+    server.starttls()
+    server.login(os.environ.get('MAIL_USERNAME'), os.environ.get('MAIL_PASSWORD'))
+    server.send_message(email)
 
 
 if __name__ == '__main__':
