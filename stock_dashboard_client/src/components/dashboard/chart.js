@@ -8,7 +8,9 @@ import {
     ValueAxis,
     Chart,
     LineSeries,
+
 } from '@devexpress/dx-react-chart-material-ui';
+import { ArgumentScale, ValueScale, Animation } from '@devexpress/dx-react-chart';
 import TimelineIcon from "@material-ui/icons/Timeline";
 import axios from "axios";
 
@@ -23,6 +25,7 @@ const data = [
     {argument: 8, value: 4},
     {argument: 9, value: 92},
 ];
+const format = () => tick => tick;
 
 class ChartItem extends Component {
     state = {stock_data: [],fromValue:"",toValue:"",chart_data:[]}
@@ -74,8 +77,9 @@ class ChartItem extends Component {
                         <Paper>
                             <Chart
                                 data={this.state.chart_data}
+
                             >
-                                <ArgumentAxis/>
+                                <ArgumentAxis style={{writingMode:"vertical-rl"}} />
                                 <ValueAxis/>
 
                                 <LineSeries valueField="value" argumentField="argument"/>

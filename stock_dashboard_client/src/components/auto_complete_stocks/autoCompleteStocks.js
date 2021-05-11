@@ -49,7 +49,7 @@ export default class CheckboxesTags extends Component {
             <Autocomplete
                 multiple
                 id="checkboxes-tags-demo"
-                options={this.state.showOptions ? this.state.activeOptions : this.state.stock_options.slice(0, 50)}
+                options={this.state.showOptions ? this.state.activeOptions.slice(0, 100) : this.state.stock_options.slice(0, 50)}
                 disableCloseOnSelect
                 disableListWrap
                 getOptionLabel={(option) => option.name}
