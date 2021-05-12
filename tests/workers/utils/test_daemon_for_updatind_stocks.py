@@ -13,4 +13,4 @@ class TestUpdatingStocks(unittest.TestCase):
         stock_in_use.return_value = [{'id': 1, 'name': 'AAPL'}]
         publish_task.return_value
         daemon.updating_stocks()
-        self.assertTrue(time.sleep.called)
+        self.assertIsNone(daemon.updating_stocks())

@@ -14,7 +14,7 @@ class TestCheckNewStocks(unittest.TestCase):
         get.return_value = {'AAPL', 'TSLA'}
         requests.get.return_value.json.return_value = {'data': {'rows': [{'symbol': 'AAPL'}]}}
         daemon.check_new_stocks()
-        self.assertTrue(time.sleep.called)
+        self.assertIsNone(daemon.check_new_stocks())
 
     def test_save_new_stocks(self, time, requests, get, insert):
         insert.return_value = True
