@@ -4,7 +4,7 @@ import requests
 
 from workers.utils.db_service import get_all_stocks_name, insert_new_stock
 
-UPDATING_DAILY_TIME = 86400
+UPDATING_DAILY_TIME = 24 * 60 * 60
 URL = "https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true"
 HEADER = {
     'user-agent':
@@ -40,9 +40,9 @@ def check_new_stocks():
     new_data = stocks_from_url - stocks_from_db
     for ticket in new_data:
         save_new_stock_data(ticket)
-    time.sleep(UPDATING_DAILY_TIME)
 
 
 if __name__ == "__main__":
     while True:
         check_new_stocks()
+        time.sleep(UPDATING_DAILY_TIME)
