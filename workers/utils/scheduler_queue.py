@@ -30,11 +30,6 @@ def get_scheduler_queue():
 
 
 def publish_task(body):
-    """
-    A function to publish a task to scheduler queue.
-
-    :param body: body of the task in json format.
-    """
     queue = get_scheduler_queue()
     queue.basic_publish(
         exchange='scheduler',
