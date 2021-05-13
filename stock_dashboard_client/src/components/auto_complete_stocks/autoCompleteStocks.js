@@ -10,7 +10,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small"/>;
 const checkedIcon = <CheckBoxIcon fontSize="small"/>;
 
 export default class CheckboxesTags extends Component {
-    state = {stock_options: [], activeOptions: [], showOptions: false}
+    state = {stock_options: [], activeOptions: [], showOptions: false,inputOption: {name:"",company_name: ""}}
     handleOnChange = (event, value) => {
         this.props.setStocks(value);
     }
@@ -22,11 +22,11 @@ export default class CheckboxesTags extends Component {
 
     handleOnInputChange = (event, value, reason) => {
         console.log(value);
-        console.log(reason);
-
+        // console.log(reason);
+        this.setState({inputOption:{name:value,company_name:value}})
         this.setState({
             activeOptions: this.state.stock_options.filter(option => {
-                console.log(option);
+                // console.log(option);
                 return (option.name.toLowerCase().startsWith(value.toLowerCase()) ||
                     option.company_name.toLowerCase().startsWith(value.toLowerCase()))
             })
@@ -45,11 +45,14 @@ export default class CheckboxesTags extends Component {
     }
 
     render() {
+        const options=this.state.showOptions ? this.state.activeOptions.slice(0, 100): this.state.stock_options.slice(0, 50)
+        this.state.inputOption.name.length>1 && options.unshift(this.state.inputOption)
+        console.log(options)
         return (
             <Autocomplete
                 multiple
                 id="checkboxes-tags-demo"
-                options={this.state.showOptions ? this.state.activeOptions.slice(0, 100) : this.state.stock_options.slice(0, 50)}
+                options={options}
                 disableCloseOnSelect
                 disableListWrap
                 getOptionLabel={(option) => option.name}
