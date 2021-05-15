@@ -44,3 +44,19 @@ def data_for_stocks_data_update(stock_id: int, name: str, start: datetime) -> li
             })
         return data_for_update
     return False
+
+
+def get_meta_data(name: str) -> dict:
+    """
+    Fetch meta data for stocks from yahoo finance
+    :param name: stock name
+    :return: dict with meta data
+    """
+    data = yf.Ticker(name).info
+    return {
+        'name': name,
+        'company_name': data['longName'],
+        'country': data['country'],
+        'industry': data['industry'],
+        'sector': data['sector']
+    }
