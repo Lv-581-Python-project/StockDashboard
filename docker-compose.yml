@@ -5,26 +5,18 @@ services:
   db:
     image: postgres:alpine
     container_name: stock_dashboard_psql_db
-    ports:
-      - 5432:5432
     volumes:
       - ./pg_data:/var/lib/postgresql/data/pgdata
-      - ./db/stock_dashboard/schema:/docker-entrypoint-initdb.d/schema
-      - ./db/stock_dashboard/CREATE_DB.sql:/docker-entrypoint-initdb.d/CREATE_DB.sql
-    environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "${POSTGRES_DB}"
-      PGDATA: /var/lib/postgresql/data/pgdata
+      - ./db/stock_dashboard/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - ./db/stock_dashboard/data/data.csv:$PATH_TO_DATACSV
     env_file:
       - .env
-    logging:
-      driver: none
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB
+      interval: 30s
+      timeout: 30s
+      retries: 500
+      start_period: 3m
     restart: always
 
   rmq:
@@ -52,11 +44,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      rmq:
-        condition: service_started
+#      rmq:
+#        condition: service_started
     links:
       - db
-      - rmq
+#      - rmq
     env_file:
       - .env
     ports:
