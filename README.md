@@ -62,6 +62,8 @@ Insert to `.env`:
    export POSTGRES_DB=your_postgres_database_name
    export POSTGRES_PORT=your_postgres_post
    export POSTGRES_HOST=your_postgres_host
+   export PATH_TO_DATACSV=your_path_to_data.csv_file
+   export PGDATA=/var/lib/postgresql/data/pgdata
    
    export LOGGING_CONF=your_path_to_pool_logging_file  # (logging.conf)
    
