@@ -17,24 +17,28 @@ services:
       timeout: 30s
       retries: 500
       start_period: 3m
-    restart: always
+    restart: on-failure
 
   rmq:
     image: rabbitmq:3-management
-    command: rabbitmq-server
     container_name: stock_dashboard_rmq
+    hostname: rabbitmq
     env_file:
       - .env
-    environment:
-      RABBITMQ_ERLANG_COOKIE: "${RABBITMQ_ERLANG_COOKIE}"
     volumes:
       - ./rmq_data:/var/lib/rabbitmq
-    ports:
-      - 5672:5672
-      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
     logging:
       driver: none
-    restart: always
+    ports:
+    - 15672:15672
+    - 5672:5672
+    command: rabbitmq-server
+    restart: on-failure
 
   api:
     build:
@@ -44,14 +48,29 @@ services:
     depends_on:
       db:
         condition: service_healthy
-#      rmq:
-#        condition: service_started
-    links:
-      - db
-#      - rmq
+      rmq:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
     env_file:
       - .env
     ports:
       - 5000:5000
     command: flask run --host=0.0.0.0 --port=5000
-    restart: always
+    restart: on-failure
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: scheduler.Dockerfile
+    container_name: stock_dashboard_scheduler
+    depends_on:
+      db:
+        condition: service_healthy
+      rmq:
+        condition: service_healthy
+    links:
+      - rmq
+    env_file:
+      - .env
+    restart: on-failure
