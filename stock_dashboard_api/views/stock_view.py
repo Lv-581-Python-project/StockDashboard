@@ -9,8 +9,7 @@ from stock_dashboard_api.utils.constants import DATETIME_PATTERN
 from stock_dashboard_api.utils.json_parser import get_body
 from stock_dashboard_api.utils.logger import views_logger as logger
 from stock_dashboard_api.utils.scheduler_queue import publish_task
-from stock_dashboard_api.utils.yahoo_finance import check_if_exist
-from stock_dashboard_api.utils.db_service import insert_new_stock, stock_get_id
+from stock_dashboard_api.utils.yahoo_finance import check_if_exist, get_meta_data
 
 MAX_STOCK_NAME_LENGTH = 16
 MAX_STOCK_COMPANY_NAME_LENGTH = 128
@@ -45,7 +44,8 @@ class StockView(MethodView):
                 data = get_meta_data(name)
                 stock = Stock.create(data["name"], data["company_name"], data["country"], data["industry"], data["sector"])
                 return make_response(jsonify(stock.to_dict()), 200)
-            return False
+            message = "A non-existent stock is entered."
+            return make_response(message, 400)
 
     def post(self) -> Response:  # pylint: disable=R0201
         """A method that create Stock and return it if provided data is valid

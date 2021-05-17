@@ -36,7 +36,7 @@ class Stock:
         self.in_use = in_use
 
     @classmethod
-    def create(cls, name: str, company_name: str) -> Stock:
+    def create(cls, name: str, company_name: str, country: str, industry: str, sector: str) -> Stock:
         """
         Create a new instance in database
 
