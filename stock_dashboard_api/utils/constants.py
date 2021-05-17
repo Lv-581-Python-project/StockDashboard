@@ -1,4 +1,4 @@
 DATETIME_PATTERN = '%Y-%m-%d %H:%M:%S'
-FETCH_DATA_FOR_PERIOD = 1
-FETCH_NEW_STOCK = 2
-FETCH_HISTORICAL_DATA = 3
+FETCH_DATA_FOR_PERIOD_TASK = 'fetch data period'
+FETCH_NEW_STOCK_TASK = 'fetch new stock'
+FETCH_HISTORICAL_DATA_TASK = 'fetch historical data’'
