@@ -64,6 +64,7 @@ Insert to `.env`:
    export POSTGRES_HOST=your_postgres_host
    export PATH_TO_DATACSV=your_path_to_data.csv_file
    export PGDATA=/var/lib/postgresql/data/pgdata
+   export SQL_SCRIPTS_ROOT=/docker-entrypoint-initdb.d   # or path to dir with .sql scripts
    
    export LOGGING_CONF=your_path_to_pool_logging_file  # (logging.conf)
    

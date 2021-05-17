@@ -7,10 +7,11 @@ services:
     container_name: stock_dashboard_psql_db
     volumes:
       - ./pg_data:/var/lib/postgresql/data/pgdata
-      - ./db/stock_dashboard/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
-      - ./db/stock_dashboard/data/data.csv:$PATH_TO_DATACSV
+      - ./db/stock_dashboard/:/docker-entrypoint-initdb.d/
     env_file:
       - .env
+    ports:
+    - 5432:5432
     healthcheck:
       test: pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB
       interval: 30s
@@ -22,7 +23,6 @@ services:
   rmq:
     image: rabbitmq:3-management
     container_name: stock_dashboard_rmq
-    hostname: rabbitmq
     env_file:
       - .env
     volumes:
