@@ -268,4 +268,3 @@ class StockViewsTestCase(TestCase):
         with app.test_client() as client:
             response = client.get(BASE_URL)
             self.assertEqual(expected_result, json.loads(response.data))
-
