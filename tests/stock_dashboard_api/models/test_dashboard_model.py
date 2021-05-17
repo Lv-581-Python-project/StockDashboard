@@ -16,13 +16,24 @@ class TestStock(unittest.TestCase):
         data = {"dashboard_hash": "TESTHASH"}
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = FETCH_ONE_RETURN_VALUE
         self.assertDictEqual(dashboard_model.Dashboard.create(
-            [Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)]).to_dict(),
-                             data)
+            [Stock(pk=1,
+                   name="A",
+                   company_name="Agilent Technologies Inc. Common Stock",
+                   country='United States',
+                   industry='Biotechnology: Laboratory Analytical Instruments',
+                   sector='Capital Goods',
+                   in_use=False)]).to_dict(), data)
 
     def test_create_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(dashboard_model.Dashboard.create(
-            [Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)]), None)
+            [Stock(pk=1,
+                   name="A",
+                   company_name="Agilent Technologies Inc. Common Stock",
+                   country='United States',
+                   industry='Biotechnology: Laboratory Analytical Instruments',
+                   sector='Capital Goods',
+                   in_use=False)]), None)
 
     def test_update_true(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = FETCH_ONE_RETURN_VALUE
@@ -56,9 +67,15 @@ class TestStock(unittest.TestCase):
 
     def test_get_stocks_pass(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [
-            (1, "A", "Agilent Technologies Inc. Common Stock", False)]
+            (1, "A", "Agilent Technologies Inc. Common Stock", 'United States', 'Biotechnology: Laboratory Analytical Instruments', 'Capital Goods', False)]
         self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks()[0].pk,
-                         Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False).pk)
+                         Stock(pk=1,
+                               name="A",
+                               company_name="Agilent Technologies Inc. Common Stock",
+                               country='United States',
+                               industry='Biotechnology: Laboratory Analytical Instruments',
+                               sector='Capital Goods',
+                               in_use=False).pk)
 
     def test_get_stocks_fail(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.ProgrammingError
