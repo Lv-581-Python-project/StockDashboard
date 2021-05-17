@@ -1,16 +1,16 @@
 import json
 
-from constants import FETCH_HISTORICAL_DATA,\
-    FETCH_DATA_FOR_PERIOD, FETCH_NEW_STOCK
+from constants import FETCH_HISTORICAL_DATA_TASK,\
+    FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK
 
 
 class Task:
     """
     Class for representation of different tasks
     """
-    STOCK_NAME = 0
-    FROM = 1
-    TO = 2
+    STOCK_NAME_INDEX = 0
+    FROM_INDEX = 1
+    TO_INDEX = 2
 
     def __init__(self, task_id):
         """
@@ -25,19 +25,19 @@ class Task:
         :param params: Params for worker
         :return: json with parameters
         """
-        if self.task_id == FETCH_DATA_FOR_PERIOD:
-            body = json.dumps({"task_id": FETCH_DATA_FOR_PERIOD,
-                               "stock_name": params[Task.STOCK_NAME],
-                               "from": params[Task.FROM],
-                               "to": params[Task.TO]})
+        if self.task_id == FETCH_DATA_FOR_PERIOD_TASK:
+            body = json.dumps({"task_id": FETCH_DATA_FOR_PERIOD_TASK,
+                               "stock_name": params[Task.STOCK_NAME_INDEX],
+                               "from": params[Task.FROM_INDEX],
+                               "to": params[Task.TO_INDEX]})
             return body
-        elif self.task_id == FETCH_NEW_STOCK:
-            body = json.dumps({"task_id": FETCH_NEW_STOCK,
-                               "stock_name": params[Task.STOCK_NAME]})
+        elif self.task_id == FETCH_NEW_STOCK_TASK:
+            body = json.dumps({"task_id": FETCH_NEW_STOCK_TASK,
+                               "stock_name": params[Task.STOCK_NAME_INDEX]})
             return body
-        elif self.task_id == FETCH_HISTORICAL_DATA:
-            body = json.dumps({"task_id": FETCH_HISTORICAL_DATA,
-                               "stock_name": params[Task.STOCK_NAME],
-                               "from": params[Task.FROM],
-                               "to": params[Task.TO]})
+        elif self.task_id == FETCH_HISTORICAL_DATA_TASK:
+            body = json.dumps({"task_id": FETCH_HISTORICAL_DATA_TASK,
+                               "stock_name": params[Task.STOCK_NAME_INDEX],
+                               "from": params[Task.FROM_INDEX],
+                               "to": params[Task.TO_INDEX]})
             return body
