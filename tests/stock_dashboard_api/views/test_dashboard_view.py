@@ -12,7 +12,13 @@ def test_get_dashboard_pass(mock_get, mock_get_stocks):
     with app.app_context():
         mock_get.return_value = Dashboard(dashboard_hash='awf241af')
         mock_get_stocks.return_value = [
-            Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)]
+            Stock(pk=1,
+                  name="A",
+                  company_name="Agilent Technologies Inc. Common Stock",
+                  country="United States",
+                  industry="Biotechnology: Laboratory Analytical Instruments",
+                  sector="Capital Goods",
+                  in_use=False)]
         with app.test_client() as client:
             response = client.get('/api/dashboard/awf241af')
             body = json.loads(response.data)
@@ -22,7 +28,10 @@ def test_get_dashboard_pass(mock_get, mock_get_stocks):
                     "company_name": "Agilent Technologies Inc. Common Stock",
                     "id": 1,
                     "in_use": False,
-                    "name": "A"
+                    "name": "A",
+                    "country": "United States",
+                    "industry": "Biotechnology: Laboratory Analytical Instruments",
+                    "sector": "Capital Goods"
                 }]
 
 
@@ -55,7 +64,13 @@ def test_get_dashboard_fail_no_stocks(mock_get, mock_get_stocks):
 def test_post_dashboard_pass(mock_get_ids, mock_post):
     data = {"stock_ids": [1,2]}
     with app.app_context():
-        mock_get_ids.return_value = Stock(pk=1, name="A", company_name="Agilent Technologies Inc. Common Stock", in_use=False)
+        mock_get_ids.return_value = Stock(pk=1,
+                                          name="A",
+                                          company_name="Agilent Technologies Inc. Common Stock",
+                                          country="United States",
+                                          industry="Biotechnology: Laboratory Analytical Instruments",
+                                          sector="Capital Goods",
+                                          in_use=False)
         mock_post.return_value = Dashboard(dashboard_hash='f79ee4f2')
         with app.test_client() as client:
             response = client.post('/api/dashboard/', json=data)

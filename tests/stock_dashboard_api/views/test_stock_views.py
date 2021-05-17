@@ -3,6 +3,7 @@ import json
 from unittest import TestCase
 from unittest.mock import patch
 
+
 from stock_dashboard_api import app
 from stock_dashboard_api.models.stock_model import Stock
 
@@ -22,38 +23,87 @@ class StockViewsTestCase(TestCase):
         self.addCleanup(stock_data_patcher.stop)
 
     def test_get_by_id(self):
-        stock_id, stock_name, stock_company_name = 1, 'mocked get name', 'mocked get company name'
+        stock_id, stock_name, stock_company_name, stock_country, stock_industry, stock_sector = (1,
+                                                                                                'mocked get name',
+                                                                                                'mocked get company name',
+                                                                                                'mocked get country',
+                                                                                                'mocked industry',
+                                                                                                'mocked sector')
         get_by_id = self.stock_mock.get_by_id
         get_by_id.return_value.to_dict.return_value = {'id': stock_id, 'name': stock_name,
-                                                       'company_name': stock_company_name}
+                                                       'company_name': stock_company_name,
+                                                       'country': stock_country,
+                                                       'industry': stock_industry,
+                                                       'sector': stock_sector}
         with app.test_client() as client:
             response = client.get(BASE_URL + '{stock_id}'.format(stock_id=stock_id))
 
             self.assertEqual(json.loads(response.data),
-                             {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name})
+                             {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name, 'country': stock_country,
+                              'industry': stock_industry, 'sector': stock_sector})
 
     def test_create(self):
-        stock_id, stock_name, stock_company_name, stock_in_use = 1, 'mock cr name', 'mocked create company name', False
+        stock_id, stock_name, stock_company_name, stock_country, stock_industry, stock_sector, stock_in_use = (1,
+                                                                                                               'mock create name',
+                                                                                                               'mocked create company name',
+                                                                                                               'mocked create country',
+                                                                                                               'mocked create industry',
+                                                                                                               'mocked create sector',
+                                                                                                               False)
         create = self.stock_mock.create
-        create.return_value = Stock(pk=stock_id, name=stock_name, company_name=stock_company_name, in_use=stock_in_use)
+        create.return_value = Stock(pk=stock_id,
+                                    name=stock_name,
+                                    company_name=stock_company_name,
+                                    country=stock_country,
+                                    industry=stock_industry,
+                                    sector=stock_sector,
+                                    in_use=stock_in_use)
         with app.test_client() as client:
-            response = client.post(BASE_URL, json={'name': stock_name, 'company_name': stock_company_name})
+            response = client.post(BASE_URL, json={'name': stock_name,
+                                                   'company_name': stock_company_name,
+                                                   'country': stock_country,
+                                                   'industry': stock_industry,
+                                                   'sector': stock_sector})
 
             self.assertEqual(json.loads(response.data),
-                             {'company_name': stock_company_name, 'id': stock_id, 'name': stock_name, 'in_use': False})
+                             {'id': stock_id,
+                              'name': stock_name,
+                              'company_name': stock_company_name,
+                              'country': stock_country,
+                              'industry': stock_industry,
+                              'sector': stock_sector,
+                              'in_use': False})
 
     def test_update_by_id(self):
-        stock_id, new_stock_name, new_stock_company_name = 1, 'mock upd name', 'mocked update company name'
+        stock_id, new_stock_name, new_stock_company_name, new_stock_country, new_stock_industry, new_stock_sector = (1,
+                                                                                                                     'mocked update name',
+                                                                                                                     'mocked update company name',
+                                                                                                                     'mocked update country',
+                                                                                                                     'mocked update industry',
+                                                                                                                     'mocked update sector')
         get_by_id = self.stock_mock.get_by_id
-        get_by_id.return_value = self.stock_mock(1, 'sdfsd', 'sdfsdf')
-        get_by_id.return_value.to_dict.return_value = {'name': new_stock_name, 'id': stock_id,
-                                                       'company_name': new_stock_company_name}
+        get_by_id.return_value = self.stock_mock(1, 'sdfsd', 'sdfsdf', 'agadgadg', 'adgadg', 'adgadgshfhs')
+        get_by_id.return_value.to_dict.return_value = {'name': new_stock_name,
+                                                       'id': stock_id,
+                                                       'company_name': new_stock_company_name,
+                                                       'country': new_stock_country,
+                                                       'industry': new_stock_industry,
+                                                       'sector': new_stock_sector}
         with app.test_client() as client:
             response = client.put(BASE_URL + '{}'.format(stock_id),
-                                  json={'name': new_stock_name, 'company_name': new_stock_company_name})
+                                  json={'name': new_stock_name,
+                                        'company_name': new_stock_company_name,
+                                        'country': new_stock_country,
+                                        'industry': new_stock_industry,
+                                        'sector': new_stock_sector})
 
             self.assertEqual(json.loads(response.data),
-                             {'company_name': new_stock_company_name, 'id': stock_id, 'name': new_stock_name})
+                             {'id': stock_id,
+                              'name': new_stock_name,
+                              'company_name': new_stock_company_name,
+                              'country': new_stock_country,
+                              'industry': new_stock_industry,
+                              'sector': new_stock_sector})
 
     def test_delete_by_id(self):
         delete = self.stock_mock.delete_by_id
@@ -64,7 +114,13 @@ class StockViewsTestCase(TestCase):
             self.assertEqual(response.status, STATUS_200)
 
     def test_get_by_id_missing_id(self):
-        stock_id, stock_name, stock_company_name = 1, 'mock cr name', 'mocked create company name'
+        stock_id, stock_name, stock_company_name, stock_country, stock_industry, stock_sector, stock_in_use = (1,
+                                                                                                               'mock create name',
+                                                                                                               'mocked create company name',
+                                                                                                               'mocked create country',
+                                                                                                               'mocked create industry',
+                                                                                                               'mocked create sector',
+                                                                                                               False)
         get_by_id = self.stock_mock.get_by_id
         get_by_id.return_value = False
         with app.test_client() as client:
@@ -72,23 +128,49 @@ class StockViewsTestCase(TestCase):
             self.assertEqual(response.status, STATUS_400)
 
     def test_create_wrong_data(self):
-        stock_id, stock_name, stock_company_name = 1, 'mock create super long name', 'mocked create company name'
+        stock_id, stock_name, stock_company_name, stock_country, stock_industry, stock_sector, stock_in_use = (1,
+                                                                                                               'mock create name',
+                                                                                                               'mocked create company name',
+                                                                                                               'mocked create country',
+                                                                                                               'mocked create industry',
+                                                                                                               'mocked create sector',
+                                                                                                               False)
         create = self.stock_mock.create
         create.return_value = None
         with app.test_client() as client:
-            response = client.post(BASE_URL, json={'name': stock_name, 'company_name': stock_company_name})
+            response = client.post(BASE_URL, json={'name': stock_name,
+                                                   'company_name': stock_company_name,
+                                                   'country': stock_country,
+                                                   'industry': stock_industry,
+                                                   'sector': stock_sector})
             self.assertEqual(response.status, STATUS_400)
 
     def test_create_wrong_data2(self):
-        stock_id, stock_name, stock_company_name = 1, 'mock create name', 'mocked create company name'
+        stock_id, stock_name, stock_company_name, stock_country, stock_industry, stock_sector, stock_in_use = (1,
+                                                                                                               'mock create name',
+                                                                                                               'mocked create company name',
+                                                                                                               'mocked create country',
+                                                                                                               'mocked create industry',
+                                                                                                               'mocked create sector',
+                                                                                                               False)
         create = self.stock_mock.create
         create.return_value = None
         with app.test_client() as client:
-            response = client.post(BASE_URL, json={'name': stock_name, 'company_name': stock_company_name})
+            response = client.post(BASE_URL, json={'name': stock_name,
+                                                   'company_name': stock_company_name,
+                                                   'country': stock_country,
+                                                   'industry': stock_industry,
+                                                   'sector': stock_sector})
             self.assertEqual(response.status, STATUS_400)
 
     def test_update_by_id_wrong_data(self):
         stock_id, new_stock_name, new_stock_company_name = 1, 'tooooooo long update stock name', 165428653
+        stock_id, new_stock_name, new_stock_company_name, new_stock_country, new_stock_industry, new_stock_sector = (1,
+                                                                                                                     'tooooooo long update stock name',
+                                                                                                                     165428653,
+                                                                                                                     1,
+                                                                                                                     2,
+                                                                                                                     3)
         with app.test_client() as client:
             response = client.put(BASE_URL + '{stock_id}'.format(stock_id=stock_id),
                                   json={'name': new_stock_name, 'company_name': new_stock_company_name})
@@ -98,10 +180,20 @@ class StockViewsTestCase(TestCase):
     def test_update_by_id_missing_id(self):
         get_by_id = self.stock_mock.get_by_id
         get_by_id.return_value = None
-        stock_id, new_stock_name, new_stock_company_name = 1, 'mock upd name', 'mocked update company name'
+        stock_id, new_stock_name, new_stock_company_name, new_stock_country, new_stock_industry, new_stock_sector = (1,
+                                                                                                                     'mocked update name',
+                                                                                                                     'mocked update company name',
+                                                                                                                     'mocked update country',
+                                                                                                                     'mocked update industry',
+                                                                                                                     'mocked update sector')
         with app.test_client() as client:
             response = client.put(BASE_URL + '{stock_id}'.format(stock_id=stock_id),
-                                  json={'name': new_stock_name, 'company_name': new_stock_company_name})
+                                  json={'id': stock_id,
+                                        'name': new_stock_name,
+                                        'company_name': new_stock_company_name,
+                                        'country': new_stock_country,
+                                        'industry': new_stock_industry,
+                                        'sector': new_stock_sector})
 
             self.assertEqual(response.status, STATUS_400)
 
@@ -115,7 +207,7 @@ class StockViewsTestCase(TestCase):
 
     def test_get_stock_data_for_time_period(self):
         get_by_id = self.stock_mock.get_by_id
-        get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM')
+        get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM', 'United States', 'Computer Manufacturing', 'Technology')
         get_data_for_time_period = get_by_id.return_value.get_data_for_time_period
 
         stock_data_id = 1
@@ -143,10 +235,13 @@ class StockViewsTestCase(TestCase):
 
     def test_get_stock_data_for_time_period_wrong_time(self):
         get_by_id = self.stock_mock.get_by_id
-        get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM', False)
+        get_by_id.return_value = self.stock_mock(1, 'IBM', 'IBM', 'United States', 'Computer Manufacturing', 'Technology', False)
         self.stock_mock.to_dict.return_value = {'pk': 1,
                                                 'name': 'IBM',
                                                 'company_name': 'IBM',
+                                                'country': 'United States',
+                                                'industry': 'Computer Manufacturing',
+                                                'sector': 'Technology',
                                                 'in_use': False}
         stock_id = 1
         with app.test_client() as client:
@@ -158,7 +253,12 @@ class StockViewsTestCase(TestCase):
             self.assertEqual(response.status, STATUS_400)
 
     def test_get_all(self):
-        data = {'pk': 1, 'name': 'IBM', 'company_name': 'IBM'}
+        data = {'pk': 1,
+                'name': 'IBM',
+                'company_name': 'IBM',
+                'country': 'United States',
+                'industry': 'Computer Manufacturing',
+                'sector': 'Technology'}
         expected_result = [data]
         stock = self.stock_mock(**data)
         stock.to_dict.return_value = data.copy()
@@ -168,3 +268,4 @@ class StockViewsTestCase(TestCase):
         with app.test_client() as client:
             response = client.get(BASE_URL)
             self.assertEqual(expected_result, json.loads(response.data))
+

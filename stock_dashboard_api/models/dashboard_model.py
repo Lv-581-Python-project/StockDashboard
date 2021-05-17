@@ -94,17 +94,24 @@ class Dashboard:
         stocks_table = 'public.stocks'
         with pool_manager() as conn:
             get_stocks_id_query = f"""SELECT {dashboard_has_stocks_table}.stock_id,{stocks_table}.name,
-                                             {stocks_table}.company_name,{stocks_table}.in_use
+                                             {stocks_table}.company_name, {stocks_table}.country, {stocks_table}.industry, {stocks_table}.sector, {stocks_table}.in_use
                                       FROM {dashboard_has_stocks_table} INNER JOIN {stocks_table} 
                                       ON {dashboard_has_stocks_table}.stock_id = {stocks_table}.id
                                       WHERE {dashboard_has_stocks_table}.dashboard_hash = %(dashboard_hash)s;"""
             try:
                 conn.cursor.execute(get_stocks_id_query, {'dashboard_hash': self.dashboard_hash})
                 list_of_stocks = conn.cursor.fetchall()
-                list_of_stocks = [Stock(pk=stock[0], name=stock[1], company_name=stock[2], in_use=stock[3])
+                list_of_stocks = [Stock(pk=stock[0],
+                                        name=stock[1],
+                                        company_name=stock[2],
+                                        country=stock[3],
+                                        industry=stock[4],
+                                        sector=stock[5],
+                                        in_use=stock[6])
                                   for stock in list_of_stocks]
                 return list_of_stocks
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as error:
+                print(error)
                 logger.info(f"Error Dashboard model get_stocks {error}")
 
     @classmethod
