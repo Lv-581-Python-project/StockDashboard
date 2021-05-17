@@ -221,7 +221,7 @@ git
         stock_data_for_time_period = []
         datetime_from, datetime_to = datetime_from.strftime(DATETIME_PATTERN), datetime_to.strftime(DATETIME_PATTERN)
         with pool_manager() as conn:
-            query = "SELECT id, name, company_name, country, industry, sector, in_use FROM stocks_data " \
+            query = "SELECT id, stock_id, price, created_at FROM stocks_data " \
                     "WHERE stock_id = %(stock_id)s " \
                     "AND %(datetime_from)s <= created_at AND created_at < %(datetime_to)s " \
                     "ORDER BY created_at;"
