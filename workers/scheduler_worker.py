@@ -16,20 +16,20 @@ def connect_queue():
     return rabbitmq
 
 
-def get_stock_names_queue():
+def new_stocks_data_download_queue():
     """
     Function to create a get_stock_names queue.
 
-    :return: get_stock_names queue.
+    :return: new_stocks_data_download queue.
     """
     connect = connect_queue()
     channel = connect.channel()
     channel.exchange_declare(
-        exchange='get_stock_names_exchange',
+        exchange='new_stocks_data_download_exchange',
         exchange_type='direct',
     )
-    channel.queue_declare(queue='get_stock_names_queue', durable=True)
-    channel.queue_bind(exchange='get_stock_names_exchange', queue='get_stock_names_queue')
+    channel.queue_declare(queue='new_stocks_data_download_queue', durable=True)
+    channel.queue_bind(exchange='new_stocks_data_download_exchange', queue='new_stocks_data_download_queue')
     queue = channel
     return queue
 
@@ -52,16 +52,16 @@ def get_stock_data_queue():
     return queue
 
 
-def publish_get_stock_names_task(body):
+def new_stocks_data_download_task(body):
     """
     A function to publish a task to get_stock_names queue.
 
     :param body: body of the task in json format.
     """
-    queue = get_stock_names_queue()
+    queue = new_stocks_data_download_queue()
     queue.basic_publish(
-        exchange='get_stock_names_exchange',
-        routing_key='get_stock_names_queue',
+        exchange='new_stocks_data_download_exchange',
+        routing_key='new_stocks_data_download_queue',
         body=body,
         properties=pika.BasicProperties(
             delivery_mode=int(os.environ.get('RABBITMQ_DELIVERY_MODE')),
@@ -98,8 +98,8 @@ def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103, 
     dict_body = json.loads(body)
     queue = dict_body['queue']
     print(body)
-    if queue == 'get_stock_names_queue':
-        publish_get_stock_names_task(body)
+    if queue == 'new_stocks_data_download_queue':
+        new_stocks_data_download_task(body)
     elif queue == 'get_stock_data_queue':
         publish_get_stock_data_task(body)
     channel.basic_ack(delivery_tag=method.delivery_tag)

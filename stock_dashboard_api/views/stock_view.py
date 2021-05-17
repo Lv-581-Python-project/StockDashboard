@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from flask import Blueprint, request, make_response, jsonify, Response
@@ -7,9 +8,13 @@ from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
 from stock_dashboard_api.utils.json_parser import get_body
 from stock_dashboard_api.utils.logger import views_logger as logger
+from stock_dashboard_api.utils.scheduler_queue import publish_task
+from stock_dashboard_api.utils.yahoo_finance import check_if_exist
+from stock_dashboard_api.utils.db_service import insert_new_stock, stock_get_id
 
 MAX_STOCK_NAME_LENGTH = 16
 MAX_STOCK_COMPANY_NAME_LENGTH = 128
+QUEUE = "new_stocks_data_download_queue"
 
 
 class StockView(MethodView):
@@ -27,9 +32,20 @@ class StockView(MethodView):
         :return: Response with all Stocks or one Stock if provided valid pk, or list of stock data for some period of
          time if provided valid pk, from, to
         """
+        body = get_body(request)
         if pk:
             return self._get_by_id(pk)
-        return self._get_all()
+        if body is None:
+            return self._get_all()
+        else:
+            name = body["validate_stock"]["name"]
+            if check_if_exist(name):
+                queue_body = json.dumps({"queue": QUEUE, "name": name})
+                publish_task(queue_body)
+                data = get_meta_data(name)
+                stock = Stock.create(data["name"], data["company_name"], data["country"], data["industry"], data["sector"])
+                return make_response(jsonify(stock.to_dict()), 200)
+            return False
 
     def post(self) -> Response:  # pylint: disable=R0201
         """A method that create Stock and return it if provided data is valid
