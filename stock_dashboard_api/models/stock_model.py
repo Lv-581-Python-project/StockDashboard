@@ -75,7 +75,7 @@ class Stock:
                sector: str = None) -> bool:
         """
         Update an existing instance in database
-git
+
         :param name:
         :param company_name:
         :param country:

@@ -111,7 +111,6 @@ class Dashboard:
                                   for stock in list_of_stocks]
                 return list_of_stocks
             except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as error:
-                print(error)
                 logger.info(f"Error Dashboard model get_stocks {error}")
 
     @classmethod
