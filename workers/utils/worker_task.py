@@ -1,11 +1,13 @@
 import json
 
-from constants import (FETCH_HISTORICAL_DATA_TASK,
-                       FETCH_DATA_FOR_PERIOD_TASK,
-                       FETCH_NEW_STOCK_TASK)
+from workers.utils.constants import (FETCH_HISTORICAL_DATA_TASK,
+                                     FETCH_DATA_FOR_PERIOD_TASK,
+                                     FETCH_NEW_STOCK_TASK)
+from workers.utils.logger import pool_logger as logger
 
 
 class Task:
+    MESSAGE = "Wrong type of task for worker"
     """
     Class for representation of different tasks
     """
@@ -28,7 +30,8 @@ class Task:
         :return: body for task
         """
         if self.task_id != FETCH_NEW_STOCK_TASK:
-            raise Exception("Wrong type of task")
+            logger.info(Task.MESSAGE)
+            raise Exception(Task.MESSAGE)
         body = json.dumps({"task_id": self.task_id,
                           "stock_name": self.stock_name})
         return body
@@ -39,7 +42,8 @@ class Task:
         :return: body for task
         """
         if self.task_id != FETCH_HISTORICAL_DATA_TASK:
-            raise Exception("Wrong type of task")
+            logger.info(Task.MESSAGE)
+            raise Exception(Task.MESSAGE)
         body = json.dumps({"task_id": self.task_id,
                            "stock_name": self.stock_name,
                            "from": self.date_from,
@@ -52,7 +56,8 @@ class Task:
         :return: body for task
         """
         if self.task_id != FETCH_DATA_FOR_PERIOD_TASK:
-            raise Exception("Wrong type of task")
+            logger.info(Task.MESSAGE)
+            raise Exception(Task.MESSAGE)
         body = json.dumps({"task_id": self.task_id,
                            "stock_name": self.stock_name,
                            "from": self.date_from,
