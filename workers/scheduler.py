@@ -5,14 +5,14 @@ import threading
 import time
 
 import pika
-from workers.utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
-from workers.utils.worker_task import Task
 
+from workers.utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK
 from workers.utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
+from workers.utils.worker_task import Task
 from workers.worker_queue import worker_publish_task
 
 UPDATING_TIME = 15 * 60
-DEFAULT_PERIOD = os.getenv('DEFAULT_PERIOD_FOR_NEW_STOCK_DATA_DOWNLOAD')
+DEFAULT_PERIOD = int(os.getenv('DEFAULT_PERIOD_FOR_NEW_STOCK_DATA_DOWNLOAD'))
 
 
 def connect_rmq():
@@ -30,18 +30,27 @@ def connect_rmq():
 
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
     dict_body = json.loads(body)
-    if dict_body['task_id'] == 'FETCH_NEW_STOCK_TASK':
+    print(dict_body)
+    if dict_body['task_id'] == FETCH_NEW_STOCK_TASK:
         dict_body['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
         body = json.dumps(dict_body)
         worker_publish_task(body)
-    elif dict_body['task_id'] == FETCH_HISTORICAL_DATA_TASK:
-        dict_body['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
-        if (dict_body['to'] - dict_body['from']).total_seconds() > (datetime.timedelta(days=30)).total_seconds():
-            pass
-
-
-    dict_body = json.loads(body)
-    print(dict_body)
+    elif dict_body['task_id'] == "FETCH_HISTORICAL_DATA_TASK":
+        dict_body['task_id'] = "FETCH_DATA_FOR_PERIOD_TASK"
+        start = datetime.datetime.fromisoformat(dict_body['from'])
+        finish = datetime.datetime.fromisoformat(dict_body['to'])
+        date_difference = (start - finish).days
+        if date_difference > DEFAULT_PERIOD:
+            count_whole_moths = date_difference // DEFAULT_PERIOD
+            remainder = date_difference - (count_whole_moths * DEFAULT_PERIOD)
+            for _ in range(count_whole_moths):
+                dict_body['from'] = start.isoformat()
+                dict_body['to'] = (start + datetime.timedelta(days=DEFAULT_PERIOD)).isoformat()
+                worker_publish_task(json.dumps(dict_body))
+                start += datetime.timedelta(days=DEFAULT_PERIOD)
+            dict_body['from'] = start.isoformat()
+            dict_body['to'] = (start + datetime.timedelta(days=remainder)).isoformat()
+            worker_publish_task(json.dumps(dict_body))
 
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -69,6 +78,6 @@ def updating_stocks():
 
 if __name__ == '__main__':
     t1 = threading.Thread(target=connect_rmq)
-    t2 = threading.Thread(target=updating_stocks)
+    # t2 = threading.Thread(target=updating_stocks)
     t1.start()
-    t2.start()
+    # t2.start()
