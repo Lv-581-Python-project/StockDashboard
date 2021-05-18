@@ -3,7 +3,7 @@ import json
 from workers.utils.constants import (FETCH_HISTORICAL_DATA_TASK,
                                      FETCH_DATA_FOR_PERIOD_TASK,
                                      FETCH_NEW_STOCK_TASK)
-from workers.utils.logger import pool_logger as logger
+from workers.utils.logger import workers_logger as logger
 
 
 class Task:
