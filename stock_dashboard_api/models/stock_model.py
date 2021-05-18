@@ -281,6 +281,7 @@ class Stock:
         time_period_in_minutes = datetime_to.timestamp() - datetime_from.timestamp() / 60
         expected_data_quantity = time_period_in_minutes / (60 / STOCK_DATA_INTERVAL)
         actual_data_quantity = len(stock_data)
+        print(actual_data_quantity != expected_data_quantity)
         return actual_data_quantity != expected_data_quantity
 
     def _fill_gaps_in_data(self, datetime_from, datetime_to, stock_data):
@@ -293,6 +294,7 @@ class Stock:
         """
 
         gaps = Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
+        print(gaps)
         datetime_from_index = 0
         datetime_to_index = 1
         for gap in gaps:
@@ -318,14 +320,17 @@ class Stock:
         stock_data.sort(key=lambda x: x.created_at)
         gaps = {}  # key - gap start, value - gap end. in order to gaps being unique and dont have duplicates
 
-        if is_gap(datetime_from, stock_data[0].created_at):
-            gaps[datetime_from] = stock_data[0].created_at
-        for i in range(len(stock_data) - 1):
-            potential_gap_start, potential_gap_end = stock_data[i].created_at, stock_data[i + 1].created_at
-            if is_gap(potential_gap_start, potential_gap_end):
-                gaps[potential_gap_start] = potential_gap_end
-        if is_gap(stock_data[-1].created_at, datetime_to):
-            gaps[stock_data[-1].created_at] = datetime_to
+        if len(stock_data) == 0:
+            gaps[datetime_from] = datetime_to
+        else:
+            if is_gap(datetime_from, stock_data[0].created_at):
+                gaps[datetime_from] = stock_data[0].created_at
+            for i in range(len(stock_data) - 1):
+                potential_gap_start, potential_gap_end = stock_data[i].created_at, stock_data[i + 1].created_at
+                if is_gap(potential_gap_start, potential_gap_end):
+                    gaps[potential_gap_start] = potential_gap_end
+            if is_gap(stock_data[-1].created_at, datetime_to):
+                gaps[stock_data[-1].created_at] = datetime_to
 
         return [(_datetime_from, _datetime_to) for _datetime_from, _datetime_to in gaps.items()]
 
