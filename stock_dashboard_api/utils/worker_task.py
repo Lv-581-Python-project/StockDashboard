@@ -1,7 +1,6 @@
 import json
 
 from stock_dashboard_api.utils.constants import (FETCH_HISTORICAL_DATA_TASK,
-                                                 FETCH_DATA_FOR_PERIOD_TASK,
                                                  FETCH_NEW_STOCK_TASK)
 from stock_dashboard_api.utils.logger import views_logger as logger
 
@@ -42,20 +41,6 @@ class Task:
         :return: body for task
         """
         if self.task_id != FETCH_HISTORICAL_DATA_TASK:
-            logger.info(Task.MESSAGE)
-            raise Exception(Task.MESSAGE)
-        body = json.dumps({"task_id": self.task_id,
-                           "stock_name": self.stock_name,
-                           "from": self.date_from,
-                           "to": self.date_to})
-        return body
-
-    def data_for_period_task(self):
-        """
-        Task for get new data for some period
-        :return: body for task
-        """
-        if self.task_id != FETCH_DATA_FOR_PERIOD_TASK:
             logger.info(Task.MESSAGE)
             raise Exception(Task.MESSAGE)
         body = json.dumps({"task_id": self.task_id,
