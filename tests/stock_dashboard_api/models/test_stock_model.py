@@ -89,17 +89,6 @@ class TestStock(unittest.TestCase):
 
         self.assertEqual(expected_result, stock_data_for_time_period_dict)
 
-    def test_junk(self, pool_manager):
-        datetime_from, datetime_to = datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 8, 20)
-        stock_data = [StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 30)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 45)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 6, 15)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 7, 30)),]
-        print()
-        print()
-        res = sm.Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
-        print(res)
-
     def test_get_data_for_time_period_error(self, pool_manager):
         datetime_from = datetime.datetime(2020, 4, 1, 5, 21, 45)
         datetime_to = datetime.datetime(2020, 4, 1, 5, 22, 30)
