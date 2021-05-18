@@ -42,7 +42,7 @@ class Task:
             raise Exception("Wrong type of task")
         body = json.dumps({"task_id": self.task_id,
                            "stock_name": self.stock_name,
-                           "from": self.date_to,
+                           "from": self.date_from,
                            "to": self.date_to})
         return body
 
