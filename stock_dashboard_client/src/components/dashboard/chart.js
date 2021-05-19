@@ -3,18 +3,9 @@ import Chart from "react-apexcharts";
 import Paper from '@material-ui/core/Paper';
 import Grid from "@material-ui/core/Grid";
 import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-// import {
-//     ArgumentAxis,
-//     ValueAxis,
-//     Chart,
-//     LineSeries,
-//
-// } from '@devexpress/dx-react-chart-material-ui';
-// import { ArgumentScale, ValueScale, Animation } from '@devexpress/dx-react-chart';
 import TimelineIcon from "@material-ui/icons/Timeline";
 import axios from "axios";
-
+import Alert from '@material-ui/lab/Alert';
 // const data = [
 //     {argument: 1, value: 10},
 //     {argument: 2, value: 20},
@@ -67,9 +58,9 @@ class ChartItem extends Component {
 
     state = {
         stock_data: [],
-        time: 2,
         fromValue: "",
         toValue: "",
+        showError:false,
         chart_data: [],
         categories: [],
         data_is_default: true,
@@ -207,16 +198,24 @@ class ChartItem extends Component {
         })
     }
     handleDrawChart = () => {
-        let toDate = this.state.toValue
-        toDate = toDate.replace("T", " ") + ":00"
-        let fromDate = this.state.fromValue
-        fromDate = fromDate.replace("T", " ") + ":00"
-        getChartData(fromDate, toDate, this.props.stock.id).then(response => {
+        let validate_date = new Date(this.state.toValue) - new Date(this.state.fromValue);
+        console.log(validate_date)
+        if (validate_date>0){
+            this.setState({showError:false})
+            let toDate = this.state.toValue
+            toDate = toDate.replace("T", " ") + ":00"
+            let fromDate = this.state.fromValue
+            fromDate = fromDate.replace("T", " ") + ":00"
+            getChartData(fromDate, toDate, this.props.stock.id).then(response => {
             console.log(response.status)
             this.handleResponse(response);
             this.setState({data_is_default: false})
         })
             .catch(errors => console.log(errors))
+        }else{
+            this.setState({showError:true})
+        }
+
     }
 
     render() {
@@ -253,7 +252,8 @@ class ChartItem extends Component {
                                                     style={{width: "99%", height: "4vh"}}
                                                     type="datetime-local"/></label>
                                 </div>
-
+                                {this.state.showError ?
+                        <Alert style={{marginTop: 10, width: "17vw"}} severity="error">Error. Wrong date provided.</Alert> : null}
                             </Paper>
                         </Grid>
                         <Grid style={{marginLeft: "2vw"}}>
