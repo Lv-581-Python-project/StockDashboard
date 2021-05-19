@@ -4,6 +4,12 @@ from stock_dashboard_api.utils.logger import views_logger as logger
 from stock_dashboard_api.models.dashboard_model import Dashboard
 from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api.utils.json_parser import get_body
+from stock_dashboard_api.utils.yahoo_finance import check_if_exist, get_meta_data
+from stock_dashboard_api.utils.scheduler_queue import scheduler_publish_task
+from stock_dashboard_api.utils.worker_task import Task
+from stock_dashboard_api.utils.constants import FETCH_NEW_STOCK_TASK
+
+
 mod = Blueprint('dashboard', __name__, url_prefix='/api/dashboard')
 
 
@@ -38,9 +44,33 @@ class DashboardView(MethodView):
         body = get_body(request)
         if not body:
             return make_response("Wrong data provided", 400)
-        stock_ids = body.get('stock_ids')
+        stocks = body.get('all_stocks')
+        stock_ids = []
+        for stock in stocks:
+            stock_ids.append(stock.get('id'))
         if not stock_ids:
             return make_response("No stock ids provided", 400)
+
+        missing_names = body.get('missing_names')
+        for name in missing_names:
+            if check_if_exist(name):
+                meta_data = get_meta_data(name)
+
+                stock = Stock.create(name=meta_data['name'],
+                                     company_name=meta_data['company_name'],
+                                     country=meta_data['country'],
+                                     industry=meta_data['industry'],
+                                     sector=meta_data['sector'],
+                                     in_use=True)
+                stock_ids.append(stock.id)
+                scheduler_publish_task(Task(task_id=FETCH_NEW_STOCK_TASK, name=meta_data['name']).new_stock_task())
+
+        for stock_id in stock_ids:
+            stock = Stock.get_by_id(stock_id)
+            if not stock.in_use:
+                stock.update(in_use=True)
+                scheduler_publish_task(Task(task_id=FETCH_NEW_STOCK_TASK, name=stock.name).new_stock_task())
+
         stocks = Stock.get_stock_by_ids(stock_ids)
         if not stocks:
             return make_response("Wrong stock ids provided", 400)
