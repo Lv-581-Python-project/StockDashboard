@@ -199,8 +199,11 @@ class ChartItem extends Component {
     }
     handleDrawChart = () => {
         let validate_date = new Date(this.state.toValue) - new Date(this.state.fromValue);
+        let check_to_date = new Date(Date.now()) - new Date(this.state.toValue)
+        let check_from_date = new Date(Date.now()) - new Date(this.state.fromValue)
+        
         console.log(validate_date)
-        if (validate_date>0){
+        if (validate_date>0 && check_to_date>0 && check_from_date>0){
             this.setState({showError:false})
             let toDate = this.state.toValue
             toDate = toDate.replace("T", " ") + ":00"
