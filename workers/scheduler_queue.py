@@ -29,7 +29,7 @@ def get_scheduler_queue():
     return queue
 
 
-def publish_task(body):
+def scheduler_publish_task(body):
     queue = get_scheduler_queue()
     queue.basic_publish(
         exchange='scheduler',
