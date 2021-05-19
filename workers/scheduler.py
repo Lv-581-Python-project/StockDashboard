@@ -6,7 +6,7 @@ import time
 
 import pika
 
-from workers.utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK
+from workers.utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
 from workers.utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
 from workers.utils.worker_task import Task
 from workers.worker_queue import worker_publish_task
@@ -35,8 +35,8 @@ def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103, 
         dict_body['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
         body = json.dumps(dict_body)
         worker_publish_task(body)
-    elif dict_body['task_id'] == "FETCH_HISTORICAL_DATA_TASK":
-        dict_body['task_id'] = "FETCH_DATA_FOR_PERIOD_TASK"
+    elif dict_body['task_id'] == FETCH_HISTORICAL_DATA_TASK:
+        dict_body['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
         start = datetime.datetime.fromisoformat(dict_body['from'])
         finish = datetime.datetime.fromisoformat(dict_body['to'])
         date_difference = (start - finish).days
