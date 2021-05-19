@@ -41,3 +41,21 @@ class TestYahooFinanceApi(unittest.TestCase):
             (datetime.datetime.now(), 2, 125.80999908447266)
         )
         self.assertEqual(yahoo_finance.data_for_stocks_data_update(18, 'AAPL', 2021), data)
+
+    def test_get_meta_data(self, yf):
+        data = {
+            'name': 'AACG',
+            'company_name': 'ATA Creativity Global',
+            'country': 'China',
+            'industry': 'Education & Training Services',
+            'sector': 'Consumer Defensive'
+        }
+
+        yf.Ticker.return_value.info = {
+            'name': 'AACG',
+            'longName': 'ATA Creativity Global',
+            'country': 'China',
+            'industry': 'Education & Training Services',
+            'sector': 'Consumer Defensive'
+        }
+        self.assertEqual(yahoo_finance.get_meta_data('AACG'), data)
