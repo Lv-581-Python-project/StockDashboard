@@ -3,17 +3,15 @@ import os
 
 import pika
 
-from workers.utils.db_service import stock_get_id, insert_stock_data
-from workers.utils.yahoo_finance import get_meta_data, data_for_stocks_data_update
+from workers.utils.db_service import insert_stock_data
+from workers.utils.yahoo_finance import data_for_stocks_data_update
 
 
 def worker_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
     body = json.loads(body)
-    print(body)
-    stock_id = stock_get_id(body['stock_name'])
-    data = data_for_stocks_data_update(stock_id, body["stock_name"], body["from"], body["to"])
-    insert_stock_data(data["stock_id"], body["price"], body["created_at"])
-
+    data = data_for_stocks_data_update(body["stock_name"], body["from"], body["to"])
+    for stock in data:
+        insert_stock_data(stock["stock_id"], stock["price"], stock["created_at"])
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
