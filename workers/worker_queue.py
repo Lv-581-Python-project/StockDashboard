@@ -13,32 +13,27 @@ def connect_queue():
     return rabbitmq
 
 
-def get_scheduler_queue():
+def get_worker_queue():
     """
     Returns a created email queue.
     """
     connect = connect_queue()
     channel = connect.channel()
     channel.exchange_declare(
-        exchange='scheduler',
+        exchange='worker',
         exchange_type='direct',
     )
-    channel.queue_declare(queue='scheduler_queue', durable=True)
-    channel.queue_bind(exchange='scheduler', queue='scheduler_queue')
+    channel.queue_declare(queue='worker_queue', durable=True)
+    channel.queue_bind(exchange='worker', queue='worker_queue')
     queue = channel
     return queue
 
 
-def publish_task(body):
-    """
-    A function to publish a task to scheduler queue.
-
-    :param body: body of the task in json format.
-    """
-    queue = get_scheduler_queue()
+def worker_publish_task(body):
+    queue = get_worker_queue()
     queue.basic_publish(
-        exchange='scheduler',
-        routing_key='scheduler_queue',
+        exchange='worker',
+        routing_key='worker_queue',
         body=body,
         properties=pika.BasicProperties(
             delivery_mode=int(os.environ.get('RABBITMQ_DELIVERY_MODE')),

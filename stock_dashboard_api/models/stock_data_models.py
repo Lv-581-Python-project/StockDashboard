@@ -5,9 +5,18 @@ from stock_dashboard_api.utils.pool import pool_manager
 
 
 class StockData:
+    """
+    Model used to create a StockData instance.
+    """
     _table = "public.stocks_data"
 
     def __init__(self, stock_id: int, price: float, created_at: datetime, pk=None):
+        """
+        :param stock_id: Stock id
+        :param price: StockData price
+        :param created_at: StockData creation date, time
+        :param pk: StockData id
+        """
         self.pk = pk
         self.stock_id = stock_id
         self.price = price
@@ -17,6 +26,10 @@ class StockData:
     def create(cls, stock_id: int, price: float, created_at: datetime):
         """
         Create new stock data
+        :param stock_id: Stock id
+        :param price: StockData price
+        :param created_at: StockData creation date, time
+        :return: StockData instance
         """
         with pool_manager() as conn:
             query = f"""INSERT INTO {cls._table} (stock_id, price, created_at)
@@ -34,6 +47,9 @@ class StockData:
     def update(self, price=None, created_at=None):
         """
         Changes values of the stock data to the given.
+        :param price: StockData price
+        :param created_at: StockData creation date, time
+        :return: updated StockData instance
         """
         data_to_update = []
         if price is not None:
@@ -62,6 +78,8 @@ class StockData:
     def get_by_id(cls, pk: int):
         """
         Get stock data with given pk.
+        :param pk: StockData id
+        :return: StockData instance with given pk
         """
         with pool_manager() as conn:
             query = f"SELECT * FROM {cls._table} WHERE id = %(id)s"
@@ -76,6 +94,8 @@ class StockData:
     def delete_by_id(cls, pk: int):
         """
         Delete stock data with given pk
+        :param pk: StockData id
+        :return: True if instance was deleted, else False
         """
         if not StockData.get_by_id(pk):
             return False

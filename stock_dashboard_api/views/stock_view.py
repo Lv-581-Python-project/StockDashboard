@@ -10,6 +10,9 @@ from stock_dashboard_api.utils.logger import views_logger as logger
 
 MAX_STOCK_NAME_LENGTH = 16
 MAX_STOCK_COMPANY_NAME_LENGTH = 128
+MAX_STOCK_COUNTRY_LENGTH = 32
+MAX_STOCK_INDUSTRY_LENGTH = 128
+MAX_STOCK_SECTOR_LENGTH = 32
 
 
 class StockView(MethodView):
@@ -37,13 +40,21 @@ class StockView(MethodView):
         :return: Response with just created Stock
         """
         body = get_body(request)
-        stock_name, stock_company_name = body.get('name'), body.get('company_name')
+        stock_name, stock_company_name, stock_country, stock_industry, stock_sector = (body.get('name'),
+                                                                                       body.get('company_name'),
+                                                                                       body.get('country'),
+                                                                                       body.get('industry'),
+                                                                                       body.get('sector'))
 
         if isinstance(stock_name, str) \
                 and isinstance(stock_company_name, str) \
                 and len(stock_name) <= MAX_STOCK_NAME_LENGTH \
                 and len(stock_company_name) <= MAX_STOCK_COMPANY_NAME_LENGTH:
-            stock_to_create = {'name': stock_name, 'company_name': stock_company_name}
+            stock_to_create = {'name': stock_name,
+                               'company_name': stock_company_name,
+                               'country': stock_country,
+                               'industry': stock_industry,
+                               'sector': stock_sector}
         else:
             message = "Wrong data provided"
             logger.info(message)
@@ -69,13 +80,22 @@ class StockView(MethodView):
             logger.info(message)
             return make_response(message, 400)
 
-        stock_name, stock_company_name = body.get('name'), body.get('company_name')
+        stock_name, stock_company_name, stock_country, stock_industry, stock_sector = (body.get('name'),
+                                                                                       body.get('company_name'),
+                                                                                       body.get('country'),
+                                                                                       body.get('industry'),
+                                                                                       body.get('sector'))
         stock_values_to_update = {}
         if isinstance(stock_name, str) and len(stock_name) <= MAX_STOCK_NAME_LENGTH:
             stock_values_to_update['name'] = stock_name
-        if isinstance(stock_company_name, str) \
-                and len(stock_company_name) <= MAX_STOCK_COMPANY_NAME_LENGTH:
+        if isinstance(stock_company_name, str) and len(stock_company_name) <= MAX_STOCK_COMPANY_NAME_LENGTH:
             stock_values_to_update['company_name'] = stock_company_name
+        if isinstance(stock_country, str) and len(stock_country) <= MAX_STOCK_COUNTRY_LENGTH:
+            stock_values_to_update['country'] = stock_country
+        if isinstance(stock_industry, str) and len(stock_industry) <= MAX_STOCK_INDUSTRY_LENGTH:
+            stock_values_to_update['industry'] = stock_industry
+        if isinstance(stock_sector, str) and len(stock_sector) <= MAX_STOCK_SECTOR_LENGTH:
+            stock_values_to_update['sector'] = stock_sector
         if stock_values_to_update:
             stock.update(**stock_values_to_update)
             if stock:

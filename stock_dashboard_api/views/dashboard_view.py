@@ -74,6 +74,22 @@ class DashboardView(MethodView):
         return make_response(message, 400)
 
 
+class DashboardStocksView(MethodView):
+    def get(self) -> Response:
+        stock_ids = request.args.get('stock_ids')
+        if not stock_ids[1:-1]:
+            return make_response('Wrong data provided', 400)
+        stocks = []
+        for stock_pk in stock_ids[1:-1].split(", "):
+            taken_stock = Stock.get_by_id(stock_pk)
+            if not taken_stock:
+                return make_response(f"Can not find stock, wrong id", 400)
+            stocks.append([stock.to_dict() for stock in Stock.get_data_for_last_day(int(stock_pk))])
+        return make_response(jsonify(stocks), 200)
+
+
 dashboard_view = DashboardView.as_view('dashboard')
 mod.add_url_rule('/<string:dashboard_hash>', view_func=dashboard_view, methods=['GET'])
 mod.add_url_rule('/', view_func=dashboard_view, methods=['POST'])
+stock_dashboard_stocks_view = DashboardStocksView.as_view('stock_dashboard_stocks_view')
+mod.add_url_rule('/', view_func=stock_dashboard_stocks_view, methods=['GET', ])
