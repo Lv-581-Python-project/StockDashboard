@@ -27,7 +27,16 @@ const data = [
     {argument: 9, value: 92},
 ];
 const format = () => tick => tick;
-const options = {
+
+class ChartItem extends Component {
+
+    state = {
+        stock_data: [],
+        fromValue: "2021-03-12T11:02",
+        toValue: "2021-04-12T11:05",
+        chart_data: [],
+        categories:[],
+        options :{
             xaxis: {
                 categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
                 labels: {
@@ -41,7 +50,7 @@ const options = {
                     rotate: -45,
                             maxHeight: 150,
                     formatter: function(value, timestamp, opts) {
-            return opts.dateFormatter(new Date(timestamp)).format("dd MMM")
+                        return new Date(value)
           }
 
                 }
@@ -50,8 +59,8 @@ const options = {
 
             yaxis: {
                 labels: {
-                    formatter: (value) => {
-                        return value.toPrecision(7)
+                    formatter: (value,index) => {
+                        return value.toFixed(1)
                     },
                 }
             },
@@ -79,15 +88,7 @@ const options = {
             },
 
 
-        }
-class ChartItem extends Component {
-
-    state = {
-        stock_data: [],
-        fromValue: "2021-03-12T11:02",
-        toValue: "2021-04-12T11:05",
-        chart_data: [],
-        categories:[],
+        },
         series: [
             {
                 name: this.props.stock.name,
@@ -131,8 +132,17 @@ class ChartItem extends Component {
                 categories1.push(stock.created_at)
                 data.push(stock.price)
             })
+            const options1 = JSON.parse(JSON.stringify(this.state.options));
+            options1.xaxis.categories = this.state.categories
+            options1.xaxis.labels.formatter = (value,timestamp,opts)=>
+        {
+            return new Date(value)
+        }
+            options1.yaxis.labels.formatter = (value,index) => {
+                        return value.toFixed(1)
+                    }
             this.setState({
-                // options: options1,
+                options: options1,
                 categories:categories1,
                 series: [
                     {
@@ -148,14 +158,14 @@ class ChartItem extends Component {
     render() {
 
 
-        const options1 = JSON.parse(JSON.stringify(options));
-        options1.xaxis.categories = this.state.categories
-        console.log(this.state.categories)
-        console.log(options1)
-        console.log(JSON.stringify(options1))
-        const options2 = JSON.parse(JSON.stringify(options1));
-
-        console.log(options2)
+        // const options1 = JSON.parse(JSON.stringify(options));
+        // options1.xaxis.categories = this.state.categories
+        // console.log(this.state.categories)
+        // console.log(options1)
+        // console.log(JSON.stringify(options1))
+        // const options2 = JSON.parse(JSON.stringify(options1));
+        //
+        // console.log(options2)
         return (
             <Grid style={{marginLeft: "2vw", marginBottom: 20}} container>
                 <Grid item style={{margin: 40, textAlign: "center"}} xs={7}>
@@ -166,7 +176,7 @@ class ChartItem extends Component {
                     <Grid item xs={7}>
                         <Paper>
                             <Chart
-                                options={options2}
+                                options={this.state.options}
                                 series={this.state.series}
                                 type="line"
 

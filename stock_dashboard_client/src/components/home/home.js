@@ -15,12 +15,20 @@ class Home extends Component {
         this.setState({stocks: stocks})
     }
     goToDashboard = () => {
-        let stocks = this.state.stocks.map((stock) => stock.id)
-         axios({
+        let missing_names = this.state.stocks.map((stock) => {
+            if (Object.keys(stock).includes("id")) {
+
+                return stock.name
+            }
+        })
+        axios({
             method: 'post',
             url: 'http://localhost:5000/api/dashboard/',
-            data: {stock_ids:stocks},
-            config: { headers: { 'Content-Type': 'application/json' } }
+            data: {
+                all_stocks: this.state.stocks,
+                missing_names: missing_names
+            },
+            config: {headers: {'Content-Type': 'application/json'}}
         }).then(response => this.props.history.push(`/dashboard/${response.data.dashboard_hash}`))
             .catch(errors => console.log(errors))
 
