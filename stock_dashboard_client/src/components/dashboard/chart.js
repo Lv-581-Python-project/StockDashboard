@@ -212,7 +212,7 @@ class ChartItem extends Component {
         let fromDate = this.state.fromValue
         fromDate = fromDate.replace("T", " ") + ":00"
         getChartData(fromDate, toDate, this.props.stock.id).then(response => {
-
+            console.log(response.status)
             this.handleResponse(response);
             this.setState({data_is_default: false})
         })

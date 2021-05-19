@@ -2,6 +2,7 @@ import axios from 'axios';
 import {Component} from 'react';
 import AutoComplete from "../auto_complete_stocks/autoCompleteStocks";
 import Button from '@material-ui/core/Button';
+import Alert from '@material-ui/lab/Alert';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -10,7 +11,7 @@ import "../../css/home.css";
 
 
 class Home extends Component {
-    state = {stocks: [],time:2}
+    state = {stocks: [], showAlert: false}
     setStocks = (stocks) => {
         this.setState({stocks: stocks})
     }
@@ -29,15 +30,21 @@ class Home extends Component {
                 missing_names: missing_names
             },
             config: {headers: {'Content-Type': 'application/json'}}
-        }).then(response => this.props.history.push(`/dashboard/${response.data.dashboard_hash}`))
-            .catch(errors => console.log(errors))
+        }).then(response => {
+
+            this.props.history.push(`/dashboard/${response.data.dashboard_hash}`)
+
+        })
+            .catch(errors => {
+                console.log(errors)
+                this.setState({showAlert: true})
+            })
 
     }
 
 
     render() {
         // console.log(this.state.stocks)
-        console.log(this.state.time)
         return (
             <Grid
                 container
@@ -83,8 +90,11 @@ class Home extends Component {
                         (minus taxes).
                     </Paper>
                 </Grid>
-                <Grid xs={6} container className="autoComplete" direction="row" alignItems='center' justify='center'>
+                <Grid xs={6} container className="autoComplete" direction="column" alignItems='center' justify='center'>
                     <AutoComplete setStocks={this.setStocks}/>
+                    {this.state.showAlert ?
+                        <Alert style={{marginTop: 10, width: "38vw"}} severity="error">Error. Non-existent stock
+                            inputed. Please check your list of inputed stocks and try again.</Alert> : null}
                     <Button
                         variant="contained"
                         color="primary"
@@ -95,6 +105,8 @@ class Home extends Component {
                         Show Charts
                     </Button>
                 </Grid>
+
+
             </Grid>
         );
     }
