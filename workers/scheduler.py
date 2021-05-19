@@ -78,6 +78,6 @@ def updating_stocks():
 
 if __name__ == '__main__':
     t1 = threading.Thread(target=connect_rmq)
-    # t2 = threading.Thread(target=updating_stocks)
+    t2 = threading.Thread(target=updating_stocks)
     t1.start()
-    # t2.start()
+    t2.start()
