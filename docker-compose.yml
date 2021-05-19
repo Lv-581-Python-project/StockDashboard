@@ -72,4 +72,6 @@ services:
       - rmq
     env_file:
       - .env
+    environment:
+      LOGGING_CONF: /scheduler/utils/logging.conf
     restart: on-failure

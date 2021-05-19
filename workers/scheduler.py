@@ -3,16 +3,19 @@ import json
 import os
 import threading
 import time
+import logging
 
 import pika
 
-from workers.utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
-from workers.utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
-from workers.utils.worker_task import Task
-from workers.worker_queue import worker_publish_task
+from utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
+from utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
+from utils.worker_queue import worker_publish_task
+from utils.worker_task import Task
 
 UPDATING_TIME = 15 * 60
 DEFAULT_PERIOD = int(os.getenv('DEFAULT_PERIOD_FOR_NEW_STOCK_DATA_DOWNLOAD'))
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 def connect_rmq():
