@@ -5,7 +5,6 @@ import yfinance as yf
 DELAY = 10
 PRICE_INDEX = 2
 DATE_INDEX = 0
-QUEUE = 'get_stock_data_queue'
 
 
 def check_if_exist(ticket: str) -> bool:
