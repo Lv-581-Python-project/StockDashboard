@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, Blueprint
 from stock_dashboard_api.forms import EmailForm
 from stock_dashboard_api.utils.send_email_queue import publish_email
 
-mod = Blueprint('dashboard', __name__, url_prefix='/mail')
+mod = Blueprint('mail', __name__, url_prefix='/mail')
 
 
 @mod.route('/')
@@ -35,5 +35,5 @@ def send_email():
                            "template_name": "dashboard_invite_email"})
         publish_email(body)
 
-        return redirect(url_for('dashboard.home'))
+        return redirect(url_for('mail.home'))
     return render_template('send_email.html', form=form)

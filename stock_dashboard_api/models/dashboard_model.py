@@ -1,90 +1,135 @@
 import psycopg2
 
+from stock_dashboard_api.utils.dashboard_hash_generator import generate_dashboard_hash
 from stock_dashboard_api.utils.pool import pool_manager
+from stock_dashboard_api.utils.logger import views_logger as logger
+from stock_dashboard_api.models.stock_model import Stock
 
 
 class Dashboard:
     """
-    Model used to create a dashboard_config.
+    Model used to create a Dashboard.
     """
 
     _table = 'public.dashboard'
 
-    def __init__(self, config_hash: str, pk=None):  # pylint: disable=C0103,  W0613
-        self.pk = pk  # pylint: disable=C0103,  W0613
-        self.config_hash = config_hash
+    def __init__(self, dashboard_hash: str):
+        self.dashboard_hash = dashboard_hash
 
     @classmethod
-    def create(cls, config_hash: str) -> object:
-        """
-        Creates a new dashboard_config.
-        :return: instance of DashboardConfig
-        """
-        with pool_manager() as conn:
-            query = f"""INSERT INTO {cls._table} (config_hash)
-                        VALUES (%(config_hash)s)
-                        RETURNING id, config_hash;"""
-            try:
-                conn.cursor.execute(query, {'config_hash': config_hash})
-                pk, config_hash = conn.cursor.fetchone()  # pylint: disable=C0103,  W0613
-            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
-                return False
-            return Dashboard(pk=pk, config_hash=config_hash)
+    def create(cls, stocks: list) -> object:
+        """Creates a new record in Dashboard table
 
-    def update(self, config_hash: str) -> bool:
+        :param stock_ids: list of stock ids for specific dashboard
+        :return: instance of Dashboard
         """
-        Updates an existing dashboard_config.
+
+        stock_names = [stock.name for stock in stocks]
+        stock_names.sort()
+        stock_names = " ".join(stock_names)
+        dashboard_hash = generate_dashboard_hash(stock_names=stock_names)
+
+        # Check if dashboard already exists returning it
+        existing_dashboard = Dashboard.get_by_hash(dashboard_hash)
+        if existing_dashboard:
+            return existing_dashboard
+
+        with pool_manager() as conn:
+            dashboard_has_stocks_table = 'public.dashboard_has_stocks'
+
+            try:
+                insert_dashboard_query = f"""INSERT INTO {cls._table} (dashboard_hash)
+                                        VALUES (%(dashboard_hash)s) 
+                                        RETURNING dashboard_hash;"""
+                conn.cursor.execute(insert_dashboard_query, {'dashboard_hash': dashboard_hash})
+                dashboard_hash = conn.cursor.fetchone()
+
+                dashboard_has_stocks_insert_data = [(stock.pk, dashboard_hash) for stock in stocks]
+                insert_dashboard_has_stocks_query = (f"INSERT INTO {dashboard_has_stocks_table} "
+                                                     "(stock_id, dashboard_hash)"
+                                                     " VALUES (%s, %s);")
+                conn.cursor.executemany(insert_dashboard_has_stocks_query, dashboard_has_stocks_insert_data)
+                return Dashboard(dashboard_hash=dashboard_hash)
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as error:
+                logger.info(f"Error Dashboard model create {error}")
+
+    def update(self, dashboard_hash: str) -> bool:
         """
-        if not config_hash:
+        Updates an existing dashboard.
+        """
+        if not dashboard_hash:
             return False
         with pool_manager() as conn:
-            query = f"""UPDATE {self._table} SET config_hash = %(config_hash)s WHERE id = %(pk)s
-                        RETURNING id, config_hash;"""
+            query = f"""UPDATE {self._table} SET dashboard_hash = %(dashboard_hash)s
+                        WHERE dashboard_hash = %(dashboard_hash)s
+                        RETURNING dashboard_hash;"""
             try:
-                conn.cursor.execute(query, {'config_hash': config_hash, 'pk': self.pk})
-                pk, config_hash = conn.cursor.fetchone()  # pylint: disable=C0103,  W0613, W0612
-                self.config_hash = config_hash
-            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as err:
-                return False
-        return True
+                conn.cursor.execute(query, {'dashboard': dashboard_hash})
+                dashboard_hash = conn.cursor.fetchone()
+                self.dashboard_hash = dashboard_hash
+                return True
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError) as error:
+                logger.info(f"Error Dashboard model update {error}")
 
     @classmethod
-    def get_by_id(cls, pk: int) -> object:  # pylint: disable=C0103,  W0613
-        """
-        Returns a dashboard_config instance by its id.
+    def get_by_hash(cls, dashboard_hash: str):
+        """Getting a dashboard by its hash from Dashboard table
+
         :return: instance of DashboardConfig model
         """
-
         with pool_manager() as conn:
-            query = f"SELECT * FROM {cls._table} WHERE id = %(id)s"
+            get_dashboard_id_query = f"""SELECT dashboard_hash FROM {cls._table}
+                                         WHERE dashboard_hash = %(dashboard_hash)s;"""
+
             try:
-                conn.cursor.execute(query, {'id': pk})
-                pk, config_hash = conn.cursor.fetchone()
-                return Dashboard(pk=pk, config_hash=config_hash)
-            except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as err:
-                return None
+                conn.cursor.execute(get_dashboard_id_query, {'dashboard_hash': dashboard_hash})
+                dashboard_hash = conn.cursor.fetchone()[0]
+                if dashboard_hash:
+                    return Dashboard(dashboard_hash=dashboard_hash)
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as error:
+                logger.info(f"Error Dashboard model get_by_hash {error}")
+
+    def get_stocks(self):
+        dashboard_has_stocks_table = 'public.dashboard_has_stocks'
+        stocks_table = 'public.stocks'
+        with pool_manager() as conn:
+            get_stocks_id_query = f"""SELECT {dashboard_has_stocks_table}.stock_id,{stocks_table}.name,
+                                             {stocks_table}.company_name, {stocks_table}.country, {stocks_table}.industry, {stocks_table}.sector, {stocks_table}.in_use
+                                      FROM {dashboard_has_stocks_table} INNER JOIN {stocks_table} 
+                                      ON {dashboard_has_stocks_table}.stock_id = {stocks_table}.id
+                                      WHERE {dashboard_has_stocks_table}.dashboard_hash = %(dashboard_hash)s;"""
+            try:
+                conn.cursor.execute(get_stocks_id_query, {'dashboard_hash': self.dashboard_hash})
+                list_of_stocks = conn.cursor.fetchall()
+                list_of_stocks = [Stock(pk=stock[0],
+                                        name=stock[1],
+                                        company_name=stock[2],
+                                        country=stock[3],
+                                        industry=stock[4],
+                                        sector=stock[5],
+                                        in_use=stock[6])
+                                  for stock in list_of_stocks]
+                return list_of_stocks
+            except (psycopg2.ProgrammingError, psycopg2.DatabaseError, TypeError) as error:
+                logger.info(f"Error Dashboard model get_stocks {error}")
 
     @classmethod
-    def delete_by_id(cls, pk: int) -> bool:  # pylint: disable=C0103,  W0613
+    def delete_by_hash(cls, dashboard_hash: str) -> bool:
         """
-        Deletes a dashboard_config instance by its id.
+        Deletes a Dashboard instance by its dashboard_hash.
         """
-
-        if not Dashboard.get_by_id(pk):
-            return False
 
         with pool_manager() as conn:
-            query = f"DELETE FROM {cls._table} WHERE id = %(id)s;"
+            query = f"DELETE FROM {cls._table} WHERE dashboard_hash = %(dashboard_hash)s;"
             try:
-                conn.cursor.execute(query, {'id': pk})
+                conn.cursor.execute(query, {'dashboard_hash': dashboard_hash})
                 return True
-            except(psycopg2.DataError, psycopg2.ProgrammingError):
-                return False
+            except(psycopg2.DataError, psycopg2.ProgrammingError) as error:
+                logger.info(f"Error Dashboard model delete_by_hash {error}")
 
     def to_dict(self) -> dict:
         """
         Used to represent the instance in dictionary format
         :return: dictionary with the information about instance
         """
-        return {'pk': self.pk,
-                'config_hash': self.config_hash}
+        return {'dashboard_hash': self.dashboard_hash}
