@@ -47,7 +47,7 @@ export default class CheckboxesTags extends Component {
     render() {
         const options=this.state.showOptions ? this.state.activeOptions.slice(0, 100): this.state.stock_options.slice(0, 50)
         this.state.inputOption.name.length>1 && options.unshift(this.state.inputOption)
-        console.log(options)
+        // console.log(options)
         return (
             <Autocomplete
                 multiple

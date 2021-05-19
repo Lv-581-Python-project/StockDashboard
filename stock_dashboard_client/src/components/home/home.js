@@ -10,7 +10,7 @@ import "../../css/home.css";
 
 
 class Home extends Component {
-    state = {stocks: []}
+    state = {stocks: [],time:2}
     setStocks = (stocks) => {
         this.setState({stocks: stocks})
     }
@@ -34,8 +34,10 @@ class Home extends Component {
 
     }
 
+
     render() {
-        console.log(this.state.stocks)
+        // console.log(this.state.stocks)
+        console.log(this.state.time)
         return (
             <Grid
                 container

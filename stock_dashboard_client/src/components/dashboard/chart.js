@@ -15,30 +15,67 @@ import Icon from '@material-ui/core/Icon';
 import TimelineIcon from "@material-ui/icons/Timeline";
 import axios from "axios";
 
-const data = [
-    {argument: 1, value: 10},
-    {argument: 2, value: 20},
-    {argument: 3, value: 30},
-    {argument: 4, value: 5},
-    {argument: 5, value: 1},
-    {argument: 6, value: 32},
-    {argument: 7, value: 15},
-    {argument: 8, value: 4},
-    {argument: 9, value: 92},
-];
+// const data = [
+//     {argument: 1, value: 10},
+//     {argument: 2, value: 20},
+//     {argument: 3, value: 30},
+//     {argument: 4, value: 5},
+//     {argument: 5, value: 1},
+//     {argument: 6, value: 32},
+//     {argument: 7, value: 15},
+//     {argument: 8, value: 4},
+//     {argument: 9, value: 92},
+// ];
 const format = () => tick => tick;
+const convert_date = (d) => {
+    let month = (d.getMonth() + 1).toString();
+    if (month.length < 2) {
+        month = "0" + month
+    }
+    let date = d.getDate().toString()
+    if (date.length < 2) {
+        date = "0" + date
+    }
+    let hours = d.getHours().toString()
+    if (hours.length < 2) {
+        hours = "0" + hours
+    }
+    let minutes = d.getMinutes().toString()
+    console.log(minutes.length)
+    if (minutes.length < 2) {
+        minutes = "0" + minutes
+    }
+    let seconds = d.getSeconds().toString()
+    if (seconds.length < 2) {
+        seconds = "0" + seconds
+    }
+    let res_date = d.getFullYear() + "-" + month + "-" + date + " " + hours + ":" + minutes+":"+ seconds
+    return res_date
+}
+
+const getChartData = (fromDate, toDate , stock_id) => {
+
+    return axios({
+        method: 'get',
+        url: `http://localhost:5000/api/stocks/${stock_id}?from=${fromDate}&to=${toDate}`,
+        config: {headers: {'Content-Type': 'application/json'}}
+    })
+}
 
 class ChartItem extends Component {
 
+
     state = {
         stock_data: [],
-        fromValue: "2021-03-12T11:02",
-        toValue: "2021-04-12T11:05",
+        time: 2,
+        fromValue: "",
+        toValue: "",
         chart_data: [],
-        categories:[],
-        options :{
+        categories: [],
+        data_is_default: true,
+        options: {
             xaxis: {
-                categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+                categories: [],
                 labels: {
                     // format: 'dd/MM',
                     datetimeFormatter: {
@@ -48,10 +85,10 @@ class ChartItem extends Component {
                         hour: 'HH:mm'
                     },
                     rotate: -45,
-                            maxHeight: 150,
-                    formatter: function(value, timestamp, opts) {
+                    maxHeight: 150,
+                    formatter: function (value, timestamp, opts) {
                         return new Date(value)
-          }
+                    }
 
                 }
 
@@ -59,7 +96,7 @@ class ChartItem extends Component {
 
             yaxis: {
                 labels: {
-                    formatter: (value,index) => {
+                    formatter: (value, index) => {
                         return value.toFixed(1)
                     },
                 }
@@ -92,12 +129,42 @@ class ChartItem extends Component {
         series: [
             {
                 name: this.props.stock.name,
-                data: [30, 40, 45, 50, 49, 60, 70, 91]
+                data: []
             }
         ],
         stroke: {
             curve: 'straight',
         }
+    }
+
+    // update plot with default date every 15 minutes
+    componentDidMount() {
+
+        if (this.state.data_is_default===true) {
+
+            let d = new Date(Date.now());
+            let d2 = new Date(Date.now());
+            d2.setDate(d.getDate() - 30)
+            d2.setMonth(d.getMonth() +1)
+            let date_now = convert_date(d);
+            let date_difference = convert_date(d2)
+            console.log(date_difference)
+            this.interval = setInterval(() => {
+                getChartData(date_difference, date_now, this.props.stock.id)
+                    .then(response => {
+                        this.handleResponse(response);
+                    })
+                    .catch(errors => console.log(errors));
+
+            }, 1000 * 30)
+
+        }
+
+
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
     handleFromInput = (event) => {
@@ -113,59 +180,49 @@ class ChartItem extends Component {
         this.setState({toValue: event.target.value})
         console.log(this.state.toValue)
     }
+    handleResponse = (response) => {
+        let categories1 = []
+        let data = []
+        response.data.forEach((stock) => {
+            categories1.push(stock.created_at)
+            data.push(stock.price)
+        })
+        const options1 = JSON.parse(JSON.stringify(this.state.options));
+        options1.xaxis.categories = this.state.categories
+        options1.xaxis.labels.formatter = (value, timestamp, opts) => {
+            return new Date(value)
+        }
+        options1.yaxis.labels.formatter = (value, index) => {
+            return value.toFixed(1)
+        }
+        this.setState({
+            options: options1,
+            categories: categories1,
+            series: [
+                {
+                    data: data
+                }
+            ],
+
+        })
+    }
     handleDrawChart = () => {
         let toDate = this.state.toValue
         toDate = toDate.replace("T", " ") + ":00"
         let fromDate = this.state.fromValue
         fromDate = fromDate.replace("T", " ") + ":00"
-        axios({
-            method: 'get',
-            url: `http://localhost:5000/api/stocks/${this.props.stock.id}?from=${fromDate}&to=${toDate}`,
-            config: {headers: {'Content-Type': 'application/json'}}
-        }).then(response => {
-            // this.setState({stock_data: response.data})
-            // let data_for_chart = []
-            let categories1 = []
-            let data = []
-            response.data.forEach((stock) => {
-                // data_for_chart.push({argument: stock.created_at, value: stock.price})
-                categories1.push(stock.created_at)
-                data.push(stock.price)
-            })
-            const options1 = JSON.parse(JSON.stringify(this.state.options));
-            options1.xaxis.categories = this.state.categories
-            options1.xaxis.labels.formatter = (value,timestamp,opts)=>
-        {
-            return new Date(value)
-        }
-            options1.yaxis.labels.formatter = (value,index) => {
-                        return value.toFixed(1)
-                    }
-            this.setState({
-                options: options1,
-                categories:categories1,
-                series: [
-                    {
-                        data: data
-                    }
-                ],
+        getChartData(fromDate, toDate, this.props.stock.id).then(response => {
 
-            })
+            this.handleResponse(response);
+            this.setState({data_is_default: false})
         })
             .catch(errors => console.log(errors))
     }
 
     render() {
-
-
-        // const options1 = JSON.parse(JSON.stringify(options));
-        // options1.xaxis.categories = this.state.categories
-        // console.log(this.state.categories)
-        // console.log(options1)
-        // console.log(JSON.stringify(options1))
-        // const options2 = JSON.parse(JSON.stringify(options1));
-        //
-        // console.log(options2)
+        console.log(this.state.series.data)
+        console.log(this.state.toValue)
+        console.log(this.state.fromValue)
         return (
             <Grid style={{marginLeft: "2vw", marginBottom: 20}} container>
                 <Grid item style={{margin: 40, textAlign: "center"}} xs={7}>
