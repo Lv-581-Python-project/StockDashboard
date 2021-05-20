@@ -150,7 +150,9 @@ class StockView(MethodView):
                 "Incorrect date specified, example '2018-09-19 01:55:19'(year-month-day hour:minute:second)",
                 400)
         stock_data_for_time_period = stock.get_data_for_time_period(datetime_from, datetime_to)
+        print(stock_data_for_time_period)
         stock_data_for_time_period = [stock_data.to_dict() for stock_data in stock_data_for_time_period]
+
         return make_response(jsonify(stock_data_for_time_period), 200)
 
 

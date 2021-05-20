@@ -89,12 +89,6 @@ class Stock:
             data_to_update.append("name = %(name)s")
         if company_name is not None:
             data_to_update.append("company_name = %(company_name)s")
-        if country is not None:
-            data_to_update.append("country = %(country)s")
-        if industry is not None:
-            data_to_update.append("industry = %(industry)s")
-        if sector is not None:
-            data_to_update.append("sector = %(sector)s")
         query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
                 WHERE id = %(pk)s RETURNING id, name, company_name, country, industry, sector, in_use; """
         with pool_manager() as conn:

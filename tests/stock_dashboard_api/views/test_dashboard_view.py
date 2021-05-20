@@ -62,7 +62,7 @@ def test_get_dashboard_fail_no_stocks(mock_get, mock_get_stocks):
 @patch('stock_dashboard_api.models.dashboard_model.Dashboard.create')
 @patch('stock_dashboard_api.models.stock_model.Stock.get_stock_by_ids')
 def test_post_dashboard_pass(mock_get_ids, mock_post):
-    data = {"stock_ids": [1,2]}
+    data = {"all_stocks": [{"id":1,"name":"A"}]}
     with app.app_context():
         mock_get_ids.return_value = Stock(pk=1,
                                           name="A",
