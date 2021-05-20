@@ -5,6 +5,7 @@ from unittest.mock import patch
 import psycopg2
 
 from stock_dashboard_api.models import stock_model as sm
+from stock_dashboard_api.models.stock_data_models import StockData
 
 
 @patch('stock_dashboard_api.models.stock_model.pool_manager')
@@ -173,6 +174,19 @@ class TestStock(unittest.TestCase):
     def test_get_all_error(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(sm.Stock.get_all(), [])
+
+    def test_get_gaps(self, pool_manager):
+        datetime_from, datetime_to = datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 8, 20)
+        stock_data = [StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 30)),
+                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 45)),
+                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 6, 15)),
+                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 7, 30))]
+        expected_result = [(datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 5, 30)),
+                           (datetime.datetime(2020, 4, 1, 5, 45), datetime.datetime(2020, 4, 1, 6, 15)),
+                           (datetime.datetime(2020, 4, 1, 6, 15), datetime.datetime(2020, 4, 1, 7, 30)),
+                           (datetime.datetime(2020, 4, 1, 7, 30), datetime.datetime(2020, 4, 1, 8, 20))]
+        res = sm.Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
+        self.assertEqual(expected_result, res)
 
     def test_get_data_for_last_day(self, pool_manager):
         stock_created_at = datetime.datetime.now() - datetime.timedelta(minutes=15)
