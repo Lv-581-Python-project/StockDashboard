@@ -26,7 +26,7 @@ def data_for_stocks_data_update(name: str, start: datetime, end: datetime) -> li
 
     :param name: stock name
     :param start: start date for downloading
-    :param start: end date for downloading
+    :param end: end date for downloading
     :return: list with data if opertion was successful
     """
 
