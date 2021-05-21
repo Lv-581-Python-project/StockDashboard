@@ -40,11 +40,11 @@ const convert_date = (d) => {
     if (seconds.length < 2) {
         seconds = "0" + seconds
     }
-    let res_date = d.getFullYear() + "-" + month + "-" + date + " " + hours + ":" + minutes+":"+ seconds
+    let res_date = d.getFullYear() + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
     return res_date
 }
 
-const getChartData = (fromDate, toDate , stock_id) => {
+const getChartData = (fromDate, toDate, stock_id) => {
 
     return axios({
         method: 'get',
@@ -60,7 +60,7 @@ class ChartItem extends Component {
         stock_data: [],
         fromValue: "",
         toValue: "",
-        showError:false,
+        showError: false,
         chart_data: [],
         categories: [],
         data_is_default: true,
@@ -69,16 +69,17 @@ class ChartItem extends Component {
                 categories: [],
                 labels: {
                     // format: 'dd/MM',
-                    datetimeFormatter: {
-                        year: 'yyyy',
-                        month: 'MM',
-                        day: 'dd',
-                        hour: 'HH:mm'
-                    },
+                    // datetimeFormatter: {
+                    //     year: 'yyyy',
+                    //     month: 'MM',
+                    //     day: 'dd',
+                    //     hour: 'HH:mm'
+                    // },
                     rotate: -45,
                     maxHeight: 150,
-                    formatter: function (value, timestamp, opts) {
-                        return new Date(value)
+                    formatter: (value, index, opt) => {
+                        var options = {  year: 'numeric', month: 'numeric', day: 'numeric',hour:"numeric",minute:"numeric" };
+                        return new Date(value).toLocaleDateString('en-US', options)
                     }
 
                 }
@@ -131,12 +132,12 @@ class ChartItem extends Component {
     // update plot with default date every 15 minutes
     componentDidMount() {
 
-        if (this.state.data_is_default===true) {
+        if (this.state.data_is_default === true) {
 
             let d = new Date(Date.now());
             let d2 = new Date(Date.now());
             d2.setDate(d.getDate() - 30)
-            d2.setMonth(d.getMonth() +1)
+            d2.setMonth(d.getMonth() + 1)
             let date_now = convert_date(d);
             let date_difference = convert_date(d2)
             console.log(date_difference)
@@ -180,11 +181,20 @@ class ChartItem extends Component {
         })
         const options1 = JSON.parse(JSON.stringify(this.state.options));
         options1.xaxis.categories = this.state.categories
-        options1.xaxis.labels.formatter = (value, timestamp, opts) => {
-            return new Date(value)
-        }
+        // options1.xaxis.labels.formatter = (value, timestamp, opts) => {
+        //     return new Date(value)
+        // }
+        // options1.xaxis = {type:"datetime"}
         options1.yaxis.labels.formatter = (value, index) => {
             return value.toFixed(1)
+        }
+
+        options1.xaxis.labels = {
+            formatter: (value, index, opt) => {
+
+                var options = {  year: 'numeric', month: 'numeric', day: 'numeric',hour:"numeric",minute:"numeric" };
+                return new Date(value).toLocaleDateString('en-US', options)
+            }
         }
         this.setState({
             options: options1,
@@ -201,22 +211,22 @@ class ChartItem extends Component {
         let validate_date = new Date(this.state.toValue) - new Date(this.state.fromValue);
         let check_to_date = new Date(Date.now()) - new Date(this.state.toValue)
         let check_from_date = new Date(Date.now()) - new Date(this.state.fromValue)
-        
+
         console.log(validate_date)
-        if (validate_date>0 && check_to_date>0 && check_from_date>0){
-            this.setState({showError:false})
+        if (validate_date > 0 && check_to_date > 0 && check_from_date > 0) {
+            this.setState({showError: false})
             let toDate = this.state.toValue
             toDate = toDate.replace("T", " ") + ":00"
             let fromDate = this.state.fromValue
             fromDate = fromDate.replace("T", " ") + ":00"
             getChartData(fromDate, toDate, this.props.stock.id).then(response => {
-            console.log(response.status)
-            this.handleResponse(response);
-            this.setState({data_is_default: false})
-        })
-            .catch(errors => console.log(errors))
-        }else{
-            this.setState({showError:true})
+                console.log(response.status)
+                this.handleResponse(response);
+                this.setState({data_is_default: false})
+            })
+                .catch(errors => console.log(errors))
+        } else {
+            this.setState({showError: true})
         }
 
     }
@@ -256,7 +266,8 @@ class ChartItem extends Component {
                                                     type="datetime-local"/></label>
                                 </div>
                                 {this.state.showError ?
-                        <Alert style={{marginTop: 10, width: "17vw"}} severity="error">Error. Wrong date provided.</Alert> : null}
+                                    <Alert style={{marginTop: 10, width: "17vw"}} severity="error">Error. Wrong date
+                                        provided.</Alert> : null}
                             </Paper>
                         </Grid>
                         <Grid style={{marginLeft: "2vw"}}>
