@@ -75,3 +75,21 @@ services:
     environment:
       LOGGING_CONF: /scheduler/utils/logging.conf
     restart: on-failure
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker.Dockerfile
+    container_name: stock_dashboard_worker
+    depends_on:
+      db:
+        condition: service_healthy
+      rmq:
+        condition: service_healthy
+    links:
+      - rmq
+    env_file:
+      - .env
+    environment:
+      LOGGING_CONF: /worker/utils/logging.conf
+    restart: on-failure
