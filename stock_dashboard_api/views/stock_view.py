@@ -3,7 +3,6 @@ from datetime import datetime
 from flask import Blueprint, request, make_response, jsonify, Response
 from flask.views import MethodView
 
-from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
 from stock_dashboard_api.utils.json_parser import get_body
 from stock_dashboard_api.utils.logger import views_logger as logger
@@ -141,7 +140,7 @@ class StockView(MethodView):
             return self._get_data_for_time_period(stock=stock, datetime_from=datetime_from, datetime_to=datetime_to)
         return make_response(jsonify(stock.to_dict()), 200)
 
-    def _get_data_for_time_period(self, stock: Stock, datetime_from: str, datetime_to: str):
+    def _get_data_for_time_period(self, stock: object, datetime_from: str, datetime_to: str):
         try:
             datetime_from = datetime.strptime(datetime_from, DATETIME_PATTERN)
             datetime_to = datetime.strptime(datetime_to, DATETIME_PATTERN)

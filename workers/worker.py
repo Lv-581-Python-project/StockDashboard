@@ -1,10 +1,11 @@
 import json
 import os
+import time
 
 import pika
 
-from workers.utils.db_service import insert_stock_data
-from workers.utils.yahoo_finance import data_for_stocks_data_update
+from utils.db_service import insert_stock_data
+from utils.yahoo_finance import data_for_stocks_data_update
 
 
 def worker_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613

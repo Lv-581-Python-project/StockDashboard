@@ -3,7 +3,7 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:alpine
+    image: postgres
     container_name: stock_dashboard_psql_db
     volumes:
       - ./pg_data:/var/lib/postgresql/data/pgdata
