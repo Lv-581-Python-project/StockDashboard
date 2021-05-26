@@ -3,17 +3,20 @@ import json
 import os
 import threading
 import time
+import logging
 
 import pika
 
-from workers.utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
-from workers.utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
-from workers.utils.worker_task import Task
-from workers.worker_queue import worker_publish_task
-from workers.utils.logger import workers_logger as logger
+from utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
+from utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
+from utils.worker_task import Task
+from utils.worker_queue import worker_publish_task
+from utils.logger import workers_logger as logger
 
 UPDATING_TIME = 15 * 60
 DEFAULT_PERIOD = int(os.getenv('DEFAULT_PERIOD_FOR_NEW_STOCK_DATA_DOWNLOAD'))
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 def connect_rmq():
@@ -25,6 +28,7 @@ def connect_rmq():
     )
     channel = connection.channel()
     channel.queue_declare(queue='scheduler_queue', durable=True)
+    channel.queue_declare(queue='worker_queue', durable=True)
     channel.basic_consume(queue='scheduler_queue', on_message_callback=scheduler_function)
     logger.info('Sheduler connect was created')
     channel.start_consuming()
@@ -54,7 +58,7 @@ def fetch_historical_data(data: dict):
     data['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
     start = datetime.datetime.fromisoformat(data['from'])
     finish = datetime.datetime.fromisoformat(data['to'])
-    date_difference = (start - finish).days
+    date_difference = (finish - start).days
     if date_difference > DEFAULT_PERIOD:
         count_whole_moths = date_difference // DEFAULT_PERIOD
         remainder = date_difference - (count_whole_moths * DEFAULT_PERIOD)
