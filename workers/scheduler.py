@@ -1,19 +1,21 @@
 import datetime
 import json
-import os
-import threading
-import time
 import logging
+import multiprocessing
+import os
+import time
 
 import pika
 
+from utils.check_new_stocks import check_new_stocks
 from utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
 from utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
-from utils.worker_task import Task
-from utils.worker_queue import worker_publish_task
 from utils.logger import workers_logger as logger
+from utils.worker_queue import worker_publish_task
+from utils.worker_task import Task
 
 UPDATING_TIME = 15 * 60
+UPDATING_DAILY_TIME = 24 * 60 * 60
 DEFAULT_PERIOD = int(os.getenv('DEFAULT_PERIOD_FOR_NEW_STOCK_DATA_DOWNLOAD'))
 
 logging.basicConfig(level=logging.DEBUG)
@@ -73,7 +75,6 @@ def fetch_historical_data(data: dict):
         worker_publish_task(json.dumps(data))
 
 
-
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
     dict_body = json.loads(body)
     logger.info(f'Task {dict_body} was received')
@@ -90,23 +91,43 @@ def updating_stocks():
 
     """
     while True:
+        logger.info('Updating stocks data was starter')
         all_stocks_in_use = get_all_stocks_in_use()
 
-        for stock in all_stocks_in_use:
-            last_record = get_stocks_data_last_record(stock_get_id(stock))
-            worker_publish_task(
-                Task(
-                    task_id=FETCH_DATA_FOR_PERIOD_TASK,
-                    stock_name=stock,
-                    date_from=last_record,
-                    date_to=datetime.datetime.now()
-                ).data_for_period_task()
-            )
+        if all_stocks_in_use:
+            for stock in all_stocks_in_use:
+                last_record = get_stocks_data_last_record(stock_get_id(stock))
+                worker_publish_task(
+                    Task(
+                        task_id=FETCH_DATA_FOR_PERIOD_TASK,
+                        stock_name=stock,
+                        date_from=last_record,
+                        date_to=datetime.datetime.now()
+                    ).data_for_period_task()
+                )
+        logger.info('Updating stocks data was complete')
         time.sleep(UPDATING_TIME)
 
 
+def check_new_stocks_rmq():
+    """
+    Start check_new_stocks function in loop
+    """
+    while True:
+        check_new_stocks()
+        time.sleep(UPDATING_DAILY_TIME)
+
+
 if __name__ == '__main__':
-    t1 = threading.Thread(target=connect_rmq)
-    t2 = threading.Thread(target=updating_stocks)
-    t1.start()
-    t2.start()
+    p1 = multiprocessing.Process(target=connect_rmq)
+    p2 = multiprocessing.Process(target=updating_stocks)
+    p3 = multiprocessing.Process(target=check_new_stocks_rmq)
+    p1.start()
+    logger.info('p1 was started')
+    time.sleep(5)
+    p2.start()
+    logger.info('p2 was started')
+    time.sleep(5)
+    p3.start()
+    logger.info('p3 was started')
+    time.sleep(5)

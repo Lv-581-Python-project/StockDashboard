@@ -135,10 +135,13 @@ class TestStock(unittest.TestCase):
 
         self.assertEqual(expected_result, stock_data_for_time_period_dict)
 
-    def test_get_data_for_time_period_error(self, pool_manager):
+    @patch('stock_dashboard_api.models.stock_model.Stock._are_gaps_in_data')
+    def test_get_data_for_time_period_error(self, gaps, pool_manager):
         datetime_from = datetime.datetime(2020, 4, 1, 5, 21, 45)
         datetime_to = datetime.datetime(2020, 4, 1, 5, 22, 30)
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = TypeError
+        gaps.return_value = False
+
         self.assertEqual(sm.Stock('IBM',
                                   'IBM',
                                   "United States",
@@ -146,9 +149,10 @@ class TestStock(unittest.TestCase):
                                   "Technology").get_data_for_time_period(datetime_from, datetime_to), [])
 
     def test_get_all(self, pool_manager):
-        data = [(1, 'IBM', 'IBM',  "United States", "Computer Manufacturing", "Technology", False),
+        data = [(1, 'IBM', 'IBM', "United States", "Computer Manufacturing", "Technology", False),
                 (2, 'AAPL', 'Apple', "United States", "Computer Manufacturing", "Technology", False),
-                (3, 'GOOGL', 'Google', 'United States', 'Computer Software: Programming Data Processing', 'Technology', False)]
+                (3, 'GOOGL', 'Google', 'United States', 'Computer Software: Programming Data Processing', 'Technology',
+                 False)]
         expected_pks = [d[0] for d in data]
         expected_names = [d[1] for d in data]
         expected_company_names = [d[2] for d in data]

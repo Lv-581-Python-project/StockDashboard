@@ -141,7 +141,7 @@ class StockView(MethodView):
             return self._get_data_for_time_period(stock=stock, datetime_from=datetime_from, datetime_to=datetime_to)
         return make_response(jsonify(stock.to_dict()), 200)
 
-    def _get_data_for_time_period(self, stock: Stock, datetime_from: str, datetime_to: str):
+    def _get_data_for_time_period(self, stock: object, datetime_from: str, datetime_to: str):
         try:
             datetime_from = datetime.strptime(datetime_from, DATETIME_PATTERN)
             datetime_to = datetime.strptime(datetime_to, DATETIME_PATTERN)
