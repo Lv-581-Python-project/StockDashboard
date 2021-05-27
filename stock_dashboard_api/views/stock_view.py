@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Blueprint, request, make_response, jsonify, Response
 from flask.views import MethodView
 
+from stock_dashboard_api.models.stock_model import Stock
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN
 from stock_dashboard_api.utils.json_parser import get_body
 from stock_dashboard_api.utils.logger import views_logger as logger

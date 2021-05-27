@@ -3,7 +3,6 @@ import json
 from unittest import TestCase
 from unittest.mock import patch
 
-
 from stock_dashboard_api import app
 from stock_dashboard_api.models.stock_model import Stock
 
