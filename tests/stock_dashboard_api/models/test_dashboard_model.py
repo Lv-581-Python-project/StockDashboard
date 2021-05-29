@@ -67,7 +67,8 @@ class TestStock(unittest.TestCase):
 
     def test_get_stocks_pass(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [
-            (1, "A", "Agilent Technologies Inc. Common Stock", 'United States', 'Biotechnology: Laboratory Analytical Instruments', 'Capital Goods', False)]
+            (1, "A", "Agilent Technologies Inc. Common Stock", 'United States',
+             'Biotechnology: Laboratory Analytical Instruments', 'Capital Goods', False)]
         self.assertEqual(dashboard_model.Dashboard("TESTHASH").get_stocks()[0].pk,
                          Stock(pk=1,
                                name="A",

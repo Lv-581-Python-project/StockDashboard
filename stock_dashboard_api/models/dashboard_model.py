@@ -20,7 +20,7 @@ class Dashboard:
     def create(cls, stocks: list) -> object:
         """Creates a new record in Dashboard table
 
-        :param stock_ids: list of stock ids for specific dashboard
+        :param stocks: list of stock ids for specific dashboard
         :return: instance of Dashboard
         """
 
@@ -94,7 +94,8 @@ class Dashboard:
         stocks_table = 'public.stocks'
         with pool_manager() as conn:
             get_stocks_id_query = f"""SELECT {dashboard_has_stocks_table}.stock_id,{stocks_table}.name,
-                                             {stocks_table}.company_name, {stocks_table}.country, {stocks_table}.industry, {stocks_table}.sector, {stocks_table}.in_use
+                                             {stocks_table}.company_name, {stocks_table}.country, 
+                                             {stocks_table}.industry, {stocks_table}.sector, {stocks_table}.in_use
                                       FROM {dashboard_has_stocks_table} INNER JOIN {stocks_table} 
                                       ON {dashboard_has_stocks_table}.stock_id = {stocks_table}.id
                                       WHERE {dashboard_has_stocks_table}.dashboard_hash = %(dashboard_hash)s;"""

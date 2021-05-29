@@ -136,4 +136,3 @@ class StockDataView(MethodView):
 
 stock_data_view = StockDataView.as_view('stock_data_view')
 mod.add_url_rule('/<int:pk>', view_func=stock_data_view, methods=['GET'])
-
