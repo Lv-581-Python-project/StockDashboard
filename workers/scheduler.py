@@ -10,7 +10,7 @@ import pika
 from utils.check_new_stocks import check_new_stocks
 from utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
 from utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
-from utils.logger import workers_logger as logger
+from utils.logger import scheduler_logger as logger
 from utils.worker_queue import worker_publish_task
 from utils.worker_task import Task
 
