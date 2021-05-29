@@ -296,7 +296,7 @@ class Stock:
                             self.name,
                             gap[datetime_from_index].isoformat(),
                             gap[datetime_to_index].isoformat())
-            publish_task(rmq_task.historical_data_task())
+            scheduler_publish_task(rmq_task.historical_data_task())
 
     @classmethod
     def _get_gaps_in_data(cls, datetime_from: datetime, datetime_to: datetime, stock_data: list):
