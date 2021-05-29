@@ -32,7 +32,7 @@ def connect_rmq():
     channel.queue_declare(queue='scheduler_queue', durable=True)
     channel.queue_declare(queue='worker_queue', durable=True)
     channel.basic_consume(queue='scheduler_queue', on_message_callback=scheduler_function)
-    logger.info('Sheduler connect was created')
+    logger.info('Sheduler connection was created')
     channel.start_consuming()
 
 
@@ -73,6 +73,14 @@ def fetch_historical_data(data: dict):
         data['to'] = (start + datetime.timedelta(days=remainder)).isoformat()
         logger.info(f'Send task {data} to workers')
         worker_publish_task(json.dumps(data))
+    data['from'] = start.isoformat()
+    data['to'] = finish.isoformat()
+    logger.info(f'Send task {data} to workers')
+    worker_publish_task(json.dumps(data))
+
+
+
+
 
 
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613

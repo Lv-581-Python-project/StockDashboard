@@ -275,7 +275,6 @@ class Stock:
         time_period_in_minutes = datetime_to.timestamp() - datetime_from.timestamp() / 60
         expected_data_quantity = time_period_in_minutes / (60 / STOCK_DATA_INTERVAL)
         actual_data_quantity = len(stock_data)
-        print(actual_data_quantity != expected_data_quantity)
         return actual_data_quantity != expected_data_quantity
 
     def _fill_gaps_in_data(self, datetime_from, datetime_to, stock_data):
@@ -288,7 +287,6 @@ class Stock:
         """
 
         gaps = Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
-        print(gaps)
         datetime_from_index = 0
         datetime_to_index = 1
         for gap in gaps:

@@ -52,6 +52,7 @@ services:
         condition: service_healthy
       scheduler:
         condition: service_started
+
     env_file:
       - docker.env
     ports:
@@ -93,3 +94,16 @@ services:
     environment:
       LOGGING_CONF: /worker/utils/logging.conf
     restart: on-failure
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    container_name: nginx_server
+    ports:
+      - 8080:80
+
+    restart: on-failure
+
+
+
