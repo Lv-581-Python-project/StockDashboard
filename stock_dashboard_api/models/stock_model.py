@@ -74,7 +74,7 @@ class Stock:
                 logger.warning(message)
 
     def update(self, name: str = None, company_name: str = None, country: str = None, industry: str = None,
-               sector: str = None, in_use: bool = None) -> bool:
+               sector: str = None, in_use: bool = False) -> bool:
         """
         Update an existing instance in database
 
@@ -104,7 +104,7 @@ class Stock:
                      'industry': industry,
                      'sector': sector,
                      'pk': self.pk,
-                     'in_use': self.in_use})
+                     'in_use': in_use})
                 pk, name, company_name, country, industry, sector, in_use = conn.cursor.fetchone()  # pylint: disable=C0103, W0612
                 self.name = name
                 self.company_name = company_name
