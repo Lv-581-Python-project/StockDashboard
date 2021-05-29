@@ -60,8 +60,9 @@ class DashboardViewsTestCase(TestCase):
 
     @patch('stock_dashboard_api.models.dashboard_model.Dashboard.create')
     @patch('stock_dashboard_api.models.stock_model.Stock.get_stock_by_ids')
-    def test_post_dashboard_pass(self, mock_get_ids, mock_post):
-        data = {"all_stocks": [{"id": 1, "name": "A"}]}
+    @patch('stock_dashboard_api.models.stock_model.Stock.get_by_id')
+    def test_post_dashboard_pass(self, mock_get_by_id, mock_get_ids, mock_post):
+        data = {"all_stocks": [{"id": 1, "name": "A"}], "missing_names": []}
         with app.app_context():
             mock_get_ids.return_value = Stock(pk=1,
                                               name="A",
@@ -71,6 +72,13 @@ class DashboardViewsTestCase(TestCase):
                                               sector="Capital Goods",
                                               in_use=False)
             mock_post.return_value = Dashboard(dashboard_hash='f79ee4f2')
+            mock_get_by_id.return_value = Stock(pk=1,
+                                                name="A",
+                                                company_name="Agilent Technologies Inc. Common Stock",
+                                                country="United States",
+                                                industry="Biotechnology: Laboratory Analytical Instruments",
+                                                sector="Capital Goods",
+                                                in_use=True)
             with app.test_client() as client:
                 response = client.post('/api/dashboard/', json=data)
                 assert response.status_code == 201

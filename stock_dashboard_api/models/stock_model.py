@@ -8,7 +8,7 @@ from stock_dashboard_api.models.stock_data_models import StockData
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN, STOCK_DATA_INTERVAL, FETCH_HISTORICAL_DATA_TASK
 from stock_dashboard_api.utils.logger import models_logger as logger
 from stock_dashboard_api.utils.pool import pool_manager
-from stock_dashboard_api.utils.scheduler_queue import publish_task
+from stock_dashboard_api.utils.scheduler_queue import scheduler_publish_task
 from stock_dashboard_api.utils.worker_task import Task
 
 
@@ -38,7 +38,7 @@ class Stock:
         self.in_use = in_use
 
     @classmethod
-    def create(cls, name: str, company_name: str, country: str, industry: str, sector: str) -> Stock:
+    def create(cls, name: str, company_name: str, country: str, industry: str, sector: str, in_use: bool = None) -> Stock:
         """
         Create a new instance in database
 
@@ -74,7 +74,7 @@ class Stock:
                 logger.warning(message)
 
     def update(self, name: str = None, company_name: str = None, country: str = None, industry: str = None,
-               sector: str = None) -> bool:
+               sector: str = None, in_use: bool = False) -> bool:
         """
         Update an existing instance in database
 
@@ -83,6 +83,7 @@ class Stock:
         :param country:
         :param industry:
         :param sector:
+        :param in_use:
         :return: True if update was successful and False if not
         """
 
@@ -103,13 +104,14 @@ class Stock:
                      'industry': industry,
                      'sector': sector,
                      'pk': self.pk,
-                     'in_use': self.in_use})
+                     'in_use': in_use})
                 pk, name, company_name, country, industry, sector, in_use = conn.cursor.fetchone()  # pylint: disable=C0103, W0612
                 self.name = name
                 self.company_name = company_name
                 self.country = country
                 self.industry = industry
                 self.sector = sector
+                self.in_use = in_use
                 return True
             except (psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
