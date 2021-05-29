@@ -60,8 +60,9 @@ class DashboardViewsTestCase(TestCase):
 
     @patch('stock_dashboard_api.models.dashboard_model.Dashboard.create')
     @patch('stock_dashboard_api.models.stock_model.Stock.get_stock_by_ids')
+
     def test_post_dashboard_pass(self, mock_get_ids, mock_post):
-        data = {"all_stocks": [{"id": 1, "name": "A"}]}
+        data = {"all_stocks": [{"id": 1, "name": "A"}], "missing_names": []}
         with app.app_context():
             mock_get_ids.return_value = Stock(pk=1,
                                               name="A",

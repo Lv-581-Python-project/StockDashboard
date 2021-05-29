@@ -62,14 +62,14 @@ class DashboardView(MethodView):
                                      industry=meta_data['industry'],
                                      sector=meta_data['sector'],
                                      in_use=True)
-                stock_ids.append(stock.id)
-                scheduler_publish_task(Task(task_id=FETCH_NEW_STOCK_TASK, name=meta_data['name']).new_stock_task())
+                stock_ids.append(stock.pk)
+                scheduler_publish_task(Task(FETCH_NEW_STOCK_TASK, meta_data['name']).new_stock_task())
 
         for stock_id in stock_ids:
             stock = Stock.get_by_id(stock_id)
             if not stock.in_use:
                 stock.update(in_use=True)
-                scheduler_publish_task(Task(task_id=FETCH_NEW_STOCK_TASK, name=stock.name).new_stock_task())
+                scheduler_publish_task(Task(FETCH_NEW_STOCK_TASK, stock.name).new_stock_task())
 
         stocks = Stock.get_stock_by_ids(stock_ids)
         if not stocks:

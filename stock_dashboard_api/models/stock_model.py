@@ -38,7 +38,7 @@ class Stock:
         self.in_use = in_use
 
     @classmethod
-    def create(cls, name: str, company_name: str, country: str, industry: str, sector: str) -> Stock:
+    def create(cls, name: str, company_name: str, country: str, industry: str, sector: str, in_use: bool = None) -> Stock:
         """
         Create a new instance in database
 
@@ -74,7 +74,7 @@ class Stock:
                 logger.warning(message)
 
     def update(self, name: str = None, company_name: str = None, country: str = None, industry: str = None,
-               sector: str = None) -> bool:
+               sector: str = None, in_use: bool = None) -> bool:
         """
         Update an existing instance in database
 
@@ -83,6 +83,7 @@ class Stock:
         :param country:
         :param industry:
         :param sector:
+        :param in_use:
         :return: True if update was successful and False if not
         """
 
@@ -110,6 +111,7 @@ class Stock:
                 self.country = country
                 self.industry = industry
                 self.sector = sector
+                self.in_use = in_use
                 return True
             except (psycopg2.DataError, psycopg2.ProgrammingError):
                 return False
