@@ -8,7 +8,7 @@ from stock_dashboard_api.models.stock_data_models import StockData
 from stock_dashboard_api.utils.constants import DATETIME_PATTERN, STOCK_DATA_INTERVAL, FETCH_HISTORICAL_DATA_TASK
 from stock_dashboard_api.utils.logger import models_logger as logger
 from stock_dashboard_api.utils.pool import pool_manager
-from stock_dashboard_api.utils.scheduler_queue import publish_task
+from stock_dashboard_api.utils.scheduler_queue import scheduler_publish_task
 from stock_dashboard_api.utils.worker_task import Task
 
 
@@ -275,7 +275,6 @@ class Stock:
         time_period_in_minutes = datetime_to.timestamp() - datetime_from.timestamp() / 60
         expected_data_quantity = time_period_in_minutes / (60 / STOCK_DATA_INTERVAL)
         actual_data_quantity = len(stock_data)
-        print(actual_data_quantity != expected_data_quantity)
         return actual_data_quantity != expected_data_quantity
 
     def _fill_gaps_in_data(self, datetime_from, datetime_to, stock_data):
@@ -288,7 +287,6 @@ class Stock:
         """
 
         gaps = Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
-        print(gaps)
         datetime_from_index = 0
         datetime_to_index = 1
         for gap in gaps:
