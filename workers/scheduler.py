@@ -10,7 +10,7 @@ import pika
 from utils.check_new_stocks import check_new_stocks
 from utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
 from utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
-from utils.logger import workers_logger as logger
+from utils.logger import scheduler_logger as logger
 from utils.worker_queue import worker_publish_task
 from utils.worker_task import Task
 
@@ -32,7 +32,7 @@ def connect_rmq():
     channel.queue_declare(queue='scheduler_queue', durable=True)
     channel.queue_declare(queue='worker_queue', durable=True)
     channel.basic_consume(queue='scheduler_queue', on_message_callback=scheduler_function)
-    logger.info('Sheduler connect was created')
+    logger.info('Sheduler connection was created')
     channel.start_consuming()
 
 
@@ -73,6 +73,14 @@ def fetch_historical_data(data: dict):
         data['to'] = (start + datetime.timedelta(days=remainder)).isoformat()
         logger.info(f'Send task {data} to workers')
         worker_publish_task(json.dumps(data))
+    data['from'] = start.isoformat()
+    data['to'] = finish.isoformat()
+    logger.info(f'Send task {data} to workers')
+    worker_publish_task(json.dumps(data))
+
+
+
+
 
 
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
