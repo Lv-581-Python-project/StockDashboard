@@ -43,7 +43,7 @@ def fetch_new_stock(data: dict):
     :param data: task template from scheduler queued
     """
     data['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
-    data['from'] = (datetime.datetime.now() - datetime.timedelta(days=DEFAULT_PERIOD)).isoformat()
+    data['from'] = (datetime.datetime.now() - datetime.timedelta(days=int(DEFAULT_PERIOD))).isoformat()
     data['to'] = datetime.datetime.now().isoformat()
     body = json.dumps(data)
     logger.info(f'Send task {data} to workers')
@@ -79,10 +79,6 @@ def fetch_historical_data(data: dict):
     worker_publish_task(json.dumps(data))
 
 
-
-
-
-
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
     dict_body = json.loads(body)
     logger.info(f'Task {dict_body} was received')
@@ -104,7 +100,7 @@ def updating_stocks():
 
         if all_stocks_in_use:
             for stock in all_stocks_in_use:
-                last_record = get_stocks_data_last_record(stock_get_id(stock))
+                last_record = get_stocks_data_last_record(stock_get_id(stock['id']))
                 worker_publish_task(
                     Task(
                         task_id=FETCH_DATA_FOR_PERIOD_TASK,

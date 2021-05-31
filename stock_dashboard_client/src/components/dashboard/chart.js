@@ -129,34 +129,34 @@ class ChartItem extends Component {
     }
 
     // update plot with default date every 15 minutes
-    componentDidMount() {
+//    componentDidMount() {
+//
+//        if (this.state.data_is_default===true) {
+//
+//            let d = new Date(Date.now());
+//            let d2 = new Date(Date.now());
+//            d2.setDate(d.getDate() - 30)
+//            d2.setMonth(d.getMonth() +1)
+//            let date_now = convert_date(d);
+//            let date_difference = convert_date(d2)
+//            console.log(date_difference)
+//            this.interval = setInterval(() => {
+//                getChartData(date_difference, date_now, this.props.stock.id)
+//                    .then(response => {
+//                        this.handleResponse(response);
+//                    })
+//                    .catch(errors => console.log(errors));
+//
+//            }, 1000 * 30)
+//
+//        }
+//
+//
+//    }
 
-        if (this.state.data_is_default===true) {
-
-            let d = new Date(Date.now());
-            let d2 = new Date(Date.now());
-            d2.setDate(d.getDate() - 30)
-            d2.setMonth(d.getMonth() +1)
-            let date_now = convert_date(d);
-            let date_difference = convert_date(d2)
-            console.log(date_difference)
-            this.interval = setInterval(() => {
-                getChartData(date_difference, date_now, this.props.stock.id)
-                    .then(response => {
-                        this.handleResponse(response);
-                    })
-                    .catch(errors => console.log(errors));
-
-            }, 1000 * 30)
-
-        }
-
-
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.interval);
-    }
+//    componentWillUnmount() {
+//        clearInterval(this.interval);
+//    }
 
     handleFromInput = (event) => {
         // let fromDate = event.target.value
