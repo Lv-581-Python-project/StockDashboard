@@ -16,8 +16,8 @@ class Home extends Component {
         this.setState({stocks: stocks})
     }
     goToDashboard = () => {
-        let missing_names = this.state.stocks.map((stock) => {
-            if (Object.keys(stock).includes("id")) {
+        let missing_names = this.state.stocks.filter((stock) => {
+            if (!Object.keys(stock).includes("id")) {
 
                 return stock.name
             }
