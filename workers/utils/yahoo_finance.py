@@ -31,7 +31,7 @@ def data_for_stocks_data_update(name: str, start: datetime, end: datetime) -> li
     """
 
     data_for_update = []
-    data = yf.Ticker(name).history(start=start, end=end, interval='15m')
+    data = yf.Ticker(name).history(start=start, end=end, interval='60m')
     for raw in data.itertuples():
         if start >= raw[DATE_INDEX].astimezone(tz=None):
             continue
@@ -39,7 +39,7 @@ def data_for_stocks_data_update(name: str, start: datetime, end: datetime) -> li
             'price': raw[PRICE_INDEX],
             'created_at': str(raw[DATE_INDEX].astimezone(tz=None))
         })
-        return data_for_update
+    return data_for_update
 
 
 def get_meta_data(name: str) -> dict:

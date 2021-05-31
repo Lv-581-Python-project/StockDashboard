@@ -228,6 +228,13 @@ class TestStock(unittest.TestCase):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(stock.get_data_for_last_day(1), [])
 
+    def test_are_gaps_in_data(self, pool_manager):
+        stock_data = [x for x in range(10)]
+        start = datetime.datetime.now() - datetime.timedelta(hours=10)
+        finish = datetime.datetime.now()
+        self.assertFalse(sm.Stock._are_gaps_in_data(start, finish, stock_data))
+
+
 
 if __name__ == '__main__':
     unittest.main()
