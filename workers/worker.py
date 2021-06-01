@@ -1,26 +1,18 @@
 import json
 import os
+import time
 
 import pika
 
-from workers.utils.db_service import get_stocks_data_last_record
-from workers.utils.db_service import insert_stock_data
-from workers.utils.yahoo_finance import data_for_stocks_data_update
+from utils.db_service import insert_stock_data
+from utils.yahoo_finance import data_for_stocks_data_update
 
 
 def worker_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
     body = json.loads(body)
-    print(body)
-
-    # stock_id = body['stock_id']
-    # name = body['name']
-    # if 'start' in body:
-    #     start = body['start']
-    # else:
-    #     start = get_stocks_data_last_record(stock_id)
-    # data_for_update = data_for_stocks_data_update(stock_id, name, start)
-    # for data in data_for_update:
-    #     insert_stock_data(data['stock_id'], data['price'], data['created_at'])
+    data = data_for_stocks_data_update(body["stock_name"], body["from"], body["to"])
+    for stock in data:
+        insert_stock_data(stock["stock_id"], stock["price"], stock["created_at"])
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 

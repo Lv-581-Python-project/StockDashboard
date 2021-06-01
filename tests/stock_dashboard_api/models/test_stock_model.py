@@ -5,36 +5,71 @@ from unittest.mock import patch
 import psycopg2
 
 from stock_dashboard_api.models import stock_model as sm
+from stock_dashboard_api.models.stock_data_models import StockData
 
 
 @patch('stock_dashboard_api.models.stock_model.pool_manager')
 class TestStock(unittest.TestCase):
 
     def test_create_true(self, pool_manager):
-        data = {"id": 1, "name": "AAPL", "company_name": "Apple", "country": "United States", "industry": "Computer Manufacturing", "sector": "Technology", "in_use": False}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, "AAPL", "Apple", "United States", "Computer Manufacturing", "Technology", False)
-        self.assertEqual(sm.Stock.create("AAPL", "Apple", "United States", "Computer Manufacturing", "Technology").to_dict(), data)
+        data = {"id": 1,
+                "name": "AAPL",
+                "company_name": "Apple",
+                "country": "United States",
+                "industry": "Computer Manufacturing",
+                "sector": "Technology",
+                "in_use": False}
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1,
+                                                                                         "AAPL",
+                                                                                         "Apple",
+                                                                                         "United States",
+                                                                                         "Computer Manufacturing",
+                                                                                         "Technology",
+                                                                                         False)
+        self.assertEqual(sm.Stock.create("AAPL",
+                                         "Apple",
+                                         "United States",
+                                         "Computer Manufacturing",
+                                         "Technology").to_dict(), data)
 
     def test_create_false(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(sm.Stock.create("AAPL", "Apple", "United States", "Computer Manufacturing", "Technology"), None)
+        self.assertEqual(sm.Stock.create("AAPL",
+                                         "Apple",
+                                         "United States",
+                                         "Computer Manufacturing",
+                                         "Technology"), None)
 
     def test_update_true(self, pool_manager):
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, "AAPL", "Apple", "United States", "Computer Manufacturing", "Technology", False)
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1,
+                                                                                         "AAPL",
+                                                                                         "Apple",
+                                                                                         "United States",
+                                                                                         "Computer Manufacturing",
+                                                                                         "Technology",
+                                                                                         False)
         pool_manager.return_value.__exit__.return_value = True
-        self.assertEqual(sm.Stock('IBM', 'IBM', "United States", "Computer Manufacturing", "Technology").update(name="AAPL",
-                                                                                                                company_name="Apple",
-                                                                                                                country="United States",
-                                                                                                                industry="Computer Manufacturing",
-                                                                                                                sector="Technology"), True)
+        self.assertEqual(sm.Stock('IBM',
+                                  'IBM',
+                                  "United States",
+                                  "Computer Manufacturing",
+                                  "Technology").update(name="AAPL",
+                                                       company_name="Apple",
+                                                       country="United States",
+                                                       industry="Computer Manufacturing",
+                                                       sector="Technology"), True)
 
     def test_update_false(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
-        self.assertEqual(sm.Stock('IBM', 'IBM', "United States", "Computer Manufacturing", "Technology").update(name="AAPL",
-                                                                                                                company_name="Apple",
-                                                                                                                country="United States",
-                                                                                                                industry="Computer Manufacturing",
-                                                                                                                sector="Technology"), False)
+        self.assertEqual(sm.Stock('IBM',
+                                  'IBM',
+                                  "United States",
+                                  "Computer Manufacturing",
+                                  "Technology").update(name="AAPL",
+                                                       company_name="Apple",
+                                                       country="United States",
+                                                       industry="Computer Manufacturing",
+                                                       sector="Technology"), False)
 
     @patch('stock_dashboard_api.models.stock_model.Stock.get_by_id')
     def test_delete_true(self, get_by_id, pool_manager):
@@ -55,8 +90,20 @@ class TestStock(unittest.TestCase):
         self.assertEqual(sm.Stock.delete_by_id(1), False)
 
     def test_get_by_id(self, pool_manager):
-        data = {"id": 1, "name": "AAPL", "company_name": "Apple", "country": "United States", "industry": "Computer Manufacturing", "sector": "Technology", "in_use": False}
-        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1, "AAPL", "Apple", "United States", "Computer Manufacturing", "Technology", False)
+        data = {"id": 1,
+                "name": "AAPL",
+                "company_name": "Apple",
+                "country": "United States",
+                "industry": "Computer Manufacturing",
+                "sector": "Technology",
+                "in_use": False}
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1,
+                                                                                         "AAPL",
+                                                                                         "Apple",
+                                                                                         "United States",
+                                                                                         "Computer Manufacturing",
+                                                                                         "Technology",
+                                                                                         False)
         self.assertEqual(sm.Stock.get_by_id(1).to_dict(), data)
 
     def test_get_by_id_error(self, pool_manager):
@@ -88,16 +135,24 @@ class TestStock(unittest.TestCase):
 
         self.assertEqual(expected_result, stock_data_for_time_period_dict)
 
-    def test_get_data_for_time_period_error(self, pool_manager):
+    @patch('stock_dashboard_api.models.stock_model.Stock._are_gaps_in_data')
+    def test_get_data_for_time_period_error(self, gaps, pool_manager):
         datetime_from = datetime.datetime(2020, 4, 1, 5, 21, 45)
         datetime_to = datetime.datetime(2020, 4, 1, 5, 22, 30)
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = TypeError
-        self.assertEqual(sm.Stock('IBM', 'IBM', "United States", "Computer Manufacturing", "Technology").get_data_for_time_period(datetime_from, datetime_to), [])
+        gaps.return_value = False
+
+        self.assertEqual(sm.Stock('IBM',
+                                  'IBM',
+                                  "United States",
+                                  "Computer Manufacturing",
+                                  "Technology").get_data_for_time_period(datetime_from, datetime_to), [])
 
     def test_get_all(self, pool_manager):
-        data = [(1, 'IBM', 'IBM',  "United States", "Computer Manufacturing", "Technology", False),
+        data = [(1, 'IBM', 'IBM', "United States", "Computer Manufacturing", "Technology", False),
                 (2, 'AAPL', 'Apple', "United States", "Computer Manufacturing", "Technology", False),
-                (3, 'GOOGL', 'Google', 'United States', 'Computer Software: Programming Data Processing', 'Technology', False)]
+                (3, 'GOOGL', 'Google', 'United States', 'Computer Software: Programming Data Processing', 'Technology',
+                 False)]
         expected_pks = [d[0] for d in data]
         expected_names = [d[1] for d in data]
         expected_company_names = [d[2] for d in data]
@@ -123,6 +178,55 @@ class TestStock(unittest.TestCase):
     def test_get_all_error(self, pool_manager):
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(sm.Stock.get_all(), [])
+
+    def test_get_gaps(self, pool_manager):
+        datetime_from, datetime_to = datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 8, 20)
+        stock_data = [StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 30)),
+                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 45)),
+                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 6, 15)),
+                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 7, 30))]
+        expected_result = [(datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 5, 30)),
+                           (datetime.datetime(2020, 4, 1, 5, 45), datetime.datetime(2020, 4, 1, 6, 15)),
+                           (datetime.datetime(2020, 4, 1, 6, 15), datetime.datetime(2020, 4, 1, 7, 30)),
+                           (datetime.datetime(2020, 4, 1, 7, 30), datetime.datetime(2020, 4, 1, 8, 20))]
+        res = sm.Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
+        self.assertEqual(expected_result, res)
+
+    def test_get_data_for_last_day(self, pool_manager):
+        stock_created_at = datetime.datetime.now() - datetime.timedelta(minutes=15)
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1,
+                                                                                         "A",
+                                                                                         "Agilent Technologies Inc",
+                                                                                         "United States",
+                                                                                         "Computer Manufacturing",
+                                                                                         "Technology",
+                                                                                         False)
+        stock = sm.Stock.get_by_id(1)
+        pool_manager.return_value.__enter__.return_value.cursor.fetchall.return_value = [(1,
+                                                                                          1,
+                                                                                          111.1,
+                                                                                          stock_created_at), ]
+        stock_data_for_last_day = stock.get_data_for_last_day(1)
+        stock_data_for_last_day_dict = [stock.to_dict() for stock in stock_data_for_last_day]
+        result = [{
+            'id': 1,
+            'stock_id': 1,
+            'price': 111.1,
+            'created_at': stock_created_at
+        }]
+        self.assertEqual(result, stock_data_for_last_day_dict)
+
+    def test_get_data_for_last_day_error(self, pool_manager):
+        pool_manager.return_value.__enter__.return_value.cursor.fetchone.return_value = (1,
+                                                                                         "A",
+                                                                                         "Agilent Technologies Inc",
+                                                                                         "United States",
+                                                                                         "Computer Manufacturing",
+                                                                                         "Technology",
+                                                                                         False)
+        stock = sm.Stock.get_by_id(1)
+        pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
+        self.assertEqual(stock.get_data_for_last_day(1), [])
 
 
 if __name__ == '__main__':

@@ -19,15 +19,6 @@
 
 - In case of editing some of this params you will likely have to remove `pg_data/` or `rmq-data/`
 
-### Database setup
-Before creating and inserting data to database you should:
-1.  Go to `StockDasbord/db/stock_dasboard/data` and run command in terminal to unzip data:
-```bash
-   tar -xf data.tar.xz
-```
-2. In folder `data` in file `stocks_data.sql` replace `YOUR_PATH_TO_DATA.CSV`
-by your absolute path to `data.csv` file
-
 ### Database Init
 
 To create and to fill database go to
@@ -62,6 +53,9 @@ Insert to `.env`:
    export POSTGRES_DB=your_postgres_database_name
    export POSTGRES_PORT=your_postgres_post
    export POSTGRES_HOST=your_postgres_host
+   export PATH_TO_DATACSV=your_path_to_data.csv_file
+   export PGDATA=/var/lib/postgresql/data/pgdata
+   export SQL_SCRIPTS_ROOT=/docker-entrypoint-initdb.d   # or path to dir with .sql scripts
    
    export LOGGING_CONF=your_path_to_pool_logging_file  # (logging.conf)
    

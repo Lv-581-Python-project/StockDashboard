@@ -1,8 +1,8 @@
 import json
 
-from workers.utils.constants import FETCH_DATA_FOR_PERIOD_TASK
+from .constants import FETCH_DATA_FOR_PERIOD_TASK
 
-from workers.utils.logger import workers_logger as logger
+from .logger import workers_logger as logger
 
 
 class Task:
