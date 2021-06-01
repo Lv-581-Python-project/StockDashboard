@@ -55,6 +55,8 @@ services:
 
     env_file:
       - docker.env
+    environment:
+      LOGGING_CONF: /stock_dashboard_api/logging.conf
     ports:
       - 5000:5000
     restart: on-failure
@@ -92,7 +94,7 @@ services:
     env_file:
       - docker.env
     environment:
-      LOGGING_CONF: /worker/workers_utils/logging.conf
+      LOGGING_CONF: ./workers/workers/workers_utils/logging.conf
     restart: on-failure
 
   nginx:
