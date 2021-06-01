@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import patch
 
-import workers.utils.yahoo_finance as yahoo_finance
+import workers.workers_utils.yahoo_finance as yahoo_finance
 
 
-@patch("workers.utils.yahoo_finance.yf", autospec=True)
+@patch("workers.workers_utils.yahoo_finance.yf", autospec=True)
 class TestYahooFinanceApi(unittest.TestCase):
     def test_if_exist_true(self, yf):
         yf.Ticker.return_value.info = {'name': 'name', 'company_name': 'company_name'}
@@ -14,7 +14,7 @@ class TestYahooFinanceApi(unittest.TestCase):
         yf.Ticker.return_value.info = {'name': 'name'}
         self.assertFalse(yahoo_finance.check_if_exist('AAPLA'))
 
-    @patch("workers.utils.yahoo_finance.datetime", autospec=True)
+    @patch("workers.workers_utils.yahoo_finance.datetime", autospec=True)
     def test_data_for_stocks(self, datetime, yf):
         data = [
             {

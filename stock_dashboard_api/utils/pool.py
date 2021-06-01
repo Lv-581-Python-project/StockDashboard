@@ -32,7 +32,6 @@ class Connection:
         self.cursor = None
 
     def __enter__(self):
-        logger.info('Get connection from pool %s', id(self.conn))
         for _ in range(TRAILS):
             try:
                 self.conn = Connection.connection_pool.getconn()
@@ -51,11 +50,9 @@ class Connection:
             self.conn.rollback()
             self.cursor.close()
             Connection.connection_pool.putconn(self.conn)
-        logger.info('All changes was commited')
         self.conn.commit()
         self.cursor.close()
         Connection.connection_pool.putconn(self.conn)
-        logger.info('Put connection to pool %s', id(self.conn))
 
 
 def pool_manager():

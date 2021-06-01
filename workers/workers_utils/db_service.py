@@ -1,8 +1,10 @@
+import sys,os
+
 from psycopg2 import DataError, ProgrammingError
 
 
-from workers.utils.pool import pool_manager
-from workers.utils.logger import pool_logger as logger
+from workers.workers_utils.logger import pool_logger as logger
+from workers.workers_utils.pool import pool_manager
 
 
 def stock_in_use_check(stocks_name):
@@ -101,7 +103,7 @@ def insert_stock_data(stock_id, price, created_at):
                     (%(stock_id)s, %(price)s, %(created_at)s)
                     RETURNING id"""
         try:
-            conn.cursor.execute(query, {"stock_id": stock_id, "price": price, "created_at" : created_at})
+            conn.cursor.execute(query, {"stock_id": stock_id, "price": price, "created_at": created_at})
             conn.cursor.fetchone()
             return True
         except (DataError, ProgrammingError, TypeError):

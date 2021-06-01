@@ -7,12 +7,12 @@ import time
 
 import pika
 
-from utils.check_new_stocks import check_new_stocks
-from utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
-from utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
-from utils.logger import workers_logger as logger
-from utils.worker_queue import worker_publish_task
-from utils.worker_task import Task
+from workers_utils.check_new_stocks import check_new_stocks
+from workers_utils.constants import FETCH_DATA_FOR_PERIOD_TASK, FETCH_NEW_STOCK_TASK, FETCH_HISTORICAL_DATA_TASK
+from workers_utils.db_service import get_all_stocks_in_use, get_stocks_data_last_record, stock_get_id
+from workers_utils.logger import scheduler_logger as logger
+from workers_utils.worker_queue import worker_publish_task
+from workers_utils.worker_task import Task
 
 UPDATING_TIME = 15 * 60
 UPDATING_DAILY_TIME = 24 * 60 * 60
@@ -32,8 +32,14 @@ def connect_rmq():
     channel.queue_declare(queue='scheduler_queue', durable=True)
     channel.queue_declare(queue='worker_queue', durable=True)
     channel.basic_consume(queue='scheduler_queue', on_message_callback=scheduler_function)
-    logger.info('Sheduler connect was created')
+    logger.info('Sheduler connection was created')
     channel.start_consuming()
+
+def rounder(t):
+    if t.minute >= 30:
+        return t.replace(second=0, microsecond=0, minute=0, hour=t.hour+1)
+    else:
+        return t.replace(second=0, microsecond=0, minute=0)
 
 
 def fetch_new_stock(data: dict):
@@ -42,9 +48,10 @@ def fetch_new_stock(data: dict):
 
     :param data: task template from scheduler queued
     """
+    round_time = rounder(datetime.datetime.now())
     data['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
-    data['from'] = (datetime.datetime.now() - datetime.timedelta(days=DEFAULT_PERIOD)).isoformat()
-    data['to'] = datetime.datetime.now().isoformat()
+    data['from'] = (round_time - datetime.timedelta(days=int(DEFAULT_PERIOD))).isoformat()
+    data['to'] = round_time.isoformat()
     body = json.dumps(data)
     logger.info(f'Send task {data} to workers')
     worker_publish_task(body)
@@ -73,6 +80,10 @@ def fetch_historical_data(data: dict):
         data['to'] = (start + datetime.timedelta(days=remainder)).isoformat()
         logger.info(f'Send task {data} to workers')
         worker_publish_task(json.dumps(data))
+    data['from'] = start.isoformat()
+    data['to'] = finish.isoformat()
+    logger.info(f'Send task {data} to workers')
+    worker_publish_task(json.dumps(data))
 
 
 def scheduler_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613
@@ -96,13 +107,14 @@ def updating_stocks():
 
         if all_stocks_in_use:
             for stock in all_stocks_in_use:
-                last_record = get_stocks_data_last_record(stock_get_id(stock))
+                round_time = rounder(datetime.datetime.now())
+                last_record = get_stocks_data_last_record(stock_get_id(stock['name']))
                 worker_publish_task(
                     Task(
-                        task_id=FETCH_DATA_FOR_PERIOD_TASK,
-                        stock_name=stock,
-                        date_from=last_record,
-                        date_to=datetime.datetime.now()
+                        FETCH_DATA_FOR_PERIOD_TASK,
+                        stock['name'],
+                        date_from=last_record.isoformat(),
+                        date_to=round_time.isoformat()
                     ).data_for_period_task()
                 )
         logger.info('Updating stocks data was complete')
@@ -114,7 +126,7 @@ def check_new_stocks_rmq():
     Start check_new_stocks function in loop
     """
     while True:
-        check_new_stocks()
+        check_new_stocdcks()
         time.sleep(UPDATING_DAILY_TIME)
 
 
