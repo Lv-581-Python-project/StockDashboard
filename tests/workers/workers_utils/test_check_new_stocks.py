@@ -4,13 +4,14 @@ import unittest
 
 from unittest.mock import patch
 
-sys.path.insert(0, os.path.abspath('../../../workers/'))
-import workers_utils.check_new_stocks as daemon
+#sys.path.insert(0, os.path.abspath('../../../workers/'))
+
+import workers.workers_utils.check_new_stocks as daemon
 
 
-@patch("workers_utils.check_new_stocks.insert_new_stock")
-@patch("workers_utils.check_new_stocks.get_all_stocks_name")
-@patch("workers_utils.check_new_stocks.requests", autospec=True)
+@patch("workers.workers_utils.check_new_stocks.insert_new_stock")
+@patch("workers.workers_utils.check_new_stocks.get_all_stocks_name")
+@patch("workers.workers_utils.check_new_stocks.requests", autospec=True)
 class TestCheckNewStocks(unittest.TestCase):
 
     def test_check_new_stocks(self, requests, get, insert):
