@@ -1,7 +1,4 @@
-import sys,os
-
 from psycopg2 import DataError, ProgrammingError
-
 
 from workers.workers_utils.logger import pool_logger as logger
 from workers.workers_utils.pool import pool_manager
