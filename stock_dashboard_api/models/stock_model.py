@@ -18,7 +18,8 @@ class Stock:
     """
     _table = 'public.stocks'
 
-    def __init__(self, name: str, company_name: str, country: str, industry: str, sector: str, pk: int = None, in_use: bool = False):
+    def __init__(self, name: str, company_name: str, country: str, industry: str, sector: str, pk: int = None,
+                 in_use: bool = False):
         """
         :param name: short name of company stocks
         :param company_name: name of company
@@ -38,7 +39,8 @@ class Stock:
         self.in_use = in_use
 
     @classmethod
-    def create(cls, name: str, company_name: str, country: str, industry: str, sector: str, in_use: bool = None) -> Stock:
+    def create(cls, name: str, company_name: str, country: str, industry: str, sector: str,
+               in_use: bool = None) -> Stock:
         """
         Create a new instance in database
 
@@ -92,6 +94,15 @@ class Stock:
             data_to_update.append("name = %(name)s")
         if company_name is not None:
             data_to_update.append("company_name = %(company_name)s")
+        if country is not None:
+            data_to_update.append("country = %(country)s")
+        if industry is not None:
+            data_to_update.append("industry = %(industry)s")
+        if sector is not None:
+            data_to_update.append("sector = %(sector)s")
+        if in_use is not None:
+            data_to_update.append("in_use = %(in_use)s")
+
         query = f"""UPDATE {self._table} SET {', '.join(data_to_update)}
                 WHERE id = %(pk)s RETURNING id, name, company_name, country, industry, sector, in_use; """
         with pool_manager() as conn:
@@ -215,7 +226,6 @@ class Stock:
         :param datetime_to: end time of period to get stock data
         :return: list of StockData
         """
-
         stock_data_for_time_period = []
         datetime_from_str, datetime_to_str = datetime_from.strftime(DATETIME_PATTERN), datetime_to.strftime(
             DATETIME_PATTERN)
@@ -274,8 +284,8 @@ class Stock:
         :param stock_data: list of StockData to check for gaps
         """
 
-        time_period_in_minutes = datetime_to.timestamp() - datetime_from.timestamp() / 60
-        expected_data_quantity = time_period_in_minutes / (60 / STOCK_DATA_INTERVAL)
+        time_period_in_minutes = int((datetime_to.timestamp() - datetime_from.timestamp())) / 60
+        expected_data_quantity = time_period_in_minutes / STOCK_DATA_INTERVAL
         actual_data_quantity = len(stock_data)
         return actual_data_quantity != expected_data_quantity
 

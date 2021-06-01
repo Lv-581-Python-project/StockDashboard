@@ -181,14 +181,16 @@ class TestStock(unittest.TestCase):
 
     def test_get_gaps(self, pool_manager):
         datetime_from, datetime_to = datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 8, 20)
-        stock_data = [StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 30)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 45)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 6, 15)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 7, 30))]
-        expected_result = [(datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 5, 30)),
-                           (datetime.datetime(2020, 4, 1, 5, 45), datetime.datetime(2020, 4, 1, 6, 15)),
-                           (datetime.datetime(2020, 4, 1, 6, 15), datetime.datetime(2020, 4, 1, 7, 30)),
-                           (datetime.datetime(2020, 4, 1, 7, 30), datetime.datetime(2020, 4, 1, 8, 20))]
+        stock_data = [
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 30)),
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 45)),
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 6, 15)),
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 7, 30))
+        ]
+        expected_result = [
+            (datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 5, 30)),
+            (datetime.datetime(2020, 4, 1, 6, 15), datetime.datetime(2020, 4, 1, 7, 30))
+        ]
         res = sm.Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
         self.assertEqual(expected_result, res)
 
@@ -227,6 +229,13 @@ class TestStock(unittest.TestCase):
         stock = sm.Stock.get_by_id(1)
         pool_manager.return_value.__enter__.return_value.cursor.execute.side_effect = psycopg2.DataError
         self.assertEqual(stock.get_data_for_last_day(1), [])
+
+    def test_are_gaps_in_data(self, pool_manager):
+        stock_data = [x for x in range(10)]
+        start = datetime.datetime.now() - datetime.timedelta(hours=10)
+        finish = datetime.datetime.now()
+        self.assertFalse(sm.Stock._are_gaps_in_data(start, finish, stock_data))
+
 
 
 if __name__ == '__main__':

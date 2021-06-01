@@ -68,14 +68,7 @@ class DashboardView(MethodView):
         for stock_id in stock_ids:
             stock = Stock.get_by_id(stock_id)
             if not stock.in_use:
-                stock.update(
-                    name=stock.name,
-                    company_name = stock.company_name,
-                    country = stock.country,
-                    industry = stock.industry,
-                    sector = stock.sector,
-                    in_use= True
-                )
+                stock.update(in_use= True)
                 scheduler_publish_task(Task(FETCH_NEW_STOCK_TASK, stock.name).new_stock_task())
 
         stocks = Stock.get_stock_by_ids(stock_ids)

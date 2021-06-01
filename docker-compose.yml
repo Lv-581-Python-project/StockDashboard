@@ -74,7 +74,7 @@ services:
     env_file:
       - docker.env
     environment:
-      LOGGING_CONF: /scheduler/utils/logging.conf
+      LOGGING_CONF: /scheduler/workers_utils/logging.conf
     restart: on-failure
 
   worker:
@@ -92,7 +92,7 @@ services:
     env_file:
       - docker.env
     environment:
-      LOGGING_CONF: /worker/utils/logging.conf
+      LOGGING_CONF: /worker/workers_utils/logging.conf
     restart: on-failure
 
   nginx:

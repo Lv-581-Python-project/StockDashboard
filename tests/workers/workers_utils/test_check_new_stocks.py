@@ -1,18 +1,22 @@
+import os
+import sys
 import unittest
+
 from unittest.mock import patch
 
-import workers.utils.check_new_stocks as daemon
+#sys.path.insert(0, os.path.abspath('../../../workers/'))
+
+import workers.workers_utils.check_new_stocks as daemon
 
 
-@patch("workers.utils.check_new_stocks.insert_new_stock")
-@patch("workers.utils.check_new_stocks.get_all_stocks_name")
-@patch("workers.utils.check_new_stocks.requests", autospec=True)
+@patch("workers.workers_utils.check_new_stocks.insert_new_stock")
+@patch("workers.workers_utils.check_new_stocks.get_all_stocks_name")
+@patch("workers.workers_utils.check_new_stocks.requests", autospec=True)
 class TestCheckNewStocks(unittest.TestCase):
 
     def test_check_new_stocks(self, requests, get, insert):
         get.return_value = {'AAPL', 'TSLA'}
         requests.get.return_value.json.return_value = {'data': {'rows': [{'symbol': 'AAPL'}]}}
-        daemon.check_new_stocks()
         self.assertIsNone(daemon.check_new_stocks())
 
     def test_save_new_stocks(self, requests, get, insert):
