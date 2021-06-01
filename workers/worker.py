@@ -4,9 +4,9 @@ import os
 
 import pika
 
-from utils.db_service import insert_stock_data, stock_get_id
-from utils.logger import workers_logger as logger
-from utils.yahoo_finance import data_for_stocks_data_update
+from workers_utils.db_service import insert_stock_data, stock_get_id
+from workers_utils.logger import workers_logger as logger
+from workers_utils.yahoo_finance import data_for_stocks_data_update
 
 
 def worker_function(ch, method, properties, body):  # pylint: disable=C0103,  W0613

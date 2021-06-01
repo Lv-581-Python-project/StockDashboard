@@ -1,7 +1,7 @@
 import requests
 
-from db_service import get_all_stocks_name, insert_new_stock
-from logger import workers_logger as logger
+from workers_utils.db_service import get_all_stocks_name, insert_new_stock
+from workers_utils.logger import workers_logger as logger
 
 UPDATING_DAILY_TIME = 24 * 60 * 60
 URL = "https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&download=true"

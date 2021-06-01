@@ -226,7 +226,7 @@ class Stock:
         :param datetime_to: end time of period to get stock data
         :return: list of StockData
         """
-
+        stock_data_for_time_period = []
         datetime_from_str, datetime_to_str = datetime_from.strftime(DATETIME_PATTERN), datetime_to.strftime(
             DATETIME_PATTERN)
         with pool_manager() as conn:
@@ -244,13 +244,13 @@ class Stock:
                           f"datetime_to={datetime_to_str}"
                 logger.warning(message)
 
-            sd_for_time_period_list = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
-                                       for pk, stock_id, price, created_at in stock_data_for_time_period]
+            stock_data_for_time_period = [StockData(pk=pk, stock_id=stock_id, price=price, created_at=created_at)
+                                          for pk, stock_id, price, created_at in stock_data_for_time_period]
 
-            if Stock._are_gaps_in_data(datetime_from, datetime_to, sd_for_time_period_list):
+            if Stock._are_gaps_in_data(datetime_from, datetime_to, stock_data_for_time_period):
                 self._fill_gaps_in_data(datetime_from, datetime_to, stock_data_for_time_period)
 
-        return sd_for_time_period_list
+        return stock_data_for_time_period
 
     @classmethod
     def get_data_for_last_day(cls, pk: int) -> list:

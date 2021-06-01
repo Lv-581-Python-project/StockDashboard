@@ -1,7 +1,10 @@
+import sys,os
+
 from psycopg2 import DataError, ProgrammingError
 
-from utils.logger import pool_logger as logger
-from utils.pool import pool_manager
+
+from workers_utils.logger import pool_logger as logger
+from workers_utils.pool import pool_manager
 
 
 def stock_in_use_check(stocks_name):

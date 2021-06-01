@@ -181,14 +181,16 @@ class TestStock(unittest.TestCase):
 
     def test_get_gaps(self, pool_manager):
         datetime_from, datetime_to = datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 8, 20)
-        stock_data = [StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 30)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 45)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 6, 15)),
-                      StockData(1, 1.1, datetime.datetime(2020, 4, 1, 7, 30))]
-        expected_result = [(datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 5, 30)),
-                           (datetime.datetime(2020, 4, 1, 5, 45), datetime.datetime(2020, 4, 1, 6, 15)),
-                           (datetime.datetime(2020, 4, 1, 6, 15), datetime.datetime(2020, 4, 1, 7, 30)),
-                           (datetime.datetime(2020, 4, 1, 7, 30), datetime.datetime(2020, 4, 1, 8, 20))]
+        stock_data = [
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 30)),
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 5, 45)),
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 6, 15)),
+            StockData(1, 1.1, datetime.datetime(2020, 4, 1, 7, 30))
+        ]
+        expected_result = [
+            (datetime.datetime(2020, 4, 1, 3, 20), datetime.datetime(2020, 4, 1, 5, 30)),
+            (datetime.datetime(2020, 4, 1, 6, 15), datetime.datetime(2020, 4, 1, 7, 30))
+        ]
         res = sm.Stock._get_gaps_in_data(datetime_from, datetime_to, stock_data)
         self.assertEqual(expected_result, res)
 
