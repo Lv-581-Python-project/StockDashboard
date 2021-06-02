@@ -48,7 +48,7 @@ def fetch_new_stock(data: dict):
 
     :param data: task template from scheduler queued
     """
-    round_time = rounder(datetime.datetime.now())
+    round_time = rounder(datetime.datetime.utcnow())
     data['task_id'] = FETCH_DATA_FOR_PERIOD_TASK
     data['from'] = (round_time - datetime.timedelta(days=int(DEFAULT_PERIOD))).isoformat()
     data['to'] = round_time.isoformat()
@@ -107,7 +107,7 @@ def updating_stocks():
 
         if all_stocks_in_use:
             for stock in all_stocks_in_use:
-                round_time = rounder(datetime.datetime.now())
+                round_time = rounder(datetime.datetime.utcnow())
                 last_record = get_stocks_data_last_record(stock_get_id(stock['name']))
                 worker_publish_task(
                     Task(

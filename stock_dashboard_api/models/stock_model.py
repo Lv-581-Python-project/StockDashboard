@@ -255,8 +255,8 @@ class Stock:
     @classmethod
     def get_data_for_last_day(cls, pk: int) -> list:
         stock_data_for_last_day = []
-        datetime_now = datetime.now().strftime(DATETIME_PATTERN)
-        datetime_yesterday = (datetime.now() - timedelta(days=1)).strftime(DATETIME_PATTERN)
+        datetime_now = datetime.utcnow().strftime(DATETIME_PATTERN)
+        datetime_yesterday = (datetime.utcnow() - timedelta(days=1)).strftime(DATETIME_PATTERN)
         with pool_manager() as conn:
             query = """SELECT * FROM stocks_data
                        WHERE stock_id = %(stock_id)s
