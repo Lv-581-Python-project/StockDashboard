@@ -22,7 +22,7 @@
 ### Database Init
 
 To create and to fill database go to
-folder data/stock_dashboard and type command to run script:
+folder db/stock_dashboard and type command to run script:
 ```bash
  psql -U <username> -d <dbname> -a -f <script_name>
 ```

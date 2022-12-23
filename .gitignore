@@ -140,6 +140,3 @@ pytest.ini
 node_modules/
 **/package-lock.json
 tests.env
-
-#Data files for insertion to DB
-db/stock_dashboard/data/data.csv
